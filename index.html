@@ -203,6 +203,13 @@
 </head>
 <body>
 
+<!-- ══ LOADING ══ -->
+<div id="loadingScreen" class="auth-screen hidden">
+  <div class="login-logo">Curro Secunda <span>Discipline</span></div>
+  <div class="login-sub">Connecting to live database…</div>
+  <div style="margin-top:20px;font-size:2rem">⏳</div>
+</div>
+
 <!-- ══ FIRST-TIME SETUP ══ -->
 <div id="setupScreen" class="auth-screen hidden">
   <div class="login-logo">Curro Secunda <span>Discipline</span></div>
@@ -226,7 +233,7 @@
         <button class="eye" onclick="togglePw('sPass',this)">👁</button></div></div>
     <div class="fg"><label>Confirm Password</label>
       <input type="password" id="sPass2" placeholder="Repeat password"></div>
-    <button class="btn btn-blue" onclick="doSetup()">Create Admin Account →</button>
+    <button class="btn btn-blue" id="setupBtn" onclick="doSetup()">Create Admin Account →</button>
   </div>
 </div>
 
@@ -245,7 +252,7 @@
           onkeydown="if(event.key==='Enter')doLogin()">
         <button class="eye" onclick="togglePw('lPass',this)">👁</button>
       </div></div>
-    <button class="btn btn-blue" onclick="doLogin()">Sign In</button>
+    <button class="btn btn-blue" id="loginBtn" onclick="doLogin()">Sign In</button>
   </div>
 </div>
 
@@ -315,7 +322,7 @@
         </div></div>
       <div class="fg"><label>Notes (optional)</label>
         <textarea id="tNote" placeholder="Additional context…"></textarea></div>
-      <button class="btn btn-blue" onclick="submitT()">Submit Transgression</button>
+      <button class="btn btn-blue" id="submitBtn" onclick="submitT()">Submit Transgression</button>
     </div>
   </main>
 
@@ -435,10 +442,31 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ══ CONSTANTS ═══════════════════════════════════════════════
+// ══ SUPABASE CONFIG ══════════════════════════════════════════
+const SUPABASE_URL = 'https://hpsjwjjidwbwgviwiitw.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_deQaiTeg0FdzAlnE2vWWhQ_lCCnFoTn';
+
+async function sb(path, method='GET', body=null) {
+  const opts = {
+    method,
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method==='POST' ? 'return=representation' : ''
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, opts);
+  if (!res.ok) { const e = await res.text(); throw new Error(e); }
+  const txt = await res.text();
+  return txt ? JSON.parse(txt) : null;
+}
+
+// ══ CONSTANTS ════════════════════════════════════════════════
 const THRESH = 10, PDAYS = 14;
 
-// ══ PRE-SEEDED EDUCATORS FROM DATABASE.CSV ═══════════════════
+// ══ PRE-SEEDED EDUCATORS ═════════════════════════════════════
 const SEED_EDUCATORS = [
   "Mandy Pretorius","Simone Robson","Anel Steyn","Righ Potgieter",
   "Faatima Bhadat","Dr I Raji","Owen Dewa","Lisa Combrinck",
@@ -447,169 +475,179 @@ const SEED_EDUCATORS = [
   "Johan Botes","Ntokozo Nzima","Luann Lundell-Coetzer"
 ];
 
+const ADMIN_ACCOUNTS = {
+  'asteyn':    {name:'Anel Steyn',           password:'curro2025'},
+  'abotha':    {name:'Annebelle Botha',       password:'curro2025'},
+  'lluann':    {name:'Luann Lundell-Coetzer', password:'curro2025'},
+  'rventer':   {name:'Rochelle Venter',       password:'curro2025'},
+  'nprinsloo': {name:'Nadine Prinsloo',       password:'curro2025'},
+  'lstrydom':  {name:'Leon Strydom',          password:'curro2025'},
+};
+
 const SEED_LEARNERS = [{"name": "Nyeleti Buhlebenkosi Baloyi", "grade": "Grade 8"}, {"name": "Siphesihle Sinothile Baloyi", "grade": "Grade 8"}, {"name": "Ntalo Faith Botha", "grade": "Grade 8"}, {"name": "Nosipho Hannah Chauke", "grade": "Grade 8"}, {"name": "Acacia Cash Cowley", "grade": "Grade 8"}, {"name": "Wandile Reign Dambuza", "grade": "Grade 8"}, {"name": "Lwandle David Dlamini", "grade": "Grade 8"}, {"name": "Ntombizethu Faith Dlamini", "grade": "Grade 8"}, {"name": "Ngimphiwe Zamaswazi Dube", "grade": "Grade 8"}, {"name": "Nkosingiphile Ndumiso Blessing Gama", "grade": "Grade 8"}, {"name": "Vutivi Olwethu Gazide", "grade": "Grade 8"}, {"name": "Omolemo Kungawo Hlungulu", "grade": "Grade 8"}, {"name": "Nhlaluko Mikhenso Hlungwane", "grade": "Grade 8"}, {"name": "Emlyn Vaenusha Iyer", "grade": "Grade 8"}, {"name": "Skylar Vidaya Iyer", "grade": "Grade 8"}, {"name": "Tameka Jiyana", "grade": "Grade 8"}, {"name": "Mukendi Mbwembwa Daniel Chloe Kalonji", "grade": "Grade 8"}, {"name": "Umar Karodia", "grade": "Grade 8"}, {"name": "El-Roel Kereta", "grade": "Grade 8"}, {"name": "Mpilenhle Felicity Khoza", "grade": "Grade 8"}, {"name": "Goodluck Ilunga Kilonda", "grade": "Grade 8"}, {"name": "Kourtney Leeya Klink", "grade": "Grade 8"}, {"name": "Onkarabile Botlhale Kotu", "grade": "Grade 8"}, {"name": "Junior Lebyang", "grade": "Grade 8"}, {"name": "Tacara Ruth Lubbe", "grade": "Grade 8"}, {"name": "Briseida Elizabeth Lungu", "grade": "Grade 8"}, {"name": "Olothando Mabaso", "grade": "Grade 8"}, {"name": "Sicelimpilo Mabena", "grade": "Grade 8"}, {"name": "Boitumelo Busisiwe Malaika Mafereka", "grade": "Grade 8"}, {"name": "Simraan Mahadaw", "grade": "Grade 8"}, {"name": "Thuto Mahlaba", "grade": "Grade 8"}, {"name": "Boitumelo Mahlangu", "grade": "Grade 8"}, {"name": "Tjhudu Upendo Mahlangu", "grade": "Grade 8"}, {"name": "Siphephelo Nkosi Makhoba", "grade": "Grade 8"}, {"name": "Relebohile Manko", "grade": "Grade 8"}, {"name": "Sithembile Tendai Maphanga", "grade": "Grade 8"}, {"name": "Aanisah Marambakuyana", "grade": "Grade 8"}, {"name": "Aphiwe Owami Masango", "grade": "Grade 8"}, {"name": "Olwethu Maseko", "grade": "Grade 8"}, {"name": "Mashego Koketso Masha", "grade": "Grade 8"}, {"name": "Vhudzani Success Okuhle Mashau", "grade": "Grade 8"}, {"name": "Uluthando Vusile Masinga", "grade": "Grade 8"}, {"name": "Liyakhanya Mathebula", "grade": "Grade 8"}, {"name": "Banele Njabulo Mhlana", "grade": "Grade 8"}, {"name": "Mpilwenhle Tyra Mhlongo", "grade": "Grade 8"}, {"name": "Malwande Anesiseko Mngadi", "grade": "Grade 8"}, {"name": "Sinenhlanhla Hlelokuhle Mntungwa", "grade": "Grade 8"}, {"name": "Lethabo Onkgopotse Mogotlane", "grade": "Grade 8"}, {"name": "Boitumelo Lehlohonolo Mollo", "grade": "Grade 8"}, {"name": "Lerato Buhle Mpho Motubatse", "grade": "Grade 8"}, {"name": "Charlene Kefilwe Rofhiwa Mphaphuli", "grade": "Grade 8"}, {"name": "Thuthukani Mnqobiwamachibi Zwelakhe Mthabela", "grade": "Grade 8"}, {"name": "Luitumezi Sinikiwe Mulenga", "grade": "Grade 8"}, {"name": "Malakhiwe Tholokuhle Mzimela", "grade": "Grade 8"}, {"name": "Ntsako Kamogelo Ngobeni", "grade": "Grade 8"}, {"name": "Zothumbela Nhlengethwa", "grade": "Grade 8"}, {"name": "Wandile Nkosi", "grade": "Grade 8"}, {"name": "Nkululeko Blessing Nkuna", "grade": "Grade 8"}, {"name": "Naledi Nomonde Nkwanyana", "grade": "Grade 8"}, {"name": "Owethu Nxangani", "grade": "Grade 8"}, {"name": "Jasmine Unathi Nxumalo", "grade": "Grade 8"}, {"name": "Adriel Michael Odayan", "grade": "Grade 8"}, {"name": "Cleojunior Owethu Innocent Palmer", "grade": "Grade 8"}, {"name": "Lwandle Nolwazi Sambo", "grade": "Grade 8"}, {"name": "Atlegang Keamogetswe Selepe", "grade": "Grade 8"}, {"name": "Pontsho Mafeta Seroto", "grade": "Grade 8"}, {"name": "Relebohile Mahlohonolo Seroto", "grade": "Grade 8"}, {"name": "Gosiame Patience Setsepu", "grade": "Grade 8"}, {"name": "Uzayr Ali Shaik", "grade": "Grade 8"}, {"name": "Siyamthanda Sithole", "grade": "Grade 8"}, {"name": "Chantel Ntando Smith", "grade": "Grade 8"}, {"name": "Haveshan Thamburan", "grade": "Grade 8"}, {"name": "Luyema Thamsanqa Thwala", "grade": "Grade 8"}, {"name": "Tshifhiwa Tshishonga", "grade": "Grade 8"}, {"name": "Casniik Van den Bergh", "grade": "Grade 8"}, {"name": "Hleloluhle Owethu Xulu", "grade": "Grade 8"}, {"name": "Allie Natalien Shongile Baloyi", "grade": "Grade 9"}, {"name": "Nonhle Princess Beni", "grade": "Grade 9"}, {"name": "Oluhle Aphiwe Biyela", "grade": "Grade 9"}, {"name": "Karabo Mpendulo Johnson Bogatsu", "grade": "Grade 9"}, {"name": "Ariana Cassim", "grade": "Grade 9"}, {"name": "Qailah Cassim", "grade": "Grade 9"}, {"name": "Umayr Cassim", "grade": "Grade 9"}, {"name": "Enze Chen", "grade": "Grade 9"}, {"name": "Sibongokuhle Vanessa Triona Dlamini", "grade": "Grade 9"}, {"name": "Ngcebenhle Ntsika Dludlu", "grade": "Grade 9"}, {"name": "Anele Thandiwe Gwebu", "grade": "Grade 9"}, {"name": "Za'hra Hajat", "grade": "Grade 9"}, {"name": "Christopher Hawes", "grade": "Grade 9"}, {"name": "Okayise Jiyane", "grade": "Grade 9"}, {"name": "Hlonolofatso Ketle", "grade": "Grade 9"}, {"name": "Azokuhle Khumalo", "grade": "Grade 9"}, {"name": "Nabeel Kola", "grade": "Grade 9"}, {"name": "Tomutenda Hansel Kudiwa", "grade": "Grade 9"}, {"name": "Siphosakhe Langa", "grade": "Grade 9"}, {"name": "Owami Ayamaah Lwane", "grade": "Grade 9"}, {"name": "Nkateko Happiness Mabedhle", "grade": "Grade 9"}, {"name": "Unathi Buhle Nosipho Mahamba", "grade": "Grade 9"}, {"name": "Bongani Phaswana Mahlangu", "grade": "Grade 9"}, {"name": "Hlelo Siyanda Makhoba", "grade": "Grade 9"}, {"name": "Kgomotso Malaka", "grade": "Grade 9"}, {"name": "Thabang Mkhuleko Maphanga", "grade": "Grade 9"}, {"name": "Anaya Marambakuyana", "grade": "Grade 9"}, {"name": "Olwethu Hope Maseko", "grade": "Grade 9"}, {"name": "Tharollo Thubelihle Mashika", "grade": "Grade 9"}, {"name": "Onale Moname Mashoeu", "grade": "Grade 9"}, {"name": "Neo Kagiso Masia", "grade": "Grade 9"}, {"name": "Konke Lwandle Mathebula Mathebula", "grade": "Grade 9"}, {"name": "Siphiwe Mathenjwa", "grade": "Grade 9"}, {"name": "Nonhle Ntsumi Mazabane", "grade": "Grade 9"}, {"name": "Benedict Takalani Mbedzi", "grade": "Grade 9"}, {"name": "Thobekile Okuhle Mdhluli", "grade": "Grade 9"}, {"name": "Zoe Jane Melville", "grade": "Grade 9"}, {"name": "Amanda Minenhle Mkhabela", "grade": "Grade 9"}, {"name": "Anna Ncobile Mkhabela", "grade": "Grade 9"}, {"name": "Letlotlo Nkanyezi Mkhwanazi", "grade": "Grade 9"}, {"name": "Melokuhle Mnguni", "grade": "Grade 9"}, {"name": "Milani Mongo", "grade": "Grade 9"}, {"name": "Lefa Mathoka Mosotho", "grade": "Grade 9"}, {"name": "Buhlebenkosi Mothopeng", "grade": "Grade 9"}, {"name": "Zoe Ohanna Morongwa Motsoaledi", "grade": "Grade 9"}, {"name": "Nathi Manqoba Mtombeni", "grade": "Grade 9"}, {"name": "Inako Mtshemla", "grade": "Grade 9"}, {"name": "Zwiande Lesedi Mulaudzi", "grade": "Grade 9"}, {"name": "Adelin Mantshana Minentle Musi", "grade": "Grade 9"}, {"name": "Tessa Khensani Ngoveni", "grade": "Grade 9"}, {"name": "Kamohelo Mcdonald Nkosi", "grade": "Grade 9"}, {"name": "Makwazeke Mndumisenjalo Nkosi", "grade": "Grade 9"}, {"name": "Sthokozile Simthokozele Ntuli", "grade": "Grade 9"}, {"name": "Miyako Tianna Pyoos", "grade": "Grade 9"}, {"name": "Cameron Linley Sallie", "grade": "Grade 9"}, {"name": "Anna Senoamadi", "grade": "Grade 9"}, {"name": "Bhelekazi Shabangu", "grade": "Grade 9"}, {"name": "Lindokuhle Ethan Wakhile Sithole", "grade": "Grade 9"}, {"name": "Sulungeka Songabe", "grade": "Grade 9"}, {"name": "Kamogelo Ben Teatea", "grade": "Grade 9"}, {"name": "Rethabile Zoe' Jabulile Thukwana", "grade": "Grade 9"}, {"name": "Hlelokuhle Hope Singita Tshabalala", "grade": "Grade 9"}, {"name": "Yandisa Siphosethu Tshabalala", "grade": "Grade 9"}, {"name": "Katelyn Lyla van Staden", "grade": "Grade 9"}, {"name": "Joy Wayiti", "grade": "Grade 9"}, {"name": "Nkululeko Aphiwe Zulu", "grade": "Grade 9"}, {"name": "Itumeleng Brandon August", "grade": "Grade 10"}, {"name": "Linda Tinyiko Chabalala", "grade": "Grade 10"}, {"name": "Chloe Chetty", "grade": "Grade 10"}, {"name": "Goitsemang Gosiame Oluhle Dinale", "grade": "Grade 10"}, {"name": "Manqoba Khayelihle Dlamini", "grade": "Grade 10"}, {"name": "Khanyisile Alicia Gama", "grade": "Grade 10"}, {"name": "Lawrance Bayanda Gama", "grade": "Grade 10"}, {"name": "Giana Lee Govender", "grade": "Grade 10"}, {"name": "Jan� Greeff", "grade": "Grade 10"}, {"name": "Brooklyn Keith Hargreaves", "grade": "Grade 10"}, {"name": "Ameera Khaled Shaaban Ibrahim", "grade": "Grade 10"}, {"name": "Isabella Talya Iyer", "grade": "Grade 10"}, {"name": "Owethu Nosipho Kulube", "grade": "Grade 10"}, {"name": "Chloe Hope Thandolwethu Lukhele", "grade": "Grade 10"}, {"name": "Briaana Ester Lungu", "grade": "Grade 10"}, {"name": "Akabongwe Justin Mabena", "grade": "Grade 10"}, {"name": "Melokuhle Nomcebo Princess Mabuyakhulu", "grade": "Grade 10"}, {"name": "Thabiso Phetole Maenetja", "grade": "Grade 10"}, {"name": "Phomollo Mahlatsi", "grade": "Grade 10"}, {"name": "Farhaan Mahomed", "grade": "Grade 10"}, {"name": "Retshedisitswe Molantwa Manko", "grade": "Grade 10"}, {"name": "Hope Fulufhelo Owethu Mashau", "grade": "Grade 10"}, {"name": "Lilitha Qhayiya Matshikiza", "grade": "Grade 10"}, {"name": "Qhama Liyana Matshikiza", "grade": "Grade 10"}, {"name": "Mamello Nthabeleng Matsoele", "grade": "Grade 10"}, {"name": "Nomthandazo Bandile Surprise Mazibuko", "grade": "Grade 10"}, {"name": "Fezile Lwandle Mhlana", "grade": "Grade 10"}, {"name": "Evan Michael", "grade": "Grade 10"}, {"name": "Nduduzo Simphiwe Mkhwanazi", "grade": "Grade 10"}, {"name": "Asiphile Sinakhokonke Mnisi", "grade": "Grade 10"}, {"name": "Andile Resegofetse Modise", "grade": "Grade 10"}, {"name": "Kgomotso Amohelang Quincy Mofokeng", "grade": "Grade 10"}, {"name": "Naledi Princess Mokoena", "grade": "Grade 10"}, {"name": "Khethokuhle Thato Mokotong", "grade": "Grade 10"}, {"name": "Banzane Hlelolwenkosi Mpondo", "grade": "Grade 10"}, {"name": "Buitumelo Simnikiwe Mulenga", "grade": "Grade 10"}, {"name": "Nhlosenhle Skhulile Nhlabathi", "grade": "Grade 10"}, {"name": "Lungelo Khethokuhle Nhlapo", "grade": "Grade 10"}, {"name": "Tshegofatso Akhona Nkwanyana", "grade": "Grade 10"}, {"name": "Nonhle Silindile Nzimande", "grade": "Grade 10"}, {"name": "Diyaanah Patel", "grade": "Grade 10"}, {"name": "Naledi Reneiloe Qhamakoane", "grade": "Grade 10"}, {"name": "Zara Alexis Raman", "grade": "Grade 10"}, {"name": "Ayabonga Realeboga Ramatja", "grade": "Grade 10"}, {"name": "Muhammed Shuaib Shaik", "grade": "Grade 10"}, {"name": "Rirhandzu Pearl Siboyi", "grade": "Grade 10"}, {"name": "Xiluva Simango", "grade": "Grade 10"}, {"name": "Londiwe Khethokuhle Sindane", "grade": "Grade 10"}, {"name": "Nokubonga Angel Skhosana", "grade": "Grade 10"}, {"name": "Thabiso Jameson Tladi", "grade": "Grade 10"}, {"name": "Khulubuse Tsebo Zimu", "grade": "Grade 10"}, {"name": "Noluthando Zulu", "grade": "Grade 10"}, {"name": "Zamazulu Zulu", "grade": "Grade 10"}, {"name": "Zwelihle Zulu", "grade": "Grade 10"}, {"name": "Saadia Abbas", "grade": "Grade 11"}, {"name": "Ryan Kylin Bimbrish", "grade": "Grade 11"}, {"name": "Zuhayr Cassim", "grade": "Grade 11"}, {"name": "Katia Paula De Alcantara", "grade": "Grade 11"}, {"name": "Logan Elizabeth Ellis", "grade": "Grade 11"}, {"name": "Gabrielle Jaylin Lungile Engelbrecht", "grade": "Grade 11"}, {"name": "Yijun Fang", "grade": "Grade 11"}, {"name": "Lesedi Ganare", "grade": "Grade 11"}, {"name": "Kaylene Verona Gloube", "grade": "Grade 11"}, {"name": "Keamogetswe Lesego Harrington", "grade": "Grade 11"}, {"name": "Oabile Lindani Hlungulu", "grade": "Grade 11"}, {"name": "Nhlalala Khensani Hlungwane", "grade": "Grade 11"}, {"name": "Arav Jagasur", "grade": "Grade 11"}, {"name": "Lisa Alice Jones", "grade": "Grade 11"}, {"name": "Sebabatso Lethabo Ketle", "grade": "Grade 11"}, {"name": "Tshegofatso Kehumile Khumalo", "grade": "Grade 11"}, {"name": "Lesedi Luthando Kutu", "grade": "Grade 11"}, {"name": "Bathabile Langa", "grade": "Grade 11"}, {"name": "Vhugala Lephauphau", "grade": "Grade 11"}, {"name": "Vhulenda Lephauphau", "grade": "Grade 11"}, {"name": "Mthokozisi Samson Mahlalela", "grade": "Grade 11"}, {"name": "Lwandile Blessing Jonas Mahlangu", "grade": "Grade 11"}, {"name": "Theto Makita Mahlare", "grade": "Grade 11"}, {"name": "Ngiphile Adequate Malaza", "grade": "Grade 11"}, {"name": "Njongoyenkosi Mpendulo Mdluli", "grade": "Grade 11"}, {"name": "Phumelelo Relebogile Modise", "grade": "Grade 11"}, {"name": "Lehlohonolo Samson Mokoena", "grade": "Grade 11"}, {"name": "Boitumelo Nonhle Bianca Moreetsi", "grade": "Grade 11"}, {"name": "Lehakoe Motsoeneng", "grade": "Grade 11"}, {"name": "Khanyisa Mphuthi", "grade": "Grade 11"}, {"name": "Zoey Qhawekazi Hope Zamile Msezane", "grade": "Grade 11"}, {"name": "Melusi Wasipha Siphosethu Mthabela", "grade": "Grade 11"}, {"name": "Unarine Kenneth Jnr Mudziri", "grade": "Grade 11"}, {"name": "Ntandokazi Malibongwe Ngwenya", "grade": "Grade 11"}, {"name": "Sikholiwe Nkosi", "grade": "Grade 11"}, {"name": "Lonwabo November", "grade": "Grade 11"}, {"name": "Phiwokuhle Ntandoyenkosi Oratile Ntumba", "grade": "Grade 11"}, {"name": "Boyce Thando Radebe", "grade": "Grade 11"}, {"name": "Jabulile Sophie-Ann Radebe", "grade": "Grade 11"}, {"name": "Thato Caswell Selepe", "grade": "Grade 11"}, {"name": "Thando Shikwambane", "grade": "Grade 11"}, {"name": "Thobekile Angel Shongwe", "grade": "Grade 11"}, {"name": "Amahle Sigasa", "grade": "Grade 11"}, {"name": "Owethu Sinethemba Sindane", "grade": "Grade 11"}, {"name": "Nilach� Smith", "grade": "Grade 11"}, {"name": "Ashtin Strydom", "grade": "Grade 11"}, {"name": "Lesedi Moipone Tau", "grade": "Grade 11"}, {"name": "Tshediso Tsolo Tsolo", "grade": "Grade 11"}, {"name": "Jessica Turley", "grade": "Grade 11"}, {"name": "Sinenhlanhla Hlosile Yende", "grade": "Grade 11"}, {"name": "Mbali Naledi Zulu", "grade": "Grade 11"}, {"name": "Romana Cassim", "grade": "Grade 12"}, {"name": "Liamae-Kiara Clarke", "grade": "Grade 12"}, {"name": "Caitlyn De Ponte", "grade": "Grade 12"}, {"name": "Reabetswe Digoro", "grade": "Grade 12"}, {"name": "Alwande Phiwokuhle Dlamini", "grade": "Grade 12"}, {"name": "Elizabeth Anne Du Piesanie", "grade": "Grade 12"}, {"name": "Dehann Fourie", "grade": "Grade 12"}, {"name": "Ismail Hoosen", "grade": "Grade 12"}, {"name": "Matthew David Klink", "grade": "Grade 12"}, {"name": "Vutlharhi Hlulani Mabedhle", "grade": "Grade 12"}, {"name": "Amahle Lethokuhle Mabuza", "grade": "Grade 12"}, {"name": "Thandolwethu Mabuza", "grade": "Grade 12"}, {"name": "Mvelo Phakamani Maseko", "grade": "Grade 12"}, {"name": "Machemo Naomi Lindokuhle Masekoameng", "grade": "Grade 12"}, {"name": "Kutloano Matsimane", "grade": "Grade 12"}, {"name": "Khwezi Mbakaza", "grade": "Grade 12"}, {"name": "Hlumelo Mpho Mbatani", "grade": "Grade 12"}, {"name": "Maningisi Kgothatso Mdhluli", "grade": "Grade 12"}, {"name": "Oarabile Kgawane Mmotla", "grade": "Grade 12"}, {"name": "Mzwandile Nkosingiphile Mndawe", "grade": "Grade 12"}, {"name": "Dineo Princess Mokoena", "grade": "Grade 12"}, {"name": "Thabiso Tsebo Blessing Mokoena", "grade": "Grade 12"}, {"name": "Thapelo Ntumiseng Tsepo Molete", "grade": "Grade 12"}, {"name": "Lesego Boitumelo Thando Moroke", "grade": "Grade 12"}, {"name": "Thato Adam Siyabonga Motubatse", "grade": "Grade 12"}, {"name": "Roneoa Princess Mphaphuli", "grade": "Grade 12"}, {"name": "Sakhisizwe Saloam Dylan Mnotho Msezane", "grade": "Grade 12"}, {"name": "Sanele Ndumiso Mshiywa", "grade": "Grade 12"}, {"name": "Darrell Tafadzwa Mwasiswebe", "grade": "Grade 12"}, {"name": "Prosper Omolemo Ndjibu", "grade": "Grade 12"}, {"name": "Reotshepile Thandolwetu Ndlovu", "grade": "Grade 12"}, {"name": "Siyabonga Siphesihle Nkabinde", "grade": "Grade 12"}, {"name": "Lauren Michael Odayan", "grade": "Grade 12"}, {"name": "Rakim Shakur Petrus", "grade": "Grade 12"}, {"name": "Sajal Ramlugan", "grade": "Grade 12"}, {"name": "Lebohang Rapoo", "grade": "Grade 12"}, {"name": "Juane Roolvink", "grade": "Grade 12"}, {"name": "Aria Samlal", "grade": "Grade 12"}, {"name": "Katlego Vukona Sentsho", "grade": "Grade 12"}, {"name": "Dimpho Ziyanda Seroto", "grade": "Grade 12"}, {"name": "Thandeka Promise Sibeko", "grade": "Grade 12"}, {"name": "Kusaselihle Selusiwe Ntombifuthi Sibiya", "grade": "Grade 12"}, {"name": "Asanda Nozibusiso Skhosana", "grade": "Grade 12"}, {"name": "Mawandla Soko", "grade": "Grade 12"}, {"name": "Jacobus Stander", "grade": "Grade 12"}, {"name": "Aphiwe Sibahle Thwala", "grade": "Grade 12"}, {"name": "Neo Shikosha Tivane", "grade": "Grade 12"}, {"name": "Minas Oghehetega Akpoghene Ugovwarhe", "grade": "Grade 12"}, {"name": "Paballo Thandi Zimu", "grade": "Grade 12"}];
 
 // ══ STATE ════════════════════════════════════════════════════
-let S  = JSON.parse(localStorage.getItem('sg_s')||'null') || (()=>{
-  const learners = SEED_LEARNERS.map((l,i)=>({id:i+1, name:l.name, grade:l.grade, history:[]}));
-  return {periodStart:td(), periodNum:1, learners, nextId:learners.length+1};
-})();
-let U  = JSON.parse(localStorage.getItem('sg_u')||'null');
-let me = null, selId = null, selPt = 2, pending = [];
+let me = null, selId = null, selPt = 2;
+let LEARNERS = [];   // live from Supabase
+let PERIOD = { id: null, periodNum: 1, periodStart: td() };
 
-const saveS = () => localStorage.setItem('sg_s', JSON.stringify(S));
-const saveU = () => localStorage.setItem('sg_u', JSON.stringify(U));
 function td() { return new Date().toISOString().split('T')[0]; }
 const g = id => document.getElementById(id);
 const gv = id => g(id).value.trim();
 
 function pPts(l) {
-  // Points accumulate across ALL periods — never reset
-  return l.history.reduce((a,x)=>a+x.pts,0);
+  return (l.history||[]).reduce((a,x)=>a+x.pts,0);
 }
 function dLeft() {
-  const s=new Date(S.periodStart),e=new Date(s); e.setDate(e.getDate()+PDAYS);
+  const s=new Date(PERIOD.periodStart), e=new Date(s);
+  e.setDate(e.getDate()+PDAYS);
   return Math.max(0,Math.ceil((e-new Date())/86400000));
 }
 
 // ══ BOOT ═════════════════════════════════════════════════════
-function boot() {
-  if (!U) { g('setupScreen').classList.remove('hidden'); return; }
-  seedMissingEducators();
-  seedMissingLearners();
-  g('loginScreen').classList.remove('hidden');
-}
-
-function seedMissingLearners() {
-  // Build a history map from existing learners keyed by name|grade
-  const historyMap = {};
-  S.learners.forEach(l => {
-    const key = l.name.toLowerCase() + '|' + l.grade.toLowerCase();
-    if (l.history && l.history.length > 0) historyMap[key] = l.history;
-  });
-
-  // Rebuild learners exactly from SEED_LEARNERS — no duplicates, correct count
-  const seen = new Set();
-  const clean = [];
-  let nextId = 1;
-  SEED_LEARNERS.forEach(l => {
-    const key = l.name.toLowerCase() + '|' + l.grade.toLowerCase();
-    if (!seen.has(key)) {
-      seen.add(key);
-      clean.push({
-        id: nextId++,
-        name: l.name,
-        grade: l.grade,
-        history: historyMap[key] || []
-      });
+async function boot() {
+  showLoading(true);
+  try {
+    await ensureTables();
+    const hasAccounts = await checkHasAccounts();
+    if (!hasAccounts) {
+      showLoading(false);
+      g('setupScreen').classList.remove('hidden');
+      return;
     }
-  });
-
-  // Only update if something changed
-  if (S.learners.length !== clean.length ||
-      JSON.stringify(S.learners.map(l=>l.name+l.grade)) !== JSON.stringify(clean.map(l=>l.name+l.grade))) {
-    S.learners = clean;
-    S.nextId = nextId;
-    saveS();
+    await loadPeriod();
+    showLoading(false);
+    g('loginScreen').classList.remove('hidden');
+  } catch(err) {
+    showLoading(false);
+    toast('Connection error: ' + err.message, 1);
+    g('loginScreen').classList.remove('hidden');
   }
 }
 
-// Accounts that should be admins with password curro2025
-const ADMIN_ACCOUNTS = {
-  'asteyn':    {name:'Anel Steyn',             password:'curro2025'},
-  'abotha':    {name:'Annebelle Botha',         password:'curro2025'},
-  'lluann':    {name:'Luann Lundell-Coetzer',   password:'curro2025'},
-  'rventer':   {name:'Rochelle Venter',         password:'curro2025'},
-  'nprinsloo': {name:'Nadine Prinsloo',         password:'curro2025'},
-  'lstrydom':  {name:'Leon Strydom',             password:'curro2025'},
-};
+function showLoading(on) {
+  let el = g('loadingScreen');
+  if (!el) return;
+  el.classList.toggle('hidden', !on);
+}
 
-function seedMissingEducators() {
-  let changed = false;
+async function ensureTables() {
+  // Tables are created via Supabase dashboard SQL — just verify connection
+  try { await sb('accounts?limit=1'); } catch(e) { throw new Error('Cannot reach database. Check connection.'); }
+}
 
-  // 1. Seed all standard educators (if not already present)
-  SEED_EDUCATORS.forEach(eduName => {
-    const parts = eduName.replace(/^Dr\s+/i,'').trim().split(/\s+/);
-    const surname = parts[parts.length-1].toLowerCase().replace(/[^a-z]/g,'');
-    const first = parts[0].toLowerCase().replace(/[^a-z]/g,'');
-    const uname = first.charAt(0) + surname;
-    if (!U.accounts.find(a => a.username === uname)) {
-      U.accounts.push({id: U.nextId++, name: eduName, username: uname, password: 'curro2026', role: 'educator'});
-      changed = true;
-    }
-  });
+async function checkHasAccounts() {
+  try {
+    const rows = await sb('accounts?limit=1');
+    return rows && rows.length > 0;
+  } catch(e) { return false; }
+}
 
-  // 2. Ensure lstrydom exists (not in original database)
-  if (!U.accounts.find(a => a.username === 'lstrydom')) {
-    U.accounts.push({id: U.nextId++, name:'Leon Strydom', username:'lstrydom', password:'curro2025', role:'admin'});
-    changed = true;
-  }
-
-  // 3. Patch all designated admin accounts — set correct role & password
-  Object.entries(ADMIN_ACCOUNTS).forEach(([uname, cfg]) => {
-    const acc = U.accounts.find(a => a.username === uname);
-    if (acc) {
-      if (acc.role !== 'admin' || acc.password !== cfg.password) {
-        acc.role = 'admin';
-        acc.password = cfg.password;
-        changed = true;
-      }
-    }
-  });
-
-  if (changed) saveU();
+async function loadPeriod() {
+  try {
+    const rows = await sb('period?limit=1');
+    if (rows && rows.length > 0) PERIOD = rows[0];
+  } catch(e) {}
 }
 
 // ══ SETUP ════════════════════════════════════════════════════
-function doSetup() {
-  const name=gv('sName'),user=gv('sUser').toLowerCase(),pass=gv('sPass'),pass2=gv('sPass2');
+async function doSetup() {
+  const name=gv('sName'), user=gv('sUser').toLowerCase(), pass=gv('sPass'), pass2=gv('sPass2');
   const e=g('setupErr'); e.style.display='none';
   if (!name||!user||!pass) return showE(e,'All fields are required.');
   if (pass!==pass2) return showE(e,'Passwords do not match.');
   if (pass.length<6) return showE(e,'Password must be at least 6 characters.');
 
-  // Build accounts: admin first, then all seeded educators
-  let nextId = 2;
-  const accounts = [{id:1, name, username:user, password:pass, role:'admin'}];
-  SEED_EDUCATORS.forEach(eduName => {
-    // Generate username: first initial + surname, lowercase, no spaces
-    const parts = eduName.replace(/^Dr\s+/i,'').trim().split(/\s+/);
-    const surname = parts[parts.length-1].toLowerCase().replace(/[^a-z]/g,'');
-    const first = parts[0].toLowerCase().replace(/[^a-z]/g,'');
-    const uname = first.charAt(0) + surname;
-    accounts.push({id: nextId++, name: eduName, username: uname, password: 'curro2026', role: 'educator'});
-  });
+  const btn = g('setupBtn'); btn.disabled = true; btn.textContent = 'Setting up…';
 
-  U = { accounts, nextId };
-  saveU(); g('setupScreen').classList.add('hidden');
-  g('loginScreen').classList.remove('hidden');
-  toast('✅ Admin + 18 educators created — please sign in!');
+  try {
+    // Create admin account
+    const accounts = [{name, username:user, password:pass, role:'admin'}];
+
+    // Add all seeded educators
+    SEED_EDUCATORS.forEach(eduName => {
+      const parts = eduName.replace(/^Dr\s+/i,'').trim().split(/\s+/);
+      const surname = parts[parts.length-1].toLowerCase().replace(/[^a-z]/g,'');
+      const first = parts[0].toLowerCase().replace(/[^a-z]/g,'');
+      const uname = first.charAt(0) + surname;
+      const isAdmin = !!ADMIN_ACCOUNTS[uname];
+      accounts.push({
+        name: eduName,
+        username: uname,
+        password: isAdmin ? ADMIN_ACCOUNTS[uname].password : 'curro2026',
+        role: isAdmin ? 'admin' : 'educator'
+      });
+    });
+
+    // Add lstrydom if not already in educators
+    if (!accounts.find(a=>a.username==='lstrydom')) {
+      accounts.push({name:'Leon Strydom', username:'lstrydom', password:'curro2025', role:'admin'});
+    }
+
+    // Insert all accounts
+    await sb('accounts', 'POST', accounts);
+
+    // Seed all learners
+    const learners = SEED_LEARNERS.map(l=>({name:l.name, grade:l.grade, history:JSON.stringify([])}));
+    // Insert in batches of 50
+    for (let i=0; i<learners.length; i+=50) {
+      await sb('learners', 'POST', learners.slice(i,i+50));
+    }
+
+    // Create initial period
+    await sb('period', 'POST', [{periodNum:1, periodStart:td()}]);
+
+    toast('✅ Setup complete! Please sign in.');
+    g('setupScreen').classList.add('hidden');
+    g('loginScreen').classList.remove('hidden');
+  } catch(err) {
+    showE(e, 'Setup failed: ' + err.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Create Admin Account →';
+  }
 }
 
 // ══ LOGIN ════════════════════════════════════════════════════
-function doLogin() {
+async function doLogin() {
   const user=gv('lUser').toLowerCase(), pass=gv('lPass');
   const e=g('loginErr'); e.style.display='none';
-  const acc = U.accounts.find(a=>a.username===user&&a.password===pass);
-  if (!acc) return showE(e,'Invalid username or password.');
-  me = acc;
-  g('loginScreen').classList.add('hidden');
-  g('app').classList.remove('hidden');
-  g('uPill').textContent = acc.name;
-  const rp=g('rPill');
-  rp.textContent = acc.role==='admin'?'★ Admin':'✏ Educator';
-  rp.className='role-pill '+(acc.role==='admin'?'role-admin':'role-edu');
-  g('t-admin').classList.toggle('hidden', acc.role!=='admin');
-  renderStrip(); filterL();
+  const btn=g('loginBtn'); btn.disabled=true; btn.textContent='Signing in…';
+
+  try {
+    const rows = await sb(`accounts?username=eq.${encodeURIComponent(user)}&password=eq.${encodeURIComponent(pass)}&limit=1`);
+    if (!rows || rows.length===0) { showE(e,'Invalid username or password.'); return; }
+    me = rows[0];
+    await loadPeriod();
+    await loadLearners();
+    g('loginScreen').classList.add('hidden');
+    g('app').classList.remove('hidden');
+    g('uPill').textContent = me.name;
+    const rp=g('rPill');
+    rp.textContent = me.role==='admin'?'★ Admin':'✏ Educator';
+    rp.className='role-pill '+(me.role==='admin'?'role-admin':'role-edu');
+    g('t-admin').classList.toggle('hidden', me.role!=='admin');
+    renderStrip(); filterL();
+  } catch(err) {
+    showE(e, 'Login error: ' + err.message);
+  } finally {
+    btn.disabled=false; btn.textContent='Sign In';
+  }
 }
+
+async function loadLearners() {
+  const rows = await sb('learners?order=grade,name');
+  LEARNERS = rows.map(r=>({...r, history: typeof r.history==='string' ? JSON.parse(r.history) : (r.history||[])}));
+}
+
 function doLogout() {
-  me=null; selId=null;
+  me=null; selId=null; LEARNERS=[];
   g('app').classList.add('hidden');
   g('loginScreen').classList.remove('hidden');
   g('lUser').value=''; g('lPass').value='';
   g('loginErr').style.display='none';
   g('tForm').classList.add('hidden');
 }
+
 function showE(el,msg){el.textContent=msg;el.style.display='block';}
 function togglePw(id,btn){
   const i=g(id); i.type=i.type==='password'?'text':'password';
@@ -624,7 +662,7 @@ function sw(name) {
   });
   if(name==='learners') renderAll();
   if(name==='report')   renderReport();
-  if(name==='admin')  { renderEduList(); g('pStart').value=S.periodStart; g('pNum').value=S.periodNum; }
+  if(name==='admin')  { renderEduList(); g('pStart').value=PERIOD.periodStart; g('pNum').value=PERIOD.periodNum; }
   if(name==='pw')     { g('cpCur').value=''; g('cpNew').value=''; g('cpNew2').value=''; }
 }
 
@@ -633,27 +671,47 @@ function renderStrip() {
   const dl=dLeft();
   g('periodStrip').innerHTML=`
     <div><div class="lbl">Current Period</div>
-      <div class="val">Period ${S.periodNum} · ${S.periodStart}</div></div>
+      <div class="val">Period ${PERIOD.periodNum} · ${PERIOD.periodStart}</div></div>
     <div class="dl" style="color:${dl<=3?'var(--red)':'var(--accent)'}">⏱ ${dl}d left</div>`;
 }
-function savePeriod() {
-  const d=gv('pStart'),n=parseInt(gv('pNum'));
+
+async function savePeriod() {
+  const d=gv('pStart'), n=parseInt(gv('pNum'));
   if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){toast('Use YYYY-MM-DD format',1);return;}
-  S.periodStart=d; if(n>0) S.periodNum=n;
-  saveS(); renderStrip(); toast('Period settings saved!');
+  try {
+    if (PERIOD.id) {
+      await sb(`period?id=eq.${PERIOD.id}`, 'PATCH', {periodNum:n, periodStart:d});
+    } else {
+      const rows = await sb('period', 'POST', [{periodNum:n, periodStart:d}]);
+      PERIOD = rows[0];
+    }
+    PERIOD.periodStart=d; PERIOD.periodNum=n;
+    renderStrip(); toast('Period settings saved!');
+  } catch(err) { toast('Save failed: '+err.message,1); }
 }
-function newPeriod() {
-  if(!confirm(`Start Period ${S.periodNum+1}? Points will continue to accumulate.`)) return;
-  S.periodNum++; S.periodStart=td();
-  saveS(); renderStrip(); renderReport(); filterL(); toast(`Period ${S.periodNum} started — points carry over!`);
+
+async function newPeriod() {
+  if(!confirm(`Start Period ${PERIOD.periodNum+1}? Points will continue to accumulate.`)) return;
+  const newNum = PERIOD.periodNum+1;
+  try {
+    if (PERIOD.id) {
+      await sb(`period?id=eq.${PERIOD.id}`, 'PATCH', {periodNum:newNum, periodStart:td()});
+    } else {
+      const rows = await sb('period', 'POST', [{periodNum:newNum, periodStart:td()}]);
+      PERIOD = rows[0];
+    }
+    PERIOD.periodNum=newNum; PERIOD.periodStart=td();
+    renderStrip(); renderReport(); filterL();
+    toast(`Period ${PERIOD.periodNum} started — points carry over!`);
+  } catch(err) { toast('Error: '+err.message,1); }
 }
 
 // ══ LOG TAB ══════════════════════════════════════════════════
 function filterL() {
   const q=(g('srch').value||'').toLowerCase();
   const gf=(g('gradeFilter')&&g('gradeFilter').value)||'';
-  const list=S.learners.filter(l=>{
-    const matchQ=!q||l.name.toLowerCase().includes(q)||l.grade.toLowerCase().includes(q);
+  const list=LEARNERS.filter(l=>{
+    const matchQ=!q||l.name.toLowerCase().includes(q);
     const matchG=!gf||l.grade===gf;
     return matchQ&&matchG;
   });
@@ -666,8 +724,10 @@ function filterL() {
       <div class="pill ${cls}">${pts}pts</div></div>`;
   }).join('');
 }
+
 function selL(id) {
-  selId=id; const l=S.learners.find(x=>x.id===id);
+  selId=id;
+  const l=LEARNERS.find(x=>x.id===id);
   filterL();
   const f=g('tForm'); f.classList.remove('hidden');
   g('tTitle').textContent=`Log — ${l.name}`;
@@ -680,21 +740,37 @@ function selL(id) {
   document.querySelectorAll('.pb').forEach((b,i)=>{b.classList.toggle('on',i===0);});
   selPt=2; f.scrollIntoView({behavior:'smooth'});
 }
+
 function selPts(btn,pts){
   document.querySelectorAll('.pb').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on'); selPt=pts;
 }
-function submitT() {
+
+async function submitT() {
   if(!selId) return;
   const type=g('tType').value;
   if(!type){toast('Select a transgression type',1);return;}
   const note=g('tNote').value.trim();
-  const l=S.learners.find(x=>x.id===selId);
-  l.history.push({type,pts:selPt,note,date:new Date().toISOString(),educator:me.name});
-  const total=pPts(l); saveS(); filterL();
-  if(total>=THRESH) showDet(l,total); else toast(`+${selPt}pts — ${l.name} (Total: ${total})`);
-  selL(selId);
+  const l=LEARNERS.find(x=>x.id===selId);
+  const entry={type,pts:selPt,note,date:new Date().toISOString(),educator:me.name};
+  const newHistory=[...(l.history||[]),entry];
+
+  const btn=g('submitBtn'); if(btn){btn.disabled=true;btn.textContent='Saving…';}
+  try {
+    await sb(`learners?id=eq.${l.id}`, 'PATCH', {history:JSON.stringify(newHistory)});
+    l.history=newHistory;
+    const total=pPts(l);
+    filterL();
+    if(total>=THRESH) showDet(l,total);
+    else toast(`+${selPt}pts — ${l.name} (Total: ${total})`);
+    selL(selId);
+  } catch(err) {
+    toast('Save failed: '+err.message,1);
+  } finally {
+    if(btn){btn.disabled=false;btn.textContent='Submit Transgression';}
+  }
 }
+
 function showDet(l,pts) {
   const b=g('dBannerTop'); b.classList.remove('hidden');
   g('dBannerMsg').textContent=`⚠️ ${l.name} has reached ${pts} pts — DETENTION assigned!`;
@@ -703,24 +779,32 @@ function showDet(l,pts) {
 }
 
 // ══ LEARNERS TAB ═════════════════════════════════════════════
-function addL() {
+async function addL() {
   const name=gv('nName'), grade=g('nGrade').value;
   if(!name||!grade){toast('Fill in name and grade',1);return;}
-  if(S.learners.find(l=>l.name.toLowerCase()===name.toLowerCase()&&l.grade===grade))
+  if(LEARNERS.find(l=>l.name.toLowerCase()===name.toLowerCase()&&l.grade===grade))
     {toast('Learner already exists',1);return;}
-  S.learners.push({id:S.nextId++,name,grade,history:[]});
-  g('nName').value=''; g('nGrade').value='';
-  saveS(); renderAll(); filterL(); toast(`${name} added!`);
+  try {
+    const rows = await sb('learners','POST',[{name,grade,history:JSON.stringify([])}]);
+    LEARNERS.push({...rows[0], history:[]});
+    g('nName').value=''; g('nGrade').value='';
+    renderAll(); filterL(); toast(`${name} added!`);
+  } catch(err){toast('Error: '+err.message,1);}
 }
-function delL(id) {
+
+async function delL(id) {
   if(!confirm('Remove learner and all their records?')) return;
-  S.learners=S.learners.filter(l=>l.id!==id);
-  saveS(); renderAll(); filterL(); toast('Learner removed');
+  try {
+    await sb(`learners?id=eq.${id}`,'DELETE');
+    LEARNERS=LEARNERS.filter(l=>l.id!==id);
+    renderAll(); filterL(); toast('Learner removed');
+  } catch(err){toast('Error: '+err.message,1);}
 }
+
 function renderAll() {
   const q=(g('srchAll').value||'').toLowerCase();
-  const list=S.learners.filter(l=>l.name.toLowerCase().includes(q)||l.grade.toLowerCase().includes(q));
-  g('lCount').textContent=S.learners.length;
+  const list=LEARNERS.filter(l=>l.name.toLowerCase().includes(q)||l.grade.toLowerCase().includes(q));
+  g('lCount').textContent=LEARNERS.length;
   const c=g('allList');
   if(!list.length){c.innerHTML='<div class="empty">No learners yet</div>';return;}
   c.innerHTML=list.map(l=>{
@@ -743,297 +827,90 @@ function renderAll() {
   }).join('');
 }
 
-// ══ FILE UPLOAD ══════════════════════════════════════════════
-function onDrop(e){
-  e.preventDefault(); g('uZone').classList.remove('dov');
-  const f=e.dataTransfer.files[0]; if(f) processFile(f);
-}
-function onFileSel(inp){ if(inp.files[0]) processFile(inp.files[0]); }
-
-function processFile(file) {
-  const ext=file.name.split('.').pop().toLowerCase();
-  if(ext==='csv'||ext==='tsv'){
-    const r=new FileReader();
-    r.onload=e=>parseCSV(e.target.result, ext==='tsv'?'\t':',');
-    r.readAsText(file);
-  } else if(ext==='xlsx'||ext==='xls') {
-    const r=new FileReader();
-    r.onload=e=>parseXLSX(e.target.result);
-    r.readAsArrayBuffer(file);
-  } else toast('Use CSV or Excel files',1);
-}
-
-function parseCSV(txt, sep=',') {
-  const lines=txt.trim().split(/\r?\n/).filter(Boolean);
-  if(!lines.length){toast('File is empty',1);return;}
-  // auto-detect separator if comma yields only 1 column
-  let s=sep;
-  if(sep===','&&lines[0].split(',').length<2&&lines[0].includes(';')) s=';';
-  const hdr=lines[0].split(s).map(h=>h.trim().toLowerCase().replace(/['"]/g,''));
-  const ni=hdr.findIndex(h=>h.includes('name')||h==='leerder'||h==='learner');
-  const gi=hdr.findIndex(h=>h.includes('grade')||h.includes('klas')||h.includes('class'));
-  if(ni<0||gi<0){toast('Need "Name" and "Grade" columns',1);return;}
-  const rows=[];
-  for(let i=1;i<lines.length;i++){
-    const cols=lines[i].split(s).map(c=>c.trim().replace(/^["']|["']$/g,''));
-    const name=cols[ni],grade=cols[gi];
-    if(name&&grade) rows.push({name,grade});
-  }
-  showPreview(rows);
-}
-
-function parseXLSX(buf) {
-  // Pure JS XLSX reader (no external lib) — reads Office Open XML ZIP
-  try {
-    const bytes=new Uint8Array(buf);
-    if(bytes[0]!==0x50||bytes[1]!==0x4B){toast('Invalid Excel file',1);return;}
-    // Decompress ZIP entries to find xl/worksheets/sheet1.xml and xl/sharedStrings.xml
-    const entries=readZipEntries(bytes);
-    const ssEntry=entries.find(e=>e.name.includes('sharedStrings'));
-    const shEntry=entries.find(e=>e.name.match(/worksheets\/sheet1\.xml/));
-    if(!shEntry){toast('Cannot read Excel. Please save as CSV.',1);return;}
-    const shXml=inflate(shEntry.data);
-    const ssXml=ssEntry?inflate(ssEntry.data):'';
-    const ss=parseSharedStrings(ssXml);
-    const rows=parseSheet(shXml,ss);
-    if(rows.length<2){toast('No data found in Excel sheet',1);return;}
-    // Find name/grade columns
-    const hdr=rows[0].map(h=>(h||'').toLowerCase().trim());
-    const ni=hdr.findIndex(h=>h.includes('name')||h==='leerder');
-    const gi=hdr.findIndex(h=>h.includes('grade')||h.includes('klas')||h.includes('class'));
-    if(ni<0||gi<0){toast('Need "Name" and "Grade" columns in Excel',1);return;}
-    const data=rows.slice(1).map(r=>({name:(r[ni]||'').trim(),grade:(r[gi]||'').trim()})).filter(r=>r.name&&r.grade);
-    showPreview(data);
-  } catch(err) {
-    toast('Could not read Excel. Please save as CSV and try again.',1);
-  }
-}
-
-// Minimal ZIP reader
-function readZipEntries(bytes) {
-  const entries=[];
-  let i=0;
-  while(i<bytes.length-4){
-    if(bytes[i]===0x50&&bytes[i+1]===0x4B&&bytes[i+2]===0x03&&bytes[i+3]===0x04){
-      const comp=bytes[i+8]|(bytes[i+9]<<8);
-      const compSize=(bytes[i+18])|(bytes[i+19]<<8)|(bytes[i+20]<<16)|(bytes[i+21]<<24);
-      const uncompSize=(bytes[i+22])|(bytes[i+23]<<8)|(bytes[i+24]<<16)|(bytes[i+25]<<24);
-      const fnLen=bytes[i+26]|(bytes[i+27]<<8);
-      const extraLen=bytes[i+28]|(bytes[i+29]<<8);
-      const name=new TextDecoder().decode(bytes.slice(i+30,i+30+fnLen));
-      const dataStart=i+30+fnLen+extraLen;
-      const data=bytes.slice(dataStart,dataStart+compSize);
-      entries.push({name,comp,data,uncompSize});
-      i=dataStart+compSize;
-    } else i++;
-  }
-  return entries;
-}
-
-// Inflate (decompress) — uses DecompressionStream if available, else treat as stored
-function inflate(data) {
-  try {
-    // DecompressionStream is available in modern browsers
-    // For DEFLATE (comp=8), strip 2-byte zlib header
-    const raw=data.slice(2);
-    const ds=new DecompressionStream('deflate-raw');
-    const writer=ds.writable.getWriter();
-    writer.write(raw); writer.close();
-    // Synchronous-ish: build from stream (async, so we use XMLHttpRequest trick)
-    // Since we can't await here easily, fall back to sync approach:
-    // Instead use a different method
-    throw 'use sync';
-  } catch(e) {
-    // Stored (comp=0) or fallback: try as UTF-8 text directly
-    try { return new TextDecoder('utf-8',{fatal:false}).decode(data); } catch(e2) { return ''; }
-  }
-}
-
-function parseSharedStrings(xml) {
-  const matches=[...xml.matchAll(/<t(?:\s[^>]*)?>([^<]*)<\/t>/g)];
-  return matches.map(m=>m[1].replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"'));
-}
-
-function parseSheet(xml, ss) {
-  const rows=[];
-  const rowMatches=[...xml.matchAll(/<row[^>]*>([\s\S]*?)<\/row>/g)];
-  for(const rm of rowMatches){
-    const rowXml=rm[1], cells=[];
-    const cellMatches=[...rowXml.matchAll(/<c r="([A-Z]+)\d+"[^>]*(?:t="([^"]*)")?[^>]*>[\s\S]*?<v>([^<]*)<\/v>[\s\S]*?<\/c>/g)];
-    if(!cellMatches.length) continue;
-    // find max col index
-    let maxCol=0;
-    for(const cm of cellMatches){
-      const col=colIdx(cm[1]); if(col>maxCol) maxCol=col;
-    }
-    const row=Array(maxCol+1).fill('');
-    for(const cm of cellMatches){
-      const col=colIdx(cm[1]),type=cm[2],val=cm[3];
-      row[col]=type==='s'?(ss[parseInt(val)]||''):val;
-    }
-    rows.push(row);
-  }
-  return rows;
-}
-function colIdx(ref){let n=0;for(const c of ref)n=n*26+(c.charCodeAt(0)-64);return n-1;}
-
-// Async inflate using DecompressionStream properly
-async function inflateAsync(data) {
-  const raw=data.slice(2);
-  const ds=new DecompressionStream('deflate-raw');
-  const writer=ds.writable.getWriter();
-  writer.write(raw); writer.close();
-  const reader=ds.readable.getReader();
-  const chunks=[];
-  while(true){const{done,value}=await reader.read();if(done)break;chunks.push(value);}
-  const total=chunks.reduce((s,c)=>s+c.length,0);
-  const out=new Uint8Array(total); let off=0;
-  for(const c of chunks){out.set(c,off);off+=c.length;}
-  return new TextDecoder('utf-8',{fatal:false}).decode(out);
-}
-
-async function parseXLSXAsync(buf) {
-  try {
-    const bytes=new Uint8Array(buf);
-    if(bytes[0]!==0x50||bytes[1]!==0x4B){toast('Invalid Excel file',1);return;}
-    const entries=readZipEntries(bytes);
-    const ssEntry=entries.find(e=>e.name.includes('sharedStrings'));
-    const shEntry=entries.find(e=>e.name.match(/worksheets\/sheet1\.xml/));
-    if(!shEntry){toast('Cannot read this Excel file. Please save as CSV.',1);return;}
-    let shXml='',ssXml='';
-    if(shEntry.comp===8) shXml=await inflateAsync(shEntry.data);
-    else shXml=new TextDecoder().decode(shEntry.data);
-    if(ssEntry){
-      if(ssEntry.comp===8) ssXml=await inflateAsync(ssEntry.data);
-      else ssXml=new TextDecoder().decode(ssEntry.data);
-    }
-    const ss=parseSharedStrings(ssXml);
-    const rows=parseSheet(shXml,ss);
-    if(rows.length<2){toast('No data found in Excel sheet',1);return;}
-    const hdr=rows[0].map(h=>(h||'').toLowerCase().trim());
-    const ni=hdr.findIndex(h=>h.includes('name')||h==='leerder');
-    const gi=hdr.findIndex(h=>h.includes('grade')||h.includes('klas')||h.includes('class'));
-    if(ni<0||gi<0){toast('Need "Name" and "Grade" columns in Excel',1);return;}
-    const data=rows.slice(1).map(r=>({name:(r[ni]||'').trim(),grade:(r[gi]||'').trim()})).filter(r=>r.name&&r.grade);
-    showPreview(data);
-  } catch(err){
-    console.error(err);
-    toast('Could not parse Excel. Please save as CSV and try again.',1);
-  }
-}
-
-// Override processFile to use async for xlsx
-function processFile(file) {
-  const ext=file.name.split('.').pop().toLowerCase();
-  if(ext==='csv'||ext==='tsv'){
-    const r=new FileReader();
-    r.onload=e=>parseCSV(e.target.result, ext==='tsv'?'\t':',');
-    r.readAsText(file);
-  } else if(ext==='xlsx'||ext==='xls'){
-    const r=new FileReader();
-    r.onload=e=>parseXLSXAsync(e.target.result);
-    r.readAsArrayBuffer(file);
-  } else toast('Use CSV or Excel files',1);
-}
-
-function showPreview(rows) {
-  pending=rows;
-  const ex=new Set(S.learners.map(l=>l.name.toLowerCase()+'|'+l.grade.toLowerCase()));
-  const nw=rows.filter(r=>!ex.has(r.name.toLowerCase()+'|'+r.grade.toLowerCase()));
-  const dup=rows.length-nw.length;
-  const pv=g('uPreview');
-  pv.innerHTML=`<div class="up-preview">
-    <div style="font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:7px">
-      ${rows.length} found · ${nw.length} new · ${dup} duplicate${dup!==1?'s':''}
-    </div>
-    ${nw.slice(0,10).map(r=>`<div class="pr">
-      <span>${r.name}</span><span style="color:var(--muted)">${r.grade}</span>
-      <span style="color:var(--green);font-size:.7rem;font-weight:700">NEW</span>
-    </div>`).join('')}
-    ${nw.length>10?`<div style="text-align:center;font-size:.73rem;color:var(--muted);padding:5px">…and ${nw.length-10} more</div>`:''}
-    ${dup?`<div style="font-size:.7rem;color:var(--muted);margin-top:5px">${dup} duplicate(s) will be skipped.</div>`:''}
-  </div>`;
-  pv.classList.remove('hidden');
-  const btn=g('importBtn'); btn.classList.remove('hidden');
-  btn.textContent=nw.length?`✅ Import ${nw.length} Learner(s)`:'No new learners to import';
-  btn.disabled=!nw.length;
-}
-function doImport(){
-  const ex=new Set(S.learners.map(l=>l.name.toLowerCase()+'|'+l.grade.toLowerCase()));
-  let added=0;
-  pending.forEach(r=>{
-    const k=r.name.toLowerCase()+'|'+r.grade.toLowerCase();
-    if(!ex.has(k)){S.learners.push({id:S.nextId++,name:r.name,grade:r.grade,history:[]});ex.add(k);added++;}
-  });
-  saveS(); g('uPreview').classList.add('hidden'); g('importBtn').classList.add('hidden');
-  pending=[]; renderAll(); filterL(); toast(`✅ ${added} learner(s) imported!`);
-}
-
 // ══ REPORT ════════════════════════════════════════════════════
 function renderReport(){
-  const all=S.learners.map(l=>({...l,pts:pPts(l)}));
-  const det=all.filter(l=>l.pts>=THRESH);
+  const det=LEARNERS.filter(l=>pPts(l)>=THRESH);
   g('statsGrid').innerHTML=`
-    <div class="sb"><div class="sn blu">${S.learners.length}</div><div class="sl">Learners</div></div>
+    <div class="sb"><div class="sn blu">${LEARNERS.length}</div><div class="sl">Learners</div></div>
     <div class="sb"><div class="sn red">${det.length}</div><div class="sl">In Detention</div></div>
-    <div class="sb"><div class="sn yel">${all.reduce((s,l)=>s+l.pts,0)}</div><div class="sl">Total Points</div></div>
+    <div class="sb"><div class="sn yel">${LEARNERS.reduce((s,l)=>s+pPts(l),0)}</div><div class="sl">Total Points</div></div>
     <div class="sb"><div class="sn grn">${dLeft()}</div><div class="sl">Days Left</div></div>`;
   g('detList').innerHTML=det.length
     ? det.map(l=>`<div class="det-banner" style="margin-bottom:8px;padding:11px 14px">
         <div class="di">🚨</div>
-        <div><h3>${l.name}</h3><p>${l.grade} — <strong>${l.pts} points</strong></p></div>
+        <div><h3>${l.name}</h3><p>${l.grade} — <strong>${pPts(l)} points</strong></p></div>
       </div>`).join('')
-    : '<div class="empty">No learners in detention this period 🎉</div>';
-  g('repList').innerHTML=[...all].sort((a,b)=>b.pts-a.pts).map(l=>{
-    const cls=l.pts>=THRESH?'ph':l.pts>=6?'pm':'pl';
+    : '<div class="empty">No learners in detention 🎉</div>';
+  g('repList').innerHTML=[...LEARNERS].sort((a,b)=>pPts(b)-pPts(a)).map(l=>{
+    const pts=pPts(l),cls=pts>=THRESH?'ph':pts>=6?'pm':'pl';
     return `<div class="li" style="cursor:default;margin-bottom:7px">
       <div><div class="ln">${l.name}</div><div class="lg">${l.grade}</div></div>
-      <div class="pill ${cls}">${l.pts}pts</div></div>`;
+      <div class="pill ${cls}">${pts}pts</div></div>`;
   }).join('')||'<div class="empty">No learners yet</div>';
 }
 
 // ══ ADMIN ═════════════════════════════════════════════════════
-function addEdu(){
+async function addEdu(){
   const name=gv('eName'),user=gv('eUser').toLowerCase(),pass=gv('ePass'),role=g('eRole').value;
   if(!name||!user||!pass){toast('Fill in all fields',1);return;}
   if(pass.length<6){toast('Password must be at least 6 characters',1);return;}
-  if(U.accounts.find(a=>a.username===user)){toast('Username already taken',1);return;}
-  U.accounts.push({id:U.nextId++,name,username:user,password:pass,role});
-  saveU(); g('eName').value=''; g('eUser').value=''; g('ePass').value='';
-  renderEduList(); toast(`${name} added as ${role}`);
-}
-function delEdu(id){
-  if(id===me.id){toast("Can't remove your own account",1);return;}
-  if(!confirm('Remove this educator account?')) return;
-  U.accounts=U.accounts.filter(a=>a.id!==id);
-  saveU(); renderEduList(); toast('Account removed');
-}
-function renderEduList(){
-  const c=g('eduList');
-  if(!U||!U.accounts.length){c.innerHTML='<div class="empty">No accounts</div>';return;}
-  c.innerHTML=U.accounts.map(a=>`<div class="eu">
-    <div><div class="eu-name">${a.name}</div><div class="eu-meta">@${a.username}</div></div>
-    <div style="display:flex;align-items:center;gap:7px">
-      <div class="role-pill ${a.role==='admin'?'role-admin':'role-edu'}">${a.role==='admin'?'★ Admin':'✏ Educator'}</div>
-      ${a.id!==me.id?`<button class="btn-xs bxr" onclick="delEdu(${a.id})">✕</button>`:'<span style="font-size:.69rem;color:var(--muted)">(you)</span>'}
-    </div></div>`).join('');
-}
-function changeMyPw() {
-  const cur=g('cpCur').value, nw=g('cpNew').value, nw2=g('cpNew2').value;
-  if(!cur||!nw||!nw2){toast('Fill in all fields',1);return;}
-  if(cur!==me.password){toast('Current password is incorrect',1);return;}
-  if(nw.length<6){toast('New password must be at least 6 characters',1);return;}
-  if(nw!==nw2){toast('New passwords do not match',1);return;}
-  const acc=U.accounts.find(a=>a.id===me.id);
-  acc.password=nw; me.password=nw;
-  saveU(); toast('✅ Password updated successfully!');
-  g('cpCur').value=''; g('cpNew').value=''; g('cpNew2').value='';
+  try {
+    const existing = await sb(`accounts?username=eq.${encodeURIComponent(user)}&limit=1`);
+    if(existing&&existing.length>0){toast('Username already taken',1);return;}
+    await sb('accounts','POST',[{name,username:user,password:pass,role}]);
+    g('eName').value=''; g('eUser').value=''; g('ePass').value='';
+    renderEduList(); toast(`${name} added as ${role}`);
+  } catch(err){toast('Error: '+err.message,1);}
 }
 
-function clearAll(){
-  if(!confirm('CLEAR ALL LEARNER DATA? Cannot be undone.')) return;
-  if(!confirm('Last warning — all records will be deleted permanently.')) return;
-  S.learners=[]; S.nextId=1; saveS(); renderAll(); filterL(); toast('All data cleared');
+async function delEdu(id){
+  if(id===me.id){toast("Can't remove your own account",1);return;}
+  if(!confirm('Remove this educator account?')) return;
+  try {
+    await sb(`accounts?id=eq.${id}`,'DELETE');
+    renderEduList(); toast('Account removed');
+  } catch(err){toast('Error: '+err.message,1);}
+}
+
+async function renderEduList(){
+  const c=g('eduList');
+  c.innerHTML='<div class="empty">Loading…</div>';
+  try {
+    const accounts = await sb('accounts?order=name');
+    if(!accounts||!accounts.length){c.innerHTML='<div class="empty">No accounts</div>';return;}
+    c.innerHTML=accounts.map(a=>`<div class="eu">
+      <div><div class="eu-name">${a.name}</div><div class="eu-meta">@${a.username}</div></div>
+      <div style="display:flex;align-items:center;gap:7px">
+        <div class="role-pill ${a.role==='admin'?'role-admin':'role-edu'}">${a.role==='admin'?'★ Admin':'✏ Educator'}</div>
+        ${a.id!==me.id?`<button class="btn-xs bxr" onclick="delEdu(${a.id})">✕</button>`:'<span style="font-size:.69rem;color:var(--muted)">(you)</span>'}
+      </div></div>`).join('');
+  } catch(err){c.innerHTML='<div class="empty">Error loading accounts</div>';}
+}
+
+async function changeMyPw() {
+  const cur=g('cpCur').value, nw=g('cpNew').value, nw2=g('cpNew2').value;
+  if(!cur||!nw||!nw2){toast('Fill in all fields',1);return;}
+  if(nw.length<6){toast('New password must be at least 6 characters',1);return;}
+  if(nw!==nw2){toast('New passwords do not match',1);return;}
+  try {
+    const check = await sb(`accounts?id=eq.${me.id}&password=eq.${encodeURIComponent(cur)}&limit=1`);
+    if(!check||check.length===0){toast('Current password is incorrect',1);return;}
+    await sb(`accounts?id=eq.${me.id}`,'PATCH',{password:nw});
+    me.password=nw;
+    toast('✅ Password updated successfully!');
+    g('cpCur').value=''; g('cpNew').value=''; g('cpNew2').value='';
+  } catch(err){toast('Error: '+err.message,1);}
+}
+
+async function clearAll(){
+  if(!confirm('CLEAR ALL LEARNER POINTS? Cannot be undone.')) return;
+  if(!confirm('Last warning — all points will be deleted permanently.')) return;
+  try {
+    // Reset all learner histories
+    await sb('learners','PATCH',{history:JSON.stringify([])});
+    await loadLearners();
+    renderAll(); filterL(); toast('All points cleared');
+  } catch(err){toast('Error: '+err.message,1);}
 }
 
 // ══ TOAST ════════════════════════════════════════════════════
@@ -1044,48 +921,9 @@ function toast(msg,err=0,warn=0){
   t._t=setTimeout(()=>t.classList.remove('show'),3500);
 }
 
-// ══ GOOGLE DRIVE SAVE ════════════════════════════════════════
-async function saveToDrive() {
-  const btn = g('driveBtn');
-  btn.textContent = '⏳';
-  btn.disabled = true;
-
-  try {
-    // Build a self-contained snapshot of the current HTML page
-    const html = document.documentElement.outerHTML;
-    const blob = new Blob([html], { type: 'text/html' });
-    const fileName = 'Curro_Secunda_Discipline_' + new Date().toISOString().slice(0,10) + '.html';
-
-    // Use Google Picker / Drive API via OAuth implicit flow
-    // Step 1: get OAuth token via popup
-    const CLIENT_ID = '';  // No client ID needed for the picker-less approach below
-    // We use the simpler approach: create a hidden <a> download, then guide user to upload
-    // For a real Drive integration, an OAuth client ID is required.
-    // We'll use the Google Drive File Picker upload approach via a data URL passed to a new tab.
-
-    // Generate a download and open Google Drive upload page simultaneously
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
-
-    // Open Google Drive in a new tab for the user to upload
-    setTimeout(() => {
-      window.open('https://drive.google.com/drive/my-drive', '_blank');
-    }, 800);
-
-    toast('📥 File downloaded — now uploading to Google Drive tab…', 0, 1);
-  } catch (err) {
-    toast('Could not save to Drive: ' + err.message, 1);
-  } finally {
-    btn.textContent = '☁️';
-    btn.disabled = false;
-  }
-}
+// ══ FILE UPLOAD (kept for manual imports) ════════════════════
+function onDrop(e){e.preventDefault();}
+function onFileSel(inp){}
 
 // ══ GO ═══════════════════════════════════════════════════════
 boot();
