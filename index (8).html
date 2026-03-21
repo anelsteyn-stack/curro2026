@@ -870,11 +870,15 @@ function renderAll() {
   c.innerHTML=list.map(l=>{
     const pts=pPts(l),cls=pts>=THRESH?'ph':pts>=6?'pm':'pl';
     const rec=[...l.history].reverse().slice(0,2);
-    const hist=rec.map(e=>`<div class="he" style="margin-bottom:5px">
-      <div><div class="ht">${e.type}</div>${e.note?`<div class="hn">${e.note}</div>`:''}
+    const hist=rec.map((e,ei)=>`<div class="he" style="margin-bottom:5px">
+      <div style="flex:1"><div class="ht">${e.type}</div>${e.note?`<div class="hn">${e.note}</div>`:''}
         <div class="heu">by ${e.educator}</div>
         <div class="hd">${new Date(e.date).toLocaleString('en-ZA',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
-      </div><div class="hp">+${e.pts}</div></div>`).join('');
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <div class="hp">+${e.pts}</div>
+        ${me&&me.role==='admin'?`<button class="btn-xs bxr" onclick="removePoint(${l.id},'${e.date}')">✕</button>`:''}
+      </div></div>`).join('');
     return `<div style="margin-bottom:8px">
       <div class="li" style="cursor:default">
         <div><div class="ln">${l.name}</div><div class="lg">${l.grade}</div></div>
@@ -1002,6 +1006,7 @@ function viewLearnerReport(id) {
       <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--muted)">${e.note||'—'}</td>
       <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--red);font-weight:700;text-align:center">+${e.pts}</td>
       <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--muted)">${e.educator}</td>
+      <td style="padding:7px 9px;border-bottom:1px solid var(--border);text-align:center">${me&&me.role==='admin'?`<button class="btn-xs bxr" onclick="removePointFromReport(${l.id},'${e.date}')">✕</button>`:''}</td>
     </tr>`).join('') 
     : '<tr><td colspan="5" style="text-align:center;padding:14px;color:var(--muted);font-size:.82rem">No transgressions recorded</td></tr>';
 
@@ -1034,6 +1039,7 @@ function viewLearnerReport(id) {
             <th style="padding:8px 9px;text-align:left;font-size:.72rem;color:var(--muted);font-weight:700">Notes</th>
             <th style="padding:8px 9px;text-align:center;font-size:.72rem;color:var(--muted);font-weight:700">Pts</th>
             <th style="padding:8px 9px;text-align:left;font-size:.72rem;color:var(--muted);font-weight:700">Educator</th>
+            ${me&&me.role==='admin'?'<th style="padding:8px 9px;font-size:.72rem;color:var(--muted);font-weight:700"></th>':''}
           </tr>
         </thead>
         <tbody>${rows}</tbody>
@@ -1116,6 +1122,38 @@ function autoSetPts(val) {
   if (map[pts] !== undefined && btns[map[pts]]) {
     btns[map[pts]].classList.add('on');
     selPt = pts;
+  }
+}
+
+async function removePoint(learnerId, date) {
+  if (!confirm('Remove this transgression entry?')) return;
+  const l = LEARNERS.find(x => x.id === learnerId);
+  if (!l) return;
+  const newHistory = l.history.filter(e => e.date !== date);
+  try {
+    await sb(`learners?id=eq.${learnerId}`, 'PATCH', {history: JSON.stringify(newHistory)});
+    l.history = newHistory;
+    renderAll();
+    filterL();
+    toast('✅ Transgression removed');
+  } catch(err) {
+    toast('Error: ' + err.message, 1);
+  }
+}
+
+async function removePointFromReport(learnerId, date) {
+  if (!confirm('Remove this transgression entry?')) return;
+  const l = LEARNERS.find(x => x.id === learnerId);
+  if (!l) return;
+  const newHistory = l.history.filter(e => e.date !== date);
+  try {
+    await sb(`learners?id=eq.${learnerId}`, 'PATCH', {history: JSON.stringify(newHistory)});
+    l.history = newHistory;
+    renderAll(); filterL();
+    viewLearnerReport(learnerId); // refresh the modal
+    toast('✅ Transgression removed');
+  } catch(err) {
+    toast('Error: ' + err.message, 1);
   }
 }
 
