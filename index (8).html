@@ -305,13 +305,59 @@
         <div><h3>DETENTION ASSIGNED</h3><p id="dBannerMsg"></p></div>
       </div>
       <div class="fg"><label>Transgression Type</label>
-        <select id="tType">
+        <select id="tType" onchange="autoSetPts(this.value)">
           <option value="">— Select type —</option>
-          <option>Late for class</option><option>Disruptive behaviour</option>
-          <option>Incomplete homework</option><option>Dress code violation</option>
-          <option>Disrespect to staff</option><option>Physical altercation</option>
-          <option>Vandalism</option><option>Cheating / plagiarism</option>
-          <option>Bullying</option><option>Truancy</option><option>Other</option>
+          <optgroup label="2 Points">
+            <option value="[M22.1] Tardiness or littering (2pts)">[M22.1] Tardiness or littering</option>
+            <option value="[M22.2] Failure to have correct learning materials (2pts)">[M22.2] Failure to have correct learning materials</option>
+            <option value="[M22.4] Dress/apparel not in accordance with school rules (2pts)">[M22.4] Dress/apparel not in accordance with school rules</option>
+            <option value="[M23.1] Tampering with possession or equipment of others (2pts)">[M23.1] Tampering with possession/equipment of others</option>
+            <option value="[M23.2] Use of school equipment without permission (2pts)">[M23.2] Use of school equipment without permission</option>
+            <option value="[M24.1] Failure to keep school premises clean and neat (2pts)">[M24.1] Failure to keep school premises clean and neat</option>
+            <option value="[M24.3] Placing posters/stickers/graffiti without authority (2pts)">[M24.3] Placing posters/stickers/graffiti without authority</option>
+            <option value="[M25.1] Refusal/failure to complete homework on due date (2pts)">[M25.1] Refusal/failure to complete homework on due date</option>
+            <option value="[M25.2] Refusal to deliver/return reply slips or letters (2pts)">[M25.2] Refusal to deliver/return reply slips or letters</option>
+            <option value="[M25.3] Unreasonable refusal to attend school activities (2pts)">[M25.3] Unreasonable refusal to attend school activities</option>
+            <option value="[M25.4] General uncooperativeness / willfully obstructive (2pts)">[M25.4] General uncooperativeness / willfully obstructive</option>
+            <option value="[M25.5] Poor application to studies or assignments (2pts)">[M25.5] Poor application to studies or assignments</option>
+            <option value="[M26.1] Truancy / poor timekeeping / late for class (2pts)">[M26.1] Truancy / poor timekeeping / late for class</option>
+            <option value="[M26.2] Unexplained absences / bunking class (2pts)">[M26.2] Unexplained absences / bunking class</option>
+          </optgroup>
+          <optgroup label="3 Points">
+            <option value="[M18.2] Defiance and disrespect (3pts)">[M18.2] Defiance and disrespect</option>
+            <option value="[M18.3] Discourtesy toward school authorities or learners (3pts)">[M18.3] Discourtesy toward school authorities or learners</option>
+            <option value="[M18.4] Unreasonable intolerance of others (3pts)">[M18.4] Unreasonable intolerance of others</option>
+            <option value="[M18.5] Persistent violation of school rules (3pts)">[M18.5] Persistent violation of school rules</option>
+            <option value="[M19.2] Playing games where others may be injured (3pts)">[M19.2] Playing games where others may be injured</option>
+            <option value="[M20.1] Noisy or disruptive behaviour (3pts)">[M20.1] Noisy or disruptive behaviour</option>
+            <option value="[M20.2] Highly disruptive or unruly classroom behaviour (3pts)">[M20.2] Highly disruptive or unruly classroom behaviour</option>
+            <option value="[M20.3] Trespassing or entering premises without permission (3pts)">[M20.3] Trespassing or entering premises without permission</option>
+            <option value="[M21] Swearing or use of vulgar language (3pts)">[M21] Swearing or use of vulgar language</option>
+            <option value="[M26.4] Leaving class or school without permission (3pts)">[M26.4] Leaving class or school without permission</option>
+            <option value="[M26.5] Persistent late coming (3pts)">[M26.5] Persistent late coming</option>
+            <option value="[M27] Misconduct relating to electronic devices (3pts)">[M27] Misconduct relating to electronic devices</option>
+            <option value="[M28.1] Bringing motor vehicle to school without license (3pts)">[M28.1] Bringing motor vehicle to school without license</option>
+            <option value="[M28.3] Driving motor vehicle creating risk to others (3pts)">[M28.3] Driving motor vehicle creating risk to others</option>
+            <option value="[M28.4] Failing to produce valid driver's license (3pts)">[M28.4] Failing to produce valid driver's license</option>
+          </optgroup>
+          <optgroup label="5 Points">
+            <option value="[S10] Absent from school without valid reason (5pts)">[S10] Absent from school without valid reason</option>
+            <option value="[S11.1] Playing dangerous games (5pts)">[S11.1] Playing dangerous games</option>
+            <option value="[S11.2] Malicious teasing, gambling or gaming on premises (5pts)">[S11.2] Malicious teasing, gambling or gaming on premises</option>
+            <option value="[S12] Inappropriate behaviour or comments in public (5pts)">[S12] Inappropriate behaviour or comments in public</option>
+            <option value="[S13.1] Smoking (5pts)">[S13.1] Smoking</option>
+            <option value="[S14.1] Forgery or falsification of school documents (5pts)">[S14.1] Forgery or falsification of school documents</option>
+            <option value="[S14.2] Lying/dishonesty with less serious consequences (5pts)">[S14.2] Lying/dishonesty with less serious consequences</option>
+            <option value="[S15.1] Vandalising property or equipment (5pts)">[S15.1] Vandalising property or equipment</option>
+            <option value="[S15.2] Not taking due care of property or equipment (5pts)">[S15.2] Not taking due care of property or equipment</option>
+            <option value="[S15.3] Accidental damage to property (5pts)">[S15.3] Accidental damage to property</option>
+            <option value="[S15.4] Removing any school property (5pts)">[S15.4] Removing any school property</option>
+            <option value="[S16.1] Acts designed to create hostile/threatening environment (5pts)">[S16.1] Acts designed to create hostile/threatening environment</option>
+            <option value="[S16.2] Wilful disruption of school activities (5pts)">[S16.2] Wilful disruption of school activities</option>
+          </optgroup>
+          <optgroup label="Other">
+            <option value="Other">Other</option>
+          </optgroup>
         </select></div>
       <div class="fg"><label>Points to Add</label>
         <div class="pts-row">
@@ -440,6 +486,21 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ══ LEARNER REPORT MODAL ══ -->
+<div id="reportModal" class="hidden" style="position:fixed;inset:0;background:#000a;z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:420px;padding:20px;margin-top:10px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;">📋 Learner Report</div>
+      <button onclick="closeReport()" style="background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;">✕</button>
+    </div>
+    <div id="reportContent"></div>
+    <div style="display:flex;gap:8px;margin-top:14px;">
+      <button class="btn btn-blue" style="flex:1" onclick="printReport()">🖨️ Print / PDF</button>
+      <button class="btn-ghost" style="flex:1;border-radius:12px;padding:12px" onclick="copyReport()">📋 Copy Text</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ══ SUPABASE CONFIG ══════════════════════════════════════════
@@ -820,6 +881,7 @@ function renderAll() {
         <div><div class="ln">${l.name}</div><div class="lg">${l.grade}</div></div>
         <div style="display:flex;align-items:center;gap:7px">
           <div class="pill ${cls}">${pts}pts</div>
+          <button class="btn-xs bxb" onclick="viewLearnerReport(${l.id})">📋</button>
           ${me&&me.role==='admin'?`<button class="btn-xs bxr" onclick="delL(${l.id})">✕</button>`:''}
         </div></div>
       ${hist?`<div style="padding:4px 3px 0">${hist}</div>`:''}
@@ -924,6 +986,139 @@ function toast(msg,err=0,warn=0){
 // ══ FILE UPLOAD (kept for manual imports) ════════════════════
 function onDrop(e){e.preventDefault();}
 function onFileSel(inp){}
+
+// ══ LEARNER REPORT ══════════════════════════════════════════
+function viewLearnerReport(id) {
+  const l = LEARNERS.find(x => x.id === id);
+  if (!l) return;
+  const pts = pPts(l);
+  const det = pts >= THRESH;
+  const history = [...(l.history||[])].reverse();
+  const today = new Date().toLocaleDateString('en-ZA', {day:'numeric',month:'long',year:'numeric'});
+
+  const rows = history.length ? history.map(e => `
+    <tr>
+      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem">${new Date(e.date).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})}</td>
+      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem">${e.type}</td>
+      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--muted)">${e.note||'—'}</td>
+      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--red);font-weight:700;text-align:center">+${e.pts}</td>
+      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--muted)">${e.educator}</td>
+    </tr>`).join('') 
+    : '<tr><td colspan="5" style="text-align:center;padding:14px;color:var(--muted);font-size:.82rem">No transgressions recorded</td></tr>';
+
+  g('reportContent').innerHTML = `
+    <div style="background:var(--navy);border-radius:12px;padding:14px;margin-bottom:12px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:2px">${l.name}</div>
+      <div style="font-size:.78rem;color:var(--muted)">${l.grade} · Report generated ${today}</div>
+      <div style="margin-top:10px;display:flex;gap:10px;align-items:center">
+        <div style="background:${det?'var(--red-soft)':'var(--green-soft)'};border:1px solid ${det?'var(--red)':'var(--green)'};border-radius:10px;padding:8px 14px;text-align:center">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:${det?'var(--red)':'var(--green)'}">${pts}</div>
+          <div style="font-size:.69rem;color:var(--muted)">Total Points</div>
+        </div>
+        <div style="background:${det?'var(--red-soft)':'var(--green-soft)'};border:1px solid ${det?'var(--red)':'var(--green)'};border-radius:10px;padding:8px 14px;text-align:center">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:${det?'var(--red)':'var(--green)'}">${det?'YES':'NO'}</div>
+          <div style="font-size:.69rem;color:var(--muted)">Detention</div>
+        </div>
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;text-align:center">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--accent)">${history.length}</div>
+          <div style="font-size:.69rem;color:var(--muted)">Incidents</div>
+        </div>
+      </div>
+    </div>
+    ${det?`<div style="background:linear-gradient(135deg,#8b0000,#c0392b);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:.82rem;font-weight:700">🚨 This learner has been assigned DETENTION (${pts} points accumulated)</div>`:''}
+    <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border)">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="background:var(--navy2)">
+            <th style="padding:8px 9px;text-align:left;font-size:.72rem;color:var(--muted);font-weight:700">Date</th>
+            <th style="padding:8px 9px;text-align:left;font-size:.72rem;color:var(--muted);font-weight:700">Transgression</th>
+            <th style="padding:8px 9px;text-align:left;font-size:.72rem;color:var(--muted);font-weight:700">Notes</th>
+            <th style="padding:8px 9px;text-align:center;font-size:.72rem;color:var(--muted);font-weight:700">Pts</th>
+            <th style="padding:8px 9px;text-align:left;font-size:.72rem;color:var(--muted);font-weight:700">Educator</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div style="margin-top:10px;font-size:.72rem;color:var(--muted);text-align:center">Curro Secunda Discipline System · Period ${PERIOD.periodNum}</div>
+  `;
+  g('reportModal').classList.remove('hidden');
+  g('reportModal').style.display = 'flex';
+}
+
+function closeReport() {
+  g('reportModal').classList.add('hidden');
+  g('reportModal').style.display = 'none';
+}
+
+function printReport() {
+  const content = g('reportContent').innerHTML;
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><title>Learner Report</title>
+    <style>
+      body{font-family:Arial,sans-serif;padding:30px;color:#111;max-width:700px;margin:0 auto;}
+      table{width:100%;border-collapse:collapse;margin-top:16px;}
+      th,td{padding:9px 12px;border:1px solid #ddd;text-align:left;font-size:13px;}
+      th{background:#f5f5f5;font-weight:700;}
+      h1{font-size:22px;margin-bottom:4px;}
+      .meta{color:#666;font-size:13px;margin-bottom:16px;}
+      .stats{display:flex;gap:16px;margin:16px 0;}
+      .stat{border:1px solid #ddd;border-radius:8px;padding:10px 18px;text-align:center;}
+      .stat-val{font-size:24px;font-weight:800;}
+      .det{background:#fff0f0;border-color:#c0392b;color:#c0392b;}
+      .ok{background:#f0fff4;border-color:#27ae60;color:#27ae60;}
+      .det-banner{background:#c0392b;color:#fff;padding:10px 14px;border-radius:8px;font-weight:700;margin:12px 0;}
+      .footer{margin-top:20px;font-size:11px;color:#999;text-align:center;}
+      @media print{body{padding:10px;}}
+    </style></head><body>
+    <div id="pc">${content}</div>
+    <script>
+      // Clean up styles for print
+      document.querySelectorAll('[style]').forEach(el=>{
+        el.style.color='';el.style.background='';
+      });
+    <\/script>
+  </body></html>`);
+  win.document.close();
+  setTimeout(()=>win.print(), 500);
+}
+
+function copyReport() {
+  // Find learner from modal content
+  const nameEl = g('reportContent').querySelector('[style*="font-weight:800"]');
+  const rows = [...g('reportContent').querySelectorAll('tbody tr')];
+  const pts = g('reportContent').querySelector('[style*="1.4rem"]');
+
+  let text = '--- CURRO SECUNDA DISCIPLINE REPORT ---\n';
+  text += new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'}) + '\n\n';
+
+  // Get all text content simply
+  const content = g('reportContent').innerText;
+  text += content;
+
+  navigator.clipboard.writeText(text).then(()=>{
+    toast('✅ Report copied — paste into your email!');
+  }).catch(()=>{
+    toast('Could not copy — try Print instead',1);
+  });
+}
+
+function autoSetPts(val) {
+  // Auto-select points based on transgression code
+  let pts = 2;
+  if (val.includes('3pts')) pts = 3;
+  else if (val.includes('5pts')) pts = 5;
+  else if (val.includes('2pts')) pts = 2;
+  
+  document.querySelectorAll('.pb').forEach(b => b.classList.remove('on'));
+  // Find the matching button
+  const btns = document.querySelectorAll('.pb');
+  const map = {2:0, 3:1, 4:2, 5:3};
+  if (map[pts] !== undefined && btns[map[pts]]) {
+    btns[map[pts]].classList.add('on');
+    selPt = pts;
+  }
+}
 
 // ══ GO ═══════════════════════════════════════════════════════
 boot();
