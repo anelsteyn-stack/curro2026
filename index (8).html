@@ -363,7 +363,6 @@
         <div class="pts-row">
           <button class="pb on" onclick="selPts(this,2)">+2</button>
           <button class="pb" onclick="selPts(this,3)">+3</button>
-          <button class="pb" onclick="selPts(this,4)">+4</button>
           <button class="pb" onclick="selPts(this,5)">+5</button>
         </div></div>
       <div class="fg"><label>Notes (optional)</label>
@@ -1113,7 +1112,7 @@ function autoSetPts(val) {
   document.querySelectorAll('.pb').forEach(b => b.classList.remove('on'));
   // Find the matching button
   const btns = document.querySelectorAll('.pb');
-  const map = {2:0, 3:1, 4:2, 5:3};
+  const map = {2:0, 3:1, 5:2};
   if (map[pts] !== undefined && btns[map[pts]]) {
     btns[map[pts]].classList.add('on');
     selPt = pts;
