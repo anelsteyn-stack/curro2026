@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Curro Secunda Discipline</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0f1b2d;--navy2:#162236;--blue:#1a6ff4;--blue-soft:#2979ff22;
+    --accent:#f7c325;--red:#ff4d4d;--red-soft:#ff4d4d22;
+    --green:#2ecc71;--green-soft:#2ecc7122;
+    --card:#1c2d44;--card2:#223350;--text:#e8edf5;
+    --muted:#7a90aa;--border:#263a54;--radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy);color:var(--text);font-family:'Nunito',sans-serif;
+    min-height:100vh;max-width:430px;margin:0 auto;overflow-x:hidden;}
+
+  /* LOGIN / SETUP */
+  .auth-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;padding:24px;
+    background:radial-gradient(ellipse at top,#1a3a5c 0%,var(--navy) 70%);}
+  .login-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:2.2rem;
+    letter-spacing:-1px;margin-bottom:4px;}
+  .login-logo span{color:var(--accent);}
+  .login-sub{color:var(--muted);font-size:.85rem;margin-bottom:32px;text-align:center;}
+  .auth-card{background:var(--card);border:1px solid var(--border);
+    border-radius:20px;padding:28px 22px;width:100%;max-width:360px;}
+  .auth-card h2{font-family:'Syne',sans-serif;font-weight:800;
+    font-size:1.1rem;margin-bottom:18px;text-align:center;}
+  .setup-card{border-color:var(--accent);}
+  .err-box{background:var(--red-soft);border:1px solid var(--red);color:var(--red);
+    border-radius:10px;padding:10px 14px;font-size:.82rem;margin-bottom:12px;display:none;}
+
+  /* APP SHELL */
+  header{background:var(--navy2);padding:13px 15px;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;z-index:100;}
+  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;letter-spacing:-.5px;}
+  .logo span{color:var(--accent);}
+  .hdr-right{display:flex;align-items:center;gap:7px;}
+  .user-pill{background:var(--blue-soft);border:1px solid var(--blue);color:var(--blue);
+    font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:20px;
+    font-family:'DM Mono',monospace;}
+  .role-pill{font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:20px;
+    font-family:'DM Mono',monospace;}
+  .role-admin{background:#f7c32522;border:1px solid var(--accent);color:var(--accent);}
+  .role-edu{background:var(--green-soft);border:1px solid var(--green);color:var(--green);}
+  .logout-btn{background:transparent;border:1px solid var(--border);color:var(--muted);
+    border-radius:8px;padding:5px 10px;font-size:.74rem;cursor:pointer;
+    font-family:'Nunito',sans-serif;}
+
+  /* TABS */
+  .tabs{display:flex;background:var(--navy2);border-bottom:1px solid var(--border);
+    padding:0 10px;overflow-x:auto;}
+  .tab{flex:1;min-width:55px;padding:11px 3px;text-align:center;font-size:.73rem;
+    font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;
+    transition:all .2s;white-space:nowrap;}
+  .tab.active{color:var(--accent);border-color:var(--accent);}
+
+  main{padding:13px;display:flex;flex-direction:column;gap:11px;}
+
+  /* PERIOD STRIP */
+  .period-strip{background:linear-gradient(135deg,var(--blue) 0%,#0a4ab5 100%);
+    border-radius:var(--radius);padding:12px 16px;
+    display:flex;align-items:center;justify-content:space-between;}
+  .period-strip .lbl{font-size:.7rem;opacity:.8;}
+  .period-strip .val{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;}
+  .period-strip .dl{font-family:'DM Mono',monospace;font-size:.82rem;}
+
+  /* CARDS */
+  .card{background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);padding:13px;}
+  .card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.78rem;
+    color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+
+  /* FORMS */
+  .fg{margin-bottom:10px;}
+  label{font-size:.77rem;font-weight:700;color:var(--muted);display:block;margin-bottom:5px;}
+  select,input[type=text],input[type=password],textarea{
+    width:100%;background:var(--navy);border:1px solid var(--border);border-radius:10px;
+    color:var(--text);font-family:'Nunito',sans-serif;font-size:.9rem;
+    padding:10px 13px;outline:none;transition:border-color .2s;}
+  select:focus,input:focus,textarea:focus{border-color:var(--blue);}
+  textarea{resize:none;height:64px;}
+  .pw-wrap{position:relative;}
+  .pw-wrap input{padding-right:40px;}
+  .eye{position:absolute;right:11px;top:50%;transform:translateY(-50%);
+    background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;}
+  .flex-row{display:flex;gap:8px;}
+  .flex-1{flex:1;}
+
+  /* BUTTONS */
+  .btn{width:100%;border:none;border-radius:12px;font-family:'Syne',sans-serif;
+    font-weight:700;font-size:.93rem;padding:12px;cursor:pointer;transition:all .2s;}
+  .btn-blue{background:var(--blue);color:#fff;}
+  .btn-blue:hover{filter:brightness(1.12);}
+  .btn-blue:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-ghost{background:transparent;border:1px solid var(--border);border-radius:10px;
+    color:var(--muted);font-family:'Nunito',sans-serif;font-weight:700;
+    font-size:.87rem;padding:10px 16px;cursor:pointer;}
+  .btn-accent{background:var(--accent);color:var(--navy);font-family:'Syne',sans-serif;
+    font-weight:800;border:none;border-radius:10px;padding:10px 18px;
+    font-size:.87rem;cursor:pointer;}
+  .btn-danger{background:var(--red);border:none;border-radius:8px;color:#fff;
+    font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;
+    padding:6px 11px;cursor:pointer;}
+  .btn-xs{padding:5px 10px;font-size:.76rem;border-radius:7px;border:none;
+    cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;}
+  .bxb{background:var(--blue-soft);color:var(--blue);border:1px solid var(--blue);}
+  .bxr{background:var(--red-soft);color:var(--red);border:1px solid var(--red);}
+
+  /* SEARCH */
+  .sw{position:relative;margin-bottom:9px;}
+  .sw input{padding-left:34px;}
+  .sw .si{position:absolute;left:11px;top:50%;transform:translateY(-50%);
+    color:var(--muted);font-size:.88rem;}
+
+  /* LEARNER ITEMS */
+  .ll{display:flex;flex-direction:column;gap:6px;}
+  .li{background:var(--card2);border:1px solid var(--border);border-radius:10px;
+    padding:10px 12px;display:flex;align-items:center;justify-content:space-between;
+    cursor:pointer;transition:all .2s;}
+  .li:hover,.li.sel{border-color:var(--blue);background:var(--blue-soft);}
+  .li.det{border-color:var(--red)!important;}
+  .ln{font-weight:700;font-size:.9rem;}
+  .lg{font-size:.7rem;color:var(--muted);}
+  .pill{font-family:'DM Mono',monospace;font-weight:500;font-size:.8rem;
+    padding:3px 9px;border-radius:20px;min-width:40px;text-align:center;}
+  .pl{background:var(--green-soft);color:var(--green);}
+  .pm{background:#f7c32522;color:var(--accent);}
+  .ph{background:var(--red-soft);color:var(--red);animation:pulse 1.5s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+
+  /* PTS SELECTOR */
+  .pts-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:3px;}
+  .pb{background:var(--navy);border:1px solid var(--border);border-radius:8px;
+    color:var(--muted);font-family:'DM Mono',monospace;font-weight:500;
+    font-size:.87rem;padding:7px 13px;cursor:pointer;transition:all .2s;}
+  .pb.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+
+  /* DETENTION BANNER */
+  .det-banner{background:linear-gradient(135deg,#8b0000,#c0392b);border-radius:var(--radius);
+    padding:13px 15px;display:flex;align-items:flex-start;gap:10px;animation:shake .3s ease;}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .det-banner .di{font-size:1.4rem;}
+  .det-banner h3{font-family:'Syne',sans-serif;font-size:.93rem;font-weight:800;}
+  .det-banner p{font-size:.77rem;opacity:.9;margin-top:3px;}
+
+  /* HISTORY */
+  .he{background:var(--navy);border:1px solid var(--border);border-radius:9px;
+    padding:8px 11px;display:flex;align-items:flex-start;justify-content:space-between;gap:7px;}
+  .ht{font-weight:700;font-size:.84rem;}
+  .hn{font-size:.7rem;color:var(--muted);margin-top:2px;}
+  .hd{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);margin-top:3px;}
+  .heu{font-size:.7rem;color:var(--blue);margin-top:2px;}
+  .hp{font-family:'DM Mono',monospace;font-weight:700;color:var(--red);font-size:.9rem;}
+
+  /* UPLOAD ZONE */
+  .uz{border:2px dashed var(--border);border-radius:12px;padding:22px;text-align:center;
+    cursor:pointer;transition:all .2s;background:var(--navy);position:relative;}
+  .uz:hover,.uz.dov{border-color:var(--blue);background:var(--blue-soft);}
+  .uz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+  .uz-icon{font-size:1.8rem;margin-bottom:7px;}
+  .uz-title{font-weight:700;font-size:.88rem;margin-bottom:3px;}
+  .uz-sub{font-size:.74rem;color:var(--muted);}
+  .up-preview{background:var(--navy);border:1px solid var(--border);border-radius:10px;
+    padding:11px;margin-top:9px;max-height:180px;overflow-y:auto;}
+  .pr{display:flex;align-items:center;justify-content:space-between;
+    padding:4px 0;border-bottom:1px solid var(--border);font-size:.78rem;}
+  .pr:last-child{border-bottom:none;}
+
+  /* EDUCATOR LIST */
+  .eu{background:var(--card2);border:1px solid var(--border);border-radius:10px;
+    padding:10px 12px;margin-bottom:7px;
+    display:flex;align-items:center;justify-content:space-between;}
+  .eu-name{font-weight:700;font-size:.87rem;}
+  .eu-meta{font-size:.7rem;color:var(--muted);margin-top:2px;}
+
+  /* STATS */
+  .sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .sb{background:var(--navy);border:1px solid var(--border);border-radius:12px;
+    padding:12px 10px;text-align:center;}
+  .sn{font-family:'Syne',sans-serif;font-weight:800;font-size:1.45rem;}
+  .sl{font-size:.69rem;color:var(--muted);margin-top:2px;}
+  .sn.red{color:var(--red)}.sn.grn{color:var(--green)}.sn.yel{color:var(--accent)}.sn.blu{color:var(--blue)}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);
+    background:var(--green);color:#fff;font-family:'Nunito',sans-serif;font-weight:700;
+    font-size:.87rem;padding:11px 22px;border-radius:30px;
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);z-index:300;white-space:nowrap;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+  .toast.err{background:var(--red);}
+  .toast.warn{background:#e67e22;}
+  .note{font-size:.74rem;color:var(--muted);margin-bottom:9px;line-height:1.5;}
+  .empty{text-align:center;color:var(--muted);font-size:.82rem;padding:16px 0;}
+  .hidden{display:none!important;}
+  .mt{margin-top:9px;}
+  hr{border:none;border-top:1px solid var(--border);margin:6px 0;}
+</style>
+</head>
+<body>
+
+<!-- ══ FIRST-TIME SETUP ══ -->
+<div id="setupScreen" class="auth-screen hidden">
+  <div class="login-logo">Curro Secunda <span>Discipline</span></div>
+  <div class="login-sub">First-Time Setup</div>
+  <div class="auth-card setup-card">
+    <div style="font-size:2rem;text-align:center;margin-bottom:10px">🏫</div>
+    <h2>Create Admin Account</h2>
+    <p class="note">This administrator account manages educators, periods, and all learner data.</p>
+    <div style="background:#2ecc7115;border:1px solid #2ecc71;border-radius:10px;padding:10px 13px;font-size:.78rem;color:#2ecc71;margin-bottom:13px;line-height:1.6;">
+      ✅ <strong>18 educators</strong> from the school database will be created automatically.<br>
+      Default password: <span style="font-family:'DM Mono',monospace;background:#00000030;padding:1px 6px;border-radius:5px;">curro2026</span><br>
+      <span style="opacity:.8">Educators can change their password after first login.</span>
+    </div>
+    <div class="err-box" id="setupErr"></div>
+    <div class="fg"><label>Administrator Name</label>
+      <input type="text" id="sName" placeholder="e.g. Mrs. Dlamini"></div>
+    <div class="fg"><label>Username</label>
+      <input type="text" id="sUser" placeholder="e.g. admin"></div>
+    <div class="fg"><label>Password</label>
+      <div class="pw-wrap"><input type="password" id="sPass" placeholder="Min. 6 characters">
+        <button class="eye" onclick="togglePw('sPass',this)">👁</button></div></div>
+    <div class="fg"><label>Confirm Password</label>
+      <input type="password" id="sPass2" placeholder="Repeat password"></div>
+    <button class="btn btn-blue" onclick="doSetup()">Create Admin Account →</button>
+  </div>
+</div>
+
+<!-- ══ LOGIN ══ -->
+<div id="loginScreen" class="auth-screen hidden">
+  <div class="login-logo">Curro Secunda <span>Discipline</span></div>
+  <div class="login-sub">Curro Secunda — Educator Discipline Portal</div>
+  <div class="auth-card">
+    <h2>🔐 Sign In</h2>
+    <div class="err-box" id="loginErr">Invalid username or password.</div>
+    <div class="fg"><label>Username</label>
+      <input type="text" id="lUser" placeholder="Your username" autocomplete="username"></div>
+    <div class="fg"><label>Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="lPass" placeholder="Your password" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="eye" onclick="togglePw('lPass',this)">👁</button>
+      </div></div>
+    <button class="btn btn-blue" onclick="doLogin()">Sign In</button>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app" class="hidden">
+  <header>
+    <div class="logo">Curro Secunda <span>Discipline</span></div>
+    <div class="hdr-right">
+      <div class="user-pill" id="uPill"></div>
+      <div class="role-pill" id="rPill"></div>
+      <button class="logout-btn" onclick="saveToDrive()" id="driveBtn" title="Save to Google Drive" style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:5px 10px;font-size:.74rem;cursor:pointer;font-family:'Nunito',sans-serif;">☁️</button>
+      <button class="logout-btn" onclick="doLogout()">⏏</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" id="t-log"      onclick="sw('log')">📋 Log</div>
+    <div class="tab"        id="t-learners" onclick="sw('learners')">👤 Learners</div>
+    <div class="tab"        id="t-report"   onclick="sw('report')">📊 Report</div>
+    <div class="tab hidden" id="t-admin"    onclick="sw('admin')">⚙️ Admin</div>
+    <div class="tab"        id="t-pw"       onclick="sw('pw')">🔑 Password</div>
+  </div>
+
+  <!-- LOG -->
+  <main id="pg-log">
+    <div class="period-strip" id="periodStrip"></div>
+
+    <div class="card">
+      <div class="card-title">Select Learner</div>
+      <div class="fg" style="margin-bottom:8px">
+        <label>Filter by Grade</label>
+        <select id="gradeFilter" onchange="filterL()" style="background:var(--navy);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Nunito',sans-serif;font-size:.9rem;padding:10px 13px;outline:none;width:100%;">
+          <option value="">— All Grades —</option>
+          <option value="Grade 8">Grade 8</option>
+          <option value="Grade 9">Grade 9</option>
+          <option value="Grade 10">Grade 10</option>
+          <option value="Grade 11">Grade 11</option>
+          <option value="Grade 12">Grade 12</option>
+        </select>
+      </div>
+      <div class="sw"><span class="si">🔍</span>
+        <input type="text" id="srch" placeholder="Search name…" oninput="filterL()"></div>
+      <div class="ll" id="lList"></div>
+    </div>
+
+    <div class="card hidden" id="tForm">
+      <div class="card-title" id="tTitle">Log Transgression</div>
+      <div id="dBannerTop" class="det-banner hidden" style="margin-bottom:11px">
+        <div class="di">🚨</div>
+        <div><h3>DETENTION ASSIGNED</h3><p id="dBannerMsg"></p></div>
+      </div>
+      <div class="fg"><label>Transgression Type</label>
+        <select id="tType">
+          <option value="">— Select type —</option>
+          <option>Late for class</option><option>Disruptive behaviour</option>
+          <option>Incomplete homework</option><option>Dress code violation</option>
+          <option>Disrespect to staff</option><option>Physical altercation</option>
+          <option>Vandalism</option><option>Cheating / plagiarism</option>
+          <option>Bullying</option><option>Truancy</option><option>Other</option>
+        </select></div>
+      <div class="fg"><label>Points to Add</label>
+        <div class="pts-row">
+          <button class="pb on" onclick="selPts(this,2)">+2</button>
+          <button class="pb" onclick="selPts(this,3)">+3</button>
+          <button class="pb" onclick="selPts(this,4)">+4</button>
+          <button class="pb" onclick="selPts(this,5)">+5</button>
+        </div></div>
+      <div class="fg"><label>Notes (optional)</label>
+        <textarea id="tNote" placeholder="Additional context…"></textarea></div>
+      <button class="btn btn-blue" onclick="submitT()">Submit Transgression</button>
+    </div>
+  </main>
+
+  <!-- LEARNERS -->
+  <main id="pg-learners" class="hidden">
+    <div class="card">
+      <div class="card-title">📂 Upload School List</div>
+      <p class="note">Upload a <strong>CSV</strong> or <strong>Excel</strong> file with columns: <em>Name</em> and <em>Grade</em>. Duplicates are skipped automatically.</p>
+      <div class="uz" id="uZone"
+           ondragover="event.preventDefault();this.classList.add('dov')"
+           ondragleave="this.classList.remove('dov')"
+           ondrop="onDrop(event)">
+        <input type="file" accept=".csv,.xlsx,.xls,.tsv" onchange="onFileSel(this)">
+        <div class="uz-icon">📄</div>
+        <div class="uz-title">Tap to browse or drag & drop</div>
+        <div class="uz-sub">CSV · Excel (.xlsx/.xls) · TSV accepted</div>
+      </div>
+      <div id="uPreview" class="hidden"></div>
+      <button class="btn btn-blue hidden mt" id="importBtn" onclick="doImport()">Import Learners</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">➕ Add Single Learner</div>
+      <div class="flex-row">
+        <input class="flex-1" type="text" id="nName" placeholder="Full name" style="background:var(--navy);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Nunito',sans-serif;font-size:.9rem;padding:10px 13px;outline:none;">
+        <select id="nGrade" style="width:130px;background:var(--navy);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Nunito',sans-serif;font-size:.9rem;padding:10px 13px;outline:none;">
+          <option value="">Grade</option>
+          <option>Grade 8</option><option>Grade 9</option><option>Grade 10</option>
+          <option>Grade 11</option><option>Grade 12</option>
+        </select>
+      </div>
+      <button class="btn btn-blue mt" onclick="addL()">Add Learner</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">All Learners (<span id="lCount">0</span>)</div>
+      <div class="sw"><span class="si">🔍</span>
+        <input type="text" id="srchAll" placeholder="Filter…" oninput="renderAll()"></div>
+      <div id="allList"></div>
+    </div>
+  </main>
+
+  <!-- REPORT -->
+  <main id="pg-report" class="hidden">
+    <div class="sg" id="statsGrid"></div>
+    <div class="card">
+      <div class="card-title" style="color:var(--red)">🚨 Detention — Current Period</div>
+      <div id="detList"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Period Totals (All Learners)</div>
+      <div id="repList"></div>
+    </div>
+    <button class="btn btn-blue" style="background:#263a54;color:var(--muted);margin-bottom:20px" onclick="newPeriod()">
+      🔄 Start Next 2-Week Period
+    </button>
+  </main>
+
+  <!-- CHANGE PASSWORD -->
+  <main id="pg-pw" class="hidden">
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title">🔑 Change My Password</div>
+      <p class="note">Update your password. You will use the new password on your next login.</p>
+      <div class="fg"><label>Current Password</label>
+        <div class="pw-wrap"><input type="password" id="cpCur" placeholder="Your current password">
+          <button class="eye" onclick="togglePw('cpCur',this)">👁</button></div></div>
+      <div class="fg"><label>New Password</label>
+        <div class="pw-wrap"><input type="password" id="cpNew" placeholder="Min. 6 characters">
+          <button class="eye" onclick="togglePw('cpNew',this)">👁</button></div></div>
+      <div class="fg"><label>Confirm New Password</label>
+        <input type="password" id="cpNew2" placeholder="Repeat new password"></div>
+      <button class="btn btn-blue" onclick="changeMyPw()">Update Password</button>
+    </div>
+  </main>
+
+  <!-- ADMIN -->
+  <main id="pg-admin" class="hidden">
+    <div class="card">
+      <div class="card-title">⚙️ Period Settings</div>
+      <div class="fg"><label>Period Start Date (YYYY-MM-DD)</label>
+        <input type="text" id="pStart" placeholder="e.g. 2026-01-20"></div>
+      <div class="fg"><label>Period Number</label>
+        <input type="text" id="pNum" placeholder="e.g. 3"></div>
+      <button class="btn btn-blue" onclick="savePeriod()">Save Period Settings</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">👩‍🏫 Add Educator Account</div>
+      <p class="note">Educators can log transgressions. Admins can manage accounts, periods and all data.</p>
+      <div class="fg"><label>Full Name</label>
+        <input type="text" id="eName" placeholder="e.g. Mr. Khumalo"></div>
+      <div class="fg"><label>Username</label>
+        <input type="text" id="eUser" placeholder="e.g. khumalo"></div>
+      <div class="fg"><label>Temporary Password</label>
+        <div class="pw-wrap"><input type="password" id="ePass" placeholder="Min. 6 characters">
+          <button class="eye" onclick="togglePw('ePass',this)">👁</button></div></div>
+      <div class="fg"><label>Role</label>
+        <select id="eRole"><option value="educator">Educator</option><option value="admin">Admin</option></select></div>
+      <button class="btn btn-blue" onclick="addEdu()">Add Educator</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">All Accounts</div>
+      <div id="eduList"></div>
+    </div>
+
+    <div class="card" style="border-color:#c0392b55;margin-bottom:20px">
+      <div class="card-title" style="color:var(--red)">⚠️ Danger Zone</div>
+      <p class="note">Permanently remove all learner records. Cannot be undone.</p>
+      <button class="btn-danger" style="width:100%;padding:12px;border-radius:10px" onclick="clearAll()">
+        🗑 Clear All Learner Data
+      </button>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══ CONSTANTS ═══════════════════════════════════════════════
+const THRESH = 10, PDAYS = 14;
+
+// ══ PRE-SEEDED EDUCATORS FROM DATABASE.CSV ═══════════════════
+const SEED_EDUCATORS = [
+  "Mandy Pretorius","Simone Robson","Anel Steyn","Righ Potgieter",
+  "Faatima Bhadat","Dr I Raji","Owen Dewa","Lisa Combrinck",
+  "Nadine Prinsloo","Lorraine Boshoff","Raeesha Farouk","Fozia Stuart",
+  "Rochelle Venter","Annebelle Botha","Jaryd van der Westhuisen",
+  "Johan Botes","Ntokozo Nzima","Luann Lundell-Coetzer"
+];
+
+const SEED_LEARNERS = [{"name": "Nyeleti Buhlebenkosi Baloyi", "grade": "Grade 8"}, {"name": "Siphesihle Sinothile Baloyi", "grade": "Grade 8"}, {"name": "Ntalo Faith Botha", "grade": "Grade 8"}, {"name": "Nosipho Hannah Chauke", "grade": "Grade 8"}, {"name": "Acacia Cash Cowley", "grade": "Grade 8"}, {"name": "Wandile Reign Dambuza", "grade": "Grade 8"}, {"name": "Lwandle David Dlamini", "grade": "Grade 8"}, {"name": "Ntombizethu Faith Dlamini", "grade": "Grade 8"}, {"name": "Ngimphiwe Zamaswazi Dube", "grade": "Grade 8"}, {"name": "Nkosingiphile Ndumiso Blessing Gama", "grade": "Grade 8"}, {"name": "Vutivi Olwethu Gazide", "grade": "Grade 8"}, {"name": "Omolemo Kungawo Hlungulu", "grade": "Grade 8"}, {"name": "Nhlaluko Mikhenso Hlungwane", "grade": "Grade 8"}, {"name": "Emlyn Vaenusha Iyer", "grade": "Grade 8"}, {"name": "Skylar Vidaya Iyer", "grade": "Grade 8"}, {"name": "Tameka Jiyana", "grade": "Grade 8"}, {"name": "Mukendi Mbwembwa Daniel Chloe Kalonji", "grade": "Grade 8"}, {"name": "Umar Karodia", "grade": "Grade 8"}, {"name": "El-Roel Kereta", "grade": "Grade 8"}, {"name": "Mpilenhle Felicity Khoza", "grade": "Grade 8"}, {"name": "Goodluck Ilunga Kilonda", "grade": "Grade 8"}, {"name": "Kourtney Leeya Klink", "grade": "Grade 8"}, {"name": "Onkarabile Botlhale Kotu", "grade": "Grade 8"}, {"name": "Junior Lebyang", "grade": "Grade 8"}, {"name": "Tacara Ruth Lubbe", "grade": "Grade 8"}, {"name": "Briseida Elizabeth Lungu", "grade": "Grade 8"}, {"name": "Olothando Mabaso", "grade": "Grade 8"}, {"name": "Sicelimpilo Mabena", "grade": "Grade 8"}, {"name": "Boitumelo Busisiwe Malaika Mafereka", "grade": "Grade 8"}, {"name": "Simraan Mahadaw", "grade": "Grade 8"}, {"name": "Thuto Mahlaba", "grade": "Grade 8"}, {"name": "Boitumelo Mahlangu", "grade": "Grade 8"}, {"name": "Tjhudu Upendo Mahlangu", "grade": "Grade 8"}, {"name": "Siphephelo Nkosi Makhoba", "grade": "Grade 8"}, {"name": "Relebohile Manko", "grade": "Grade 8"}, {"name": "Sithembile Tendai Maphanga", "grade": "Grade 8"}, {"name": "Aanisah Marambakuyana", "grade": "Grade 8"}, {"name": "Aphiwe Owami Masango", "grade": "Grade 8"}, {"name": "Olwethu Maseko", "grade": "Grade 8"}, {"name": "Mashego Koketso Masha", "grade": "Grade 8"}, {"name": "Vhudzani Success Okuhle Mashau", "grade": "Grade 8"}, {"name": "Uluthando Vusile Masinga", "grade": "Grade 8"}, {"name": "Liyakhanya Mathebula", "grade": "Grade 8"}, {"name": "Banele Njabulo Mhlana", "grade": "Grade 8"}, {"name": "Mpilwenhle Tyra Mhlongo", "grade": "Grade 8"}, {"name": "Malwande Anesiseko Mngadi", "grade": "Grade 8"}, {"name": "Sinenhlanhla Hlelokuhle Mntungwa", "grade": "Grade 8"}, {"name": "Lethabo Onkgopotse Mogotlane", "grade": "Grade 8"}, {"name": "Boitumelo Lehlohonolo Mollo", "grade": "Grade 8"}, {"name": "Lerato Buhle Mpho Motubatse", "grade": "Grade 8"}, {"name": "Charlene Kefilwe Rofhiwa Mphaphuli", "grade": "Grade 8"}, {"name": "Thuthukani Mnqobiwamachibi Zwelakhe Mthabela", "grade": "Grade 8"}, {"name": "Luitumezi Sinikiwe Mulenga", "grade": "Grade 8"}, {"name": "Malakhiwe Tholokuhle Mzimela", "grade": "Grade 8"}, {"name": "Ntsako Kamogelo Ngobeni", "grade": "Grade 8"}, {"name": "Zothumbela Nhlengethwa", "grade": "Grade 8"}, {"name": "Wandile Nkosi", "grade": "Grade 8"}, {"name": "Nkululeko Blessing Nkuna", "grade": "Grade 8"}, {"name": "Naledi Nomonde Nkwanyana", "grade": "Grade 8"}, {"name": "Owethu Nxangani", "grade": "Grade 8"}, {"name": "Jasmine Unathi Nxumalo", "grade": "Grade 8"}, {"name": "Adriel Michael Odayan", "grade": "Grade 8"}, {"name": "Cleojunior Owethu Innocent Palmer", "grade": "Grade 8"}, {"name": "Lwandle Nolwazi Sambo", "grade": "Grade 8"}, {"name": "Atlegang Keamogetswe Selepe", "grade": "Grade 8"}, {"name": "Pontsho Mafeta Seroto", "grade": "Grade 8"}, {"name": "Relebohile Mahlohonolo Seroto", "grade": "Grade 8"}, {"name": "Gosiame Patience Setsepu", "grade": "Grade 8"}, {"name": "Uzayr Ali Shaik", "grade": "Grade 8"}, {"name": "Siyamthanda Sithole", "grade": "Grade 8"}, {"name": "Chantel Ntando Smith", "grade": "Grade 8"}, {"name": "Haveshan Thamburan", "grade": "Grade 8"}, {"name": "Luyema Thamsanqa Thwala", "grade": "Grade 8"}, {"name": "Tshifhiwa Tshishonga", "grade": "Grade 8"}, {"name": "Casniik Van den Bergh", "grade": "Grade 8"}, {"name": "Hleloluhle Owethu Xulu", "grade": "Grade 8"}, {"name": "Allie Natalien Shongile Baloyi", "grade": "Grade 9"}, {"name": "Nonhle Princess Beni", "grade": "Grade 9"}, {"name": "Oluhle Aphiwe Biyela", "grade": "Grade 9"}, {"name": "Karabo Mpendulo Johnson Bogatsu", "grade": "Grade 9"}, {"name": "Ariana Cassim", "grade": "Grade 9"}, {"name": "Qailah Cassim", "grade": "Grade 9"}, {"name": "Umayr Cassim", "grade": "Grade 9"}, {"name": "Enze Chen", "grade": "Grade 9"}, {"name": "Sibongokuhle Vanessa Triona Dlamini", "grade": "Grade 9"}, {"name": "Ngcebenhle Ntsika Dludlu", "grade": "Grade 9"}, {"name": "Anele Thandiwe Gwebu", "grade": "Grade 9"}, {"name": "Za'hra Hajat", "grade": "Grade 9"}, {"name": "Christopher Hawes", "grade": "Grade 9"}, {"name": "Okayise Jiyane", "grade": "Grade 9"}, {"name": "Hlonolofatso Ketle", "grade": "Grade 9"}, {"name": "Azokuhle Khumalo", "grade": "Grade 9"}, {"name": "Nabeel Kola", "grade": "Grade 9"}, {"name": "Tomutenda Hansel Kudiwa", "grade": "Grade 9"}, {"name": "Siphosakhe Langa", "grade": "Grade 9"}, {"name": "Owami Ayamaah Lwane", "grade": "Grade 9"}, {"name": "Nkateko Happiness Mabedhle", "grade": "Grade 9"}, {"name": "Unathi Buhle Nosipho Mahamba", "grade": "Grade 9"}, {"name": "Bongani Phaswana Mahlangu", "grade": "Grade 9"}, {"name": "Hlelo Siyanda Makhoba", "grade": "Grade 9"}, {"name": "Kgomotso Malaka", "grade": "Grade 9"}, {"name": "Thabang Mkhuleko Maphanga", "grade": "Grade 9"}, {"name": "Anaya Marambakuyana", "grade": "Grade 9"}, {"name": "Olwethu Hope Maseko", "grade": "Grade 9"}, {"name": "Tharollo Thubelihle Mashika", "grade": "Grade 9"}, {"name": "Onale Moname Mashoeu", "grade": "Grade 9"}, {"name": "Neo Kagiso Masia", "grade": "Grade 9"}, {"name": "Konke Lwandle Mathebula Mathebula", "grade": "Grade 9"}, {"name": "Siphiwe Mathenjwa", "grade": "Grade 9"}, {"name": "Nonhle Ntsumi Mazabane", "grade": "Grade 9"}, {"name": "Benedict Takalani Mbedzi", "grade": "Grade 9"}, {"name": "Thobekile Okuhle Mdhluli", "grade": "Grade 9"}, {"name": "Zoe Jane Melville", "grade": "Grade 9"}, {"name": "Amanda Minenhle Mkhabela", "grade": "Grade 9"}, {"name": "Anna Ncobile Mkhabela", "grade": "Grade 9"}, {"name": "Letlotlo Nkanyezi Mkhwanazi", "grade": "Grade 9"}, {"name": "Melokuhle Mnguni", "grade": "Grade 9"}, {"name": "Milani Mongo", "grade": "Grade 9"}, {"name": "Lefa Mathoka Mosotho", "grade": "Grade 9"}, {"name": "Buhlebenkosi Mothopeng", "grade": "Grade 9"}, {"name": "Zoe Ohanna Morongwa Motsoaledi", "grade": "Grade 9"}, {"name": "Nathi Manqoba Mtombeni", "grade": "Grade 9"}, {"name": "Inako Mtshemla", "grade": "Grade 9"}, {"name": "Zwiande Lesedi Mulaudzi", "grade": "Grade 9"}, {"name": "Adelin Mantshana Minentle Musi", "grade": "Grade 9"}, {"name": "Tessa Khensani Ngoveni", "grade": "Grade 9"}, {"name": "Kamohelo Mcdonald Nkosi", "grade": "Grade 9"}, {"name": "Makwazeke Mndumisenjalo Nkosi", "grade": "Grade 9"}, {"name": "Sthokozile Simthokozele Ntuli", "grade": "Grade 9"}, {"name": "Miyako Tianna Pyoos", "grade": "Grade 9"}, {"name": "Cameron Linley Sallie", "grade": "Grade 9"}, {"name": "Anna Senoamadi", "grade": "Grade 9"}, {"name": "Bhelekazi Shabangu", "grade": "Grade 9"}, {"name": "Lindokuhle Ethan Wakhile Sithole", "grade": "Grade 9"}, {"name": "Sulungeka Songabe", "grade": "Grade 9"}, {"name": "Kamogelo Ben Teatea", "grade": "Grade 9"}, {"name": "Rethabile Zoe' Jabulile Thukwana", "grade": "Grade 9"}, {"name": "Hlelokuhle Hope Singita Tshabalala", "grade": "Grade 9"}, {"name": "Yandisa Siphosethu Tshabalala", "grade": "Grade 9"}, {"name": "Katelyn Lyla van Staden", "grade": "Grade 9"}, {"name": "Joy Wayiti", "grade": "Grade 9"}, {"name": "Nkululeko Aphiwe Zulu", "grade": "Grade 9"}, {"name": "Itumeleng Brandon August", "grade": "Grade 10"}, {"name": "Linda Tinyiko Chabalala", "grade": "Grade 10"}, {"name": "Chloe Chetty", "grade": "Grade 10"}, {"name": "Goitsemang Gosiame Oluhle Dinale", "grade": "Grade 10"}, {"name": "Manqoba Khayelihle Dlamini", "grade": "Grade 10"}, {"name": "Khanyisile Alicia Gama", "grade": "Grade 10"}, {"name": "Lawrance Bayanda Gama", "grade": "Grade 10"}, {"name": "Giana Lee Govender", "grade": "Grade 10"}, {"name": "Jan� Greeff", "grade": "Grade 10"}, {"name": "Brooklyn Keith Hargreaves", "grade": "Grade 10"}, {"name": "Ameera Khaled Shaaban Ibrahim", "grade": "Grade 10"}, {"name": "Isabella Talya Iyer", "grade": "Grade 10"}, {"name": "Owethu Nosipho Kulube", "grade": "Grade 10"}, {"name": "Chloe Hope Thandolwethu Lukhele", "grade": "Grade 10"}, {"name": "Briaana Ester Lungu", "grade": "Grade 10"}, {"name": "Akabongwe Justin Mabena", "grade": "Grade 10"}, {"name": "Melokuhle Nomcebo Princess Mabuyakhulu", "grade": "Grade 10"}, {"name": "Thabiso Phetole Maenetja", "grade": "Grade 10"}, {"name": "Phomollo Mahlatsi", "grade": "Grade 10"}, {"name": "Farhaan Mahomed", "grade": "Grade 10"}, {"name": "Retshedisitswe Molantwa Manko", "grade": "Grade 10"}, {"name": "Hope Fulufhelo Owethu Mashau", "grade": "Grade 10"}, {"name": "Lilitha Qhayiya Matshikiza", "grade": "Grade 10"}, {"name": "Qhama Liyana Matshikiza", "grade": "Grade 10"}, {"name": "Mamello Nthabeleng Matsoele", "grade": "Grade 10"}, {"name": "Nomthandazo Bandile Surprise Mazibuko", "grade": "Grade 10"}, {"name": "Fezile Lwandle Mhlana", "grade": "Grade 10"}, {"name": "Evan Michael", "grade": "Grade 10"}, {"name": "Nduduzo Simphiwe Mkhwanazi", "grade": "Grade 10"}, {"name": "Asiphile Sinakhokonke Mnisi", "grade": "Grade 10"}, {"name": "Andile Resegofetse Modise", "grade": "Grade 10"}, {"name": "Kgomotso Amohelang Quincy Mofokeng", "grade": "Grade 10"}, {"name": "Naledi Princess Mokoena", "grade": "Grade 10"}, {"name": "Khethokuhle Thato Mokotong", "grade": "Grade 10"}, {"name": "Banzane Hlelolwenkosi Mpondo", "grade": "Grade 10"}, {"name": "Buitumelo Simnikiwe Mulenga", "grade": "Grade 10"}, {"name": "Nhlosenhle Skhulile Nhlabathi", "grade": "Grade 10"}, {"name": "Lungelo Khethokuhle Nhlapo", "grade": "Grade 10"}, {"name": "Tshegofatso Akhona Nkwanyana", "grade": "Grade 10"}, {"name": "Nonhle Silindile Nzimande", "grade": "Grade 10"}, {"name": "Diyaanah Patel", "grade": "Grade 10"}, {"name": "Naledi Reneiloe Qhamakoane", "grade": "Grade 10"}, {"name": "Zara Alexis Raman", "grade": "Grade 10"}, {"name": "Ayabonga Realeboga Ramatja", "grade": "Grade 10"}, {"name": "Muhammed Shuaib Shaik", "grade": "Grade 10"}, {"name": "Rirhandzu Pearl Siboyi", "grade": "Grade 10"}, {"name": "Xiluva Simango", "grade": "Grade 10"}, {"name": "Londiwe Khethokuhle Sindane", "grade": "Grade 10"}, {"name": "Nokubonga Angel Skhosana", "grade": "Grade 10"}, {"name": "Thabiso Jameson Tladi", "grade": "Grade 10"}, {"name": "Khulubuse Tsebo Zimu", "grade": "Grade 10"}, {"name": "Noluthando Zulu", "grade": "Grade 10"}, {"name": "Zamazulu Zulu", "grade": "Grade 10"}, {"name": "Zwelihle Zulu", "grade": "Grade 10"}, {"name": "Saadia Abbas", "grade": "Grade 11"}, {"name": "Ryan Kylin Bimbrish", "grade": "Grade 11"}, {"name": "Zuhayr Cassim", "grade": "Grade 11"}, {"name": "Katia Paula De Alcantara", "grade": "Grade 11"}, {"name": "Logan Elizabeth Ellis", "grade": "Grade 11"}, {"name": "Gabrielle Jaylin Lungile Engelbrecht", "grade": "Grade 11"}, {"name": "Yijun Fang", "grade": "Grade 11"}, {"name": "Lesedi Ganare", "grade": "Grade 11"}, {"name": "Kaylene Verona Gloube", "grade": "Grade 11"}, {"name": "Keamogetswe Lesego Harrington", "grade": "Grade 11"}, {"name": "Oabile Lindani Hlungulu", "grade": "Grade 11"}, {"name": "Nhlalala Khensani Hlungwane", "grade": "Grade 11"}, {"name": "Arav Jagasur", "grade": "Grade 11"}, {"name": "Lisa Alice Jones", "grade": "Grade 11"}, {"name": "Sebabatso Lethabo Ketle", "grade": "Grade 11"}, {"name": "Tshegofatso Kehumile Khumalo", "grade": "Grade 11"}, {"name": "Lesedi Luthando Kutu", "grade": "Grade 11"}, {"name": "Bathabile Langa", "grade": "Grade 11"}, {"name": "Vhugala Lephauphau", "grade": "Grade 11"}, {"name": "Vhulenda Lephauphau", "grade": "Grade 11"}, {"name": "Mthokozisi Samson Mahlalela", "grade": "Grade 11"}, {"name": "Lwandile Blessing Jonas Mahlangu", "grade": "Grade 11"}, {"name": "Theto Makita Mahlare", "grade": "Grade 11"}, {"name": "Ngiphile Adequate Malaza", "grade": "Grade 11"}, {"name": "Njongoyenkosi Mpendulo Mdluli", "grade": "Grade 11"}, {"name": "Phumelelo Relebogile Modise", "grade": "Grade 11"}, {"name": "Lehlohonolo Samson Mokoena", "grade": "Grade 11"}, {"name": "Boitumelo Nonhle Bianca Moreetsi", "grade": "Grade 11"}, {"name": "Lehakoe Motsoeneng", "grade": "Grade 11"}, {"name": "Khanyisa Mphuthi", "grade": "Grade 11"}, {"name": "Zoey Qhawekazi Hope Zamile Msezane", "grade": "Grade 11"}, {"name": "Melusi Wasipha Siphosethu Mthabela", "grade": "Grade 11"}, {"name": "Unarine Kenneth Jnr Mudziri", "grade": "Grade 11"}, {"name": "Ntandokazi Malibongwe Ngwenya", "grade": "Grade 11"}, {"name": "Sikholiwe Nkosi", "grade": "Grade 11"}, {"name": "Lonwabo November", "grade": "Grade 11"}, {"name": "Phiwokuhle Ntandoyenkosi Oratile Ntumba", "grade": "Grade 11"}, {"name": "Boyce Thando Radebe", "grade": "Grade 11"}, {"name": "Jabulile Sophie-Ann Radebe", "grade": "Grade 11"}, {"name": "Thato Caswell Selepe", "grade": "Grade 11"}, {"name": "Thando Shikwambane", "grade": "Grade 11"}, {"name": "Thobekile Angel Shongwe", "grade": "Grade 11"}, {"name": "Amahle Sigasa", "grade": "Grade 11"}, {"name": "Owethu Sinethemba Sindane", "grade": "Grade 11"}, {"name": "Nilach� Smith", "grade": "Grade 11"}, {"name": "Ashtin Strydom", "grade": "Grade 11"}, {"name": "Lesedi Moipone Tau", "grade": "Grade 11"}, {"name": "Tshediso Tsolo Tsolo", "grade": "Grade 11"}, {"name": "Jessica Turley", "grade": "Grade 11"}, {"name": "Sinenhlanhla Hlosile Yende", "grade": "Grade 11"}, {"name": "Mbali Naledi Zulu", "grade": "Grade 11"}, {"name": "Romana Cassim", "grade": "Grade 12"}, {"name": "Liamae-Kiara Clarke", "grade": "Grade 12"}, {"name": "Caitlyn De Ponte", "grade": "Grade 12"}, {"name": "Reabetswe Digoro", "grade": "Grade 12"}, {"name": "Alwande Phiwokuhle Dlamini", "grade": "Grade 12"}, {"name": "Elizabeth Anne Du Piesanie", "grade": "Grade 12"}, {"name": "Dehann Fourie", "grade": "Grade 12"}, {"name": "Ismail Hoosen", "grade": "Grade 12"}, {"name": "Matthew David Klink", "grade": "Grade 12"}, {"name": "Vutlharhi Hlulani Mabedhle", "grade": "Grade 12"}, {"name": "Amahle Lethokuhle Mabuza", "grade": "Grade 12"}, {"name": "Thandolwethu Mabuza", "grade": "Grade 12"}, {"name": "Mvelo Phakamani Maseko", "grade": "Grade 12"}, {"name": "Machemo Naomi Lindokuhle Masekoameng", "grade": "Grade 12"}, {"name": "Kutloano Matsimane", "grade": "Grade 12"}, {"name": "Khwezi Mbakaza", "grade": "Grade 12"}, {"name": "Hlumelo Mpho Mbatani", "grade": "Grade 12"}, {"name": "Maningisi Kgothatso Mdhluli", "grade": "Grade 12"}, {"name": "Oarabile Kgawane Mmotla", "grade": "Grade 12"}, {"name": "Mzwandile Nkosingiphile Mndawe", "grade": "Grade 12"}, {"name": "Dineo Princess Mokoena", "grade": "Grade 12"}, {"name": "Thabiso Tsebo Blessing Mokoena", "grade": "Grade 12"}, {"name": "Thapelo Ntumiseng Tsepo Molete", "grade": "Grade 12"}, {"name": "Lesego Boitumelo Thando Moroke", "grade": "Grade 12"}, {"name": "Thato Adam Siyabonga Motubatse", "grade": "Grade 12"}, {"name": "Roneoa Princess Mphaphuli", "grade": "Grade 12"}, {"name": "Sakhisizwe Saloam Dylan Mnotho Msezane", "grade": "Grade 12"}, {"name": "Sanele Ndumiso Mshiywa", "grade": "Grade 12"}, {"name": "Darrell Tafadzwa Mwasiswebe", "grade": "Grade 12"}, {"name": "Prosper Omolemo Ndjibu", "grade": "Grade 12"}, {"name": "Reotshepile Thandolwetu Ndlovu", "grade": "Grade 12"}, {"name": "Siyabonga Siphesihle Nkabinde", "grade": "Grade 12"}, {"name": "Lauren Michael Odayan", "grade": "Grade 12"}, {"name": "Rakim Shakur Petrus", "grade": "Grade 12"}, {"name": "Sajal Ramlugan", "grade": "Grade 12"}, {"name": "Lebohang Rapoo", "grade": "Grade 12"}, {"name": "Juane Roolvink", "grade": "Grade 12"}, {"name": "Aria Samlal", "grade": "Grade 12"}, {"name": "Katlego Vukona Sentsho", "grade": "Grade 12"}, {"name": "Dimpho Ziyanda Seroto", "grade": "Grade 12"}, {"name": "Thandeka Promise Sibeko", "grade": "Grade 12"}, {"name": "Kusaselihle Selusiwe Ntombifuthi Sibiya", "grade": "Grade 12"}, {"name": "Asanda Nozibusiso Skhosana", "grade": "Grade 12"}, {"name": "Mawandla Soko", "grade": "Grade 12"}, {"name": "Jacobus Stander", "grade": "Grade 12"}, {"name": "Aphiwe Sibahle Thwala", "grade": "Grade 12"}, {"name": "Neo Shikosha Tivane", "grade": "Grade 12"}, {"name": "Minas Oghehetega Akpoghene Ugovwarhe", "grade": "Grade 12"}, {"name": "Paballo Thandi Zimu", "grade": "Grade 12"}];
+
+// ══ STATE ════════════════════════════════════════════════════
+let S  = JSON.parse(localStorage.getItem('sg_s')||'null') || (()=>{
+  const learners = SEED_LEARNERS.map((l,i)=>({id:i+1, name:l.name, grade:l.grade, history:[]}));
+  return {periodStart:td(), periodNum:1, learners, nextId:learners.length+1};
+})();
+let U  = JSON.parse(localStorage.getItem('sg_u')||'null');
+let me = null, selId = null, selPt = 2, pending = [];
+
+const saveS = () => localStorage.setItem('sg_s', JSON.stringify(S));
+const saveU = () => localStorage.setItem('sg_u', JSON.stringify(U));
+function td() { return new Date().toISOString().split('T')[0]; }
+const g = id => document.getElementById(id);
+const gv = id => g(id).value.trim();
+
+function pPts(l) {
+  // Points accumulate across ALL periods — never reset
+  return l.history.reduce((a,x)=>a+x.pts,0);
+}
+function dLeft() {
+  const s=new Date(S.periodStart),e=new Date(s); e.setDate(e.getDate()+PDAYS);
+  return Math.max(0,Math.ceil((e-new Date())/86400000));
+}
+
+// ══ BOOT ═════════════════════════════════════════════════════
+function boot() {
+  if (!U) { g('setupScreen').classList.remove('hidden'); return; }
+  seedMissingEducators();
+  seedMissingLearners();
+  g('loginScreen').classList.remove('hidden');
+}
+
+function seedMissingLearners() {
+  // Build a history map from existing learners keyed by name|grade
+  const historyMap = {};
+  S.learners.forEach(l => {
+    const key = l.name.toLowerCase() + '|' + l.grade.toLowerCase();
+    if (l.history && l.history.length > 0) historyMap[key] = l.history;
+  });
+
+  // Rebuild learners exactly from SEED_LEARNERS — no duplicates, correct count
+  const seen = new Set();
+  const clean = [];
+  let nextId = 1;
+  SEED_LEARNERS.forEach(l => {
+    const key = l.name.toLowerCase() + '|' + l.grade.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      clean.push({
+        id: nextId++,
+        name: l.name,
+        grade: l.grade,
+        history: historyMap[key] || []
+      });
+    }
+  });
+
+  // Only update if something changed
+  if (S.learners.length !== clean.length ||
+      JSON.stringify(S.learners.map(l=>l.name+l.grade)) !== JSON.stringify(clean.map(l=>l.name+l.grade))) {
+    S.learners = clean;
+    S.nextId = nextId;
+    saveS();
+  }
+}
+
+// Accounts that should be admins with password curro2025
+const ADMIN_ACCOUNTS = {
+  'asteyn':    {name:'Anel Steyn',             password:'curro2025'},
+  'abotha':    {name:'Annebelle Botha',         password:'curro2025'},
+  'lluann':    {name:'Luann Lundell-Coetzer',   password:'curro2025'},
+  'rventer':   {name:'Rochelle Venter',         password:'curro2025'},
+  'nprinsloo': {name:'Nadine Prinsloo',         password:'curro2025'},
+  'lstrydom':  {name:'Leon Strydom',             password:'curro2025'},
+};
+
+function seedMissingEducators() {
+  let changed = false;
+
+  // 1. Seed all standard educators (if not already present)
+  SEED_EDUCATORS.forEach(eduName => {
+    const parts = eduName.replace(/^Dr\s+/i,'').trim().split(/\s+/);
+    const surname = parts[parts.length-1].toLowerCase().replace(/[^a-z]/g,'');
+    const first = parts[0].toLowerCase().replace(/[^a-z]/g,'');
+    const uname = first.charAt(0) + surname;
+    if (!U.accounts.find(a => a.username === uname)) {
+      U.accounts.push({id: U.nextId++, name: eduName, username: uname, password: 'curro2026', role: 'educator'});
+      changed = true;
+    }
+  });
+
+  // 2. Ensure lstrydom exists (not in original database)
+  if (!U.accounts.find(a => a.username === 'lstrydom')) {
+    U.accounts.push({id: U.nextId++, name:'Leon Strydom', username:'lstrydom', password:'curro2025', role:'admin'});
+    changed = true;
+  }
+
+  // 3. Patch all designated admin accounts — set correct role & password
+  Object.entries(ADMIN_ACCOUNTS).forEach(([uname, cfg]) => {
+    const acc = U.accounts.find(a => a.username === uname);
+    if (acc) {
+      if (acc.role !== 'admin' || acc.password !== cfg.password) {
+        acc.role = 'admin';
+        acc.password = cfg.password;
+        changed = true;
+      }
+    }
+  });
+
+  if (changed) saveU();
+}
+
+// ══ SETUP ════════════════════════════════════════════════════
+function doSetup() {
+  const name=gv('sName'),user=gv('sUser').toLowerCase(),pass=gv('sPass'),pass2=gv('sPass2');
+  const e=g('setupErr'); e.style.display='none';
+  if (!name||!user||!pass) return showE(e,'All fields are required.');
+  if (pass!==pass2) return showE(e,'Passwords do not match.');
+  if (pass.length<6) return showE(e,'Password must be at least 6 characters.');
+
+  // Build accounts: admin first, then all seeded educators
+  let nextId = 2;
+  const accounts = [{id:1, name, username:user, password:pass, role:'admin'}];
+  SEED_EDUCATORS.forEach(eduName => {
+    // Generate username: first initial + surname, lowercase, no spaces
+    const parts = eduName.replace(/^Dr\s+/i,'').trim().split(/\s+/);
+    const surname = parts[parts.length-1].toLowerCase().replace(/[^a-z]/g,'');
+    const first = parts[0].toLowerCase().replace(/[^a-z]/g,'');
+    const uname = first.charAt(0) + surname;
+    accounts.push({id: nextId++, name: eduName, username: uname, password: 'curro2026', role: 'educator'});
+  });
+
+  U = { accounts, nextId };
+  saveU(); g('setupScreen').classList.add('hidden');
+  g('loginScreen').classList.remove('hidden');
+  toast('✅ Admin + 18 educators created — please sign in!');
+}
+
+// ══ LOGIN ════════════════════════════════════════════════════
+function doLogin() {
+  const user=gv('lUser').toLowerCase(), pass=gv('lPass');
+  const e=g('loginErr'); e.style.display='none';
+  const acc = U.accounts.find(a=>a.username===user&&a.password===pass);
+  if (!acc) return showE(e,'Invalid username or password.');
+  me = acc;
+  g('loginScreen').classList.add('hidden');
+  g('app').classList.remove('hidden');
+  g('uPill').textContent = acc.name;
+  const rp=g('rPill');
+  rp.textContent = acc.role==='admin'?'★ Admin':'✏ Educator';
+  rp.className='role-pill '+(acc.role==='admin'?'role-admin':'role-edu');
+  g('t-admin').classList.toggle('hidden', acc.role!=='admin');
+  renderStrip(); filterL();
+}
+function doLogout() {
+  me=null; selId=null;
+  g('app').classList.add('hidden');
+  g('loginScreen').classList.remove('hidden');
+  g('lUser').value=''; g('lPass').value='';
+  g('loginErr').style.display='none';
+  g('tForm').classList.add('hidden');
+}
+function showE(el,msg){el.textContent=msg;el.style.display='block';}
+function togglePw(id,btn){
+  const i=g(id); i.type=i.type==='password'?'text':'password';
+  btn.textContent=i.type==='password'?'👁':'🙈';
+}
+
+// ══ TABS ═════════════════════════════════════════════════════
+function sw(name) {
+  ['log','learners','report','admin','pw'].forEach(t=>{
+    g('pg-'+t)&&g('pg-'+t).classList.toggle('hidden',t!==name);
+    g('t-'+t)&&g('t-'+t).classList.toggle('active',t===name);
+  });
+  if(name==='learners') renderAll();
+  if(name==='report')   renderReport();
+  if(name==='admin')  { renderEduList(); g('pStart').value=S.periodStart; g('pNum').value=S.periodNum; }
+  if(name==='pw')     { g('cpCur').value=''; g('cpNew').value=''; g('cpNew2').value=''; }
+}
+
+// ══ PERIOD ═══════════════════════════════════════════════════
+function renderStrip() {
+  const dl=dLeft();
+  g('periodStrip').innerHTML=`
+    <div><div class="lbl">Current Period</div>
+      <div class="val">Period ${S.periodNum} · ${S.periodStart}</div></div>
+    <div class="dl" style="color:${dl<=3?'var(--red)':'var(--accent)'}">⏱ ${dl}d left</div>`;
+}
+function savePeriod() {
+  const d=gv('pStart'),n=parseInt(gv('pNum'));
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){toast('Use YYYY-MM-DD format',1);return;}
+  S.periodStart=d; if(n>0) S.periodNum=n;
+  saveS(); renderStrip(); toast('Period settings saved!');
+}
+function newPeriod() {
+  if(!confirm(`Start Period ${S.periodNum+1}? Points will continue to accumulate.`)) return;
+  S.periodNum++; S.periodStart=td();
+  saveS(); renderStrip(); renderReport(); filterL(); toast(`Period ${S.periodNum} started — points carry over!`);
+}
+
+// ══ LOG TAB ══════════════════════════════════════════════════
+function filterL() {
+  const q=(g('srch').value||'').toLowerCase();
+  const gf=(g('gradeFilter')&&g('gradeFilter').value)||'';
+  const list=S.learners.filter(l=>{
+    const matchQ=!q||l.name.toLowerCase().includes(q)||l.grade.toLowerCase().includes(q);
+    const matchG=!gf||l.grade===gf;
+    return matchQ&&matchG;
+  });
+  const c=g('lList');
+  if(!list.length){c.innerHTML='<div class="empty">No learners found</div>';return;}
+  c.innerHTML=list.map(l=>{
+    const pts=pPts(l),cls=pts>=THRESH?'ph':pts>=6?'pm':'pl',df=pts>=THRESH?' det':'';
+    return `<div class="li${df}${selId===l.id?' sel':''}" onclick="selL(${l.id})">
+      <div><div class="ln">${l.name}${pts>=THRESH?' 🚨':''}</div><div class="lg">${l.grade}</div></div>
+      <div class="pill ${cls}">${pts}pts</div></div>`;
+  }).join('');
+}
+function selL(id) {
+  selId=id; const l=S.learners.find(x=>x.id===id);
+  filterL();
+  const f=g('tForm'); f.classList.remove('hidden');
+  g('tTitle').textContent=`Log — ${l.name}`;
+  const pts=pPts(l), banner=g('dBannerTop');
+  if(pts>=THRESH){
+    banner.classList.remove('hidden');
+    g('dBannerMsg').textContent=`${l.name} has ${pts} pts — DETENTION assigned.`;
+  } else banner.classList.add('hidden');
+  g('tType').value=''; g('tNote').value='';
+  document.querySelectorAll('.pb').forEach((b,i)=>{b.classList.toggle('on',i===0);});
+  selPt=2; f.scrollIntoView({behavior:'smooth'});
+}
+function selPts(btn,pts){
+  document.querySelectorAll('.pb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on'); selPt=pts;
+}
+function submitT() {
+  if(!selId) return;
+  const type=g('tType').value;
+  if(!type){toast('Select a transgression type',1);return;}
+  const note=g('tNote').value.trim();
+  const l=S.learners.find(x=>x.id===selId);
+  l.history.push({type,pts:selPt,note,date:new Date().toISOString(),educator:me.name});
+  const total=pPts(l); saveS(); filterL();
+  if(total>=THRESH) showDet(l,total); else toast(`+${selPt}pts — ${l.name} (Total: ${total})`);
+  selL(selId);
+}
+function showDet(l,pts) {
+  const b=g('dBannerTop'); b.classList.remove('hidden');
+  g('dBannerMsg').textContent=`⚠️ ${l.name} has reached ${pts} pts — DETENTION assigned!`;
+  b.style.animation='none'; setTimeout(()=>b.style.animation='',10);
+  toast(`🚨 DETENTION — ${l.name} (${pts}pts)`,0,1);
+}
+
+// ══ LEARNERS TAB ═════════════════════════════════════════════
+function addL() {
+  const name=gv('nName'), grade=g('nGrade').value;
+  if(!name||!grade){toast('Fill in name and grade',1);return;}
+  if(S.learners.find(l=>l.name.toLowerCase()===name.toLowerCase()&&l.grade===grade))
+    {toast('Learner already exists',1);return;}
+  S.learners.push({id:S.nextId++,name,grade,history:[]});
+  g('nName').value=''; g('nGrade').value='';
+  saveS(); renderAll(); filterL(); toast(`${name} added!`);
+}
+function delL(id) {
+  if(!confirm('Remove learner and all their records?')) return;
+  S.learners=S.learners.filter(l=>l.id!==id);
+  saveS(); renderAll(); filterL(); toast('Learner removed');
+}
+function renderAll() {
+  const q=(g('srchAll').value||'').toLowerCase();
+  const list=S.learners.filter(l=>l.name.toLowerCase().includes(q)||l.grade.toLowerCase().includes(q));
+  g('lCount').textContent=S.learners.length;
+  const c=g('allList');
+  if(!list.length){c.innerHTML='<div class="empty">No learners yet</div>';return;}
+  c.innerHTML=list.map(l=>{
+    const pts=pPts(l),cls=pts>=THRESH?'ph':pts>=6?'pm':'pl';
+    const rec=[...l.history].reverse().slice(0,2);
+    const hist=rec.map(e=>`<div class="he" style="margin-bottom:5px">
+      <div><div class="ht">${e.type}</div>${e.note?`<div class="hn">${e.note}</div>`:''}
+        <div class="heu">by ${e.educator}</div>
+        <div class="hd">${new Date(e.date).toLocaleString('en-ZA',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+      </div><div class="hp">+${e.pts}</div></div>`).join('');
+    return `<div style="margin-bottom:8px">
+      <div class="li" style="cursor:default">
+        <div><div class="ln">${l.name}</div><div class="lg">${l.grade}</div></div>
+        <div style="display:flex;align-items:center;gap:7px">
+          <div class="pill ${cls}">${pts}pts</div>
+          ${me&&me.role==='admin'?`<button class="btn-xs bxr" onclick="delL(${l.id})">✕</button>`:''}
+        </div></div>
+      ${hist?`<div style="padding:4px 3px 0">${hist}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ══ FILE UPLOAD ══════════════════════════════════════════════
+function onDrop(e){
+  e.preventDefault(); g('uZone').classList.remove('dov');
+  const f=e.dataTransfer.files[0]; if(f) processFile(f);
+}
+function onFileSel(inp){ if(inp.files[0]) processFile(inp.files[0]); }
+
+function processFile(file) {
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(ext==='csv'||ext==='tsv'){
+    const r=new FileReader();
+    r.onload=e=>parseCSV(e.target.result, ext==='tsv'?'\t':',');
+    r.readAsText(file);
+  } else if(ext==='xlsx'||ext==='xls') {
+    const r=new FileReader();
+    r.onload=e=>parseXLSX(e.target.result);
+    r.readAsArrayBuffer(file);
+  } else toast('Use CSV or Excel files',1);
+}
+
+function parseCSV(txt, sep=',') {
+  const lines=txt.trim().split(/\r?\n/).filter(Boolean);
+  if(!lines.length){toast('File is empty',1);return;}
+  // auto-detect separator if comma yields only 1 column
+  let s=sep;
+  if(sep===','&&lines[0].split(',').length<2&&lines[0].includes(';')) s=';';
+  const hdr=lines[0].split(s).map(h=>h.trim().toLowerCase().replace(/['"]/g,''));
+  const ni=hdr.findIndex(h=>h.includes('name')||h==='leerder'||h==='learner');
+  const gi=hdr.findIndex(h=>h.includes('grade')||h.includes('klas')||h.includes('class'));
+  if(ni<0||gi<0){toast('Need "Name" and "Grade" columns',1);return;}
+  const rows=[];
+  for(let i=1;i<lines.length;i++){
+    const cols=lines[i].split(s).map(c=>c.trim().replace(/^["']|["']$/g,''));
+    const name=cols[ni],grade=cols[gi];
+    if(name&&grade) rows.push({name,grade});
+  }
+  showPreview(rows);
+}
+
+function parseXLSX(buf) {
+  // Pure JS XLSX reader (no external lib) — reads Office Open XML ZIP
+  try {
+    const bytes=new Uint8Array(buf);
+    if(bytes[0]!==0x50||bytes[1]!==0x4B){toast('Invalid Excel file',1);return;}
+    // Decompress ZIP entries to find xl/worksheets/sheet1.xml and xl/sharedStrings.xml
+    const entries=readZipEntries(bytes);
+    const ssEntry=entries.find(e=>e.name.includes('sharedStrings'));
+    const shEntry=entries.find(e=>e.name.match(/worksheets\/sheet1\.xml/));
+    if(!shEntry){toast('Cannot read Excel. Please save as CSV.',1);return;}
+    const shXml=inflate(shEntry.data);
+    const ssXml=ssEntry?inflate(ssEntry.data):'';
+    const ss=parseSharedStrings(ssXml);
+    const rows=parseSheet(shXml,ss);
+    if(rows.length<2){toast('No data found in Excel sheet',1);return;}
+    // Find name/grade columns
+    const hdr=rows[0].map(h=>(h||'').toLowerCase().trim());
+    const ni=hdr.findIndex(h=>h.includes('name')||h==='leerder');
+    const gi=hdr.findIndex(h=>h.includes('grade')||h.includes('klas')||h.includes('class'));
+    if(ni<0||gi<0){toast('Need "Name" and "Grade" columns in Excel',1);return;}
+    const data=rows.slice(1).map(r=>({name:(r[ni]||'').trim(),grade:(r[gi]||'').trim()})).filter(r=>r.name&&r.grade);
+    showPreview(data);
+  } catch(err) {
+    toast('Could not read Excel. Please save as CSV and try again.',1);
+  }
+}
+
+// Minimal ZIP reader
+function readZipEntries(bytes) {
+  const entries=[];
+  let i=0;
+  while(i<bytes.length-4){
+    if(bytes[i]===0x50&&bytes[i+1]===0x4B&&bytes[i+2]===0x03&&bytes[i+3]===0x04){
+      const comp=bytes[i+8]|(bytes[i+9]<<8);
+      const compSize=(bytes[i+18])|(bytes[i+19]<<8)|(bytes[i+20]<<16)|(bytes[i+21]<<24);
+      const uncompSize=(bytes[i+22])|(bytes[i+23]<<8)|(bytes[i+24]<<16)|(bytes[i+25]<<24);
+      const fnLen=bytes[i+26]|(bytes[i+27]<<8);
+      const extraLen=bytes[i+28]|(bytes[i+29]<<8);
+      const name=new TextDecoder().decode(bytes.slice(i+30,i+30+fnLen));
+      const dataStart=i+30+fnLen+extraLen;
+      const data=bytes.slice(dataStart,dataStart+compSize);
+      entries.push({name,comp,data,uncompSize});
+      i=dataStart+compSize;
+    } else i++;
+  }
+  return entries;
+}
+
+// Inflate (decompress) — uses DecompressionStream if available, else treat as stored
+function inflate(data) {
+  try {
+    // DecompressionStream is available in modern browsers
+    // For DEFLATE (comp=8), strip 2-byte zlib header
+    const raw=data.slice(2);
+    const ds=new DecompressionStream('deflate-raw');
+    const writer=ds.writable.getWriter();
+    writer.write(raw); writer.close();
+    // Synchronous-ish: build from stream (async, so we use XMLHttpRequest trick)
+    // Since we can't await here easily, fall back to sync approach:
+    // Instead use a different method
+    throw 'use sync';
+  } catch(e) {
+    // Stored (comp=0) or fallback: try as UTF-8 text directly
+    try { return new TextDecoder('utf-8',{fatal:false}).decode(data); } catch(e2) { return ''; }
+  }
+}
+
+function parseSharedStrings(xml) {
+  const matches=[...xml.matchAll(/<t(?:\s[^>]*)?>([^<]*)<\/t>/g)];
+  return matches.map(m=>m[1].replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"'));
+}
+
+function parseSheet(xml, ss) {
+  const rows=[];
+  const rowMatches=[...xml.matchAll(/<row[^>]*>([\s\S]*?)<\/row>/g)];
+  for(const rm of rowMatches){
+    const rowXml=rm[1], cells=[];
+    const cellMatches=[...rowXml.matchAll(/<c r="([A-Z]+)\d+"[^>]*(?:t="([^"]*)")?[^>]*>[\s\S]*?<v>([^<]*)<\/v>[\s\S]*?<\/c>/g)];
+    if(!cellMatches.length) continue;
+    // find max col index
+    let maxCol=0;
+    for(const cm of cellMatches){
+      const col=colIdx(cm[1]); if(col>maxCol) maxCol=col;
+    }
+    const row=Array(maxCol+1).fill('');
+    for(const cm of cellMatches){
+      const col=colIdx(cm[1]),type=cm[2],val=cm[3];
+      row[col]=type==='s'?(ss[parseInt(val)]||''):val;
+    }
+    rows.push(row);
+  }
+  return rows;
+}
+function colIdx(ref){let n=0;for(const c of ref)n=n*26+(c.charCodeAt(0)-64);return n-1;}
+
+// Async inflate using DecompressionStream properly
+async function inflateAsync(data) {
+  const raw=data.slice(2);
+  const ds=new DecompressionStream('deflate-raw');
+  const writer=ds.writable.getWriter();
+  writer.write(raw); writer.close();
+  const reader=ds.readable.getReader();
+  const chunks=[];
+  while(true){const{done,value}=await reader.read();if(done)break;chunks.push(value);}
+  const total=chunks.reduce((s,c)=>s+c.length,0);
+  const out=new Uint8Array(total); let off=0;
+  for(const c of chunks){out.set(c,off);off+=c.length;}
+  return new TextDecoder('utf-8',{fatal:false}).decode(out);
+}
+
+async function parseXLSXAsync(buf) {
+  try {
+    const bytes=new Uint8Array(buf);
+    if(bytes[0]!==0x50||bytes[1]!==0x4B){toast('Invalid Excel file',1);return;}
+    const entries=readZipEntries(bytes);
+    const ssEntry=entries.find(e=>e.name.includes('sharedStrings'));
+    const shEntry=entries.find(e=>e.name.match(/worksheets\/sheet1\.xml/));
+    if(!shEntry){toast('Cannot read this Excel file. Please save as CSV.',1);return;}
+    let shXml='',ssXml='';
+    if(shEntry.comp===8) shXml=await inflateAsync(shEntry.data);
+    else shXml=new TextDecoder().decode(shEntry.data);
+    if(ssEntry){
+      if(ssEntry.comp===8) ssXml=await inflateAsync(ssEntry.data);
+      else ssXml=new TextDecoder().decode(ssEntry.data);
+    }
+    const ss=parseSharedStrings(ssXml);
+    const rows=parseSheet(shXml,ss);
+    if(rows.length<2){toast('No data found in Excel sheet',1);return;}
+    const hdr=rows[0].map(h=>(h||'').toLowerCase().trim());
+    const ni=hdr.findIndex(h=>h.includes('name')||h==='leerder');
+    const gi=hdr.findIndex(h=>h.includes('grade')||h.includes('klas')||h.includes('class'));
+    if(ni<0||gi<0){toast('Need "Name" and "Grade" columns in Excel',1);return;}
+    const data=rows.slice(1).map(r=>({name:(r[ni]||'').trim(),grade:(r[gi]||'').trim()})).filter(r=>r.name&&r.grade);
+    showPreview(data);
+  } catch(err){
+    console.error(err);
+    toast('Could not parse Excel. Please save as CSV and try again.',1);
+  }
+}
+
+// Override processFile to use async for xlsx
+function processFile(file) {
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(ext==='csv'||ext==='tsv'){
+    const r=new FileReader();
+    r.onload=e=>parseCSV(e.target.result, ext==='tsv'?'\t':',');
+    r.readAsText(file);
+  } else if(ext==='xlsx'||ext==='xls'){
+    const r=new FileReader();
+    r.onload=e=>parseXLSXAsync(e.target.result);
+    r.readAsArrayBuffer(file);
+  } else toast('Use CSV or Excel files',1);
+}
+
+function showPreview(rows) {
+  pending=rows;
+  const ex=new Set(S.learners.map(l=>l.name.toLowerCase()+'|'+l.grade.toLowerCase()));
+  const nw=rows.filter(r=>!ex.has(r.name.toLowerCase()+'|'+r.grade.toLowerCase()));
+  const dup=rows.length-nw.length;
+  const pv=g('uPreview');
+  pv.innerHTML=`<div class="up-preview">
+    <div style="font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:7px">
+      ${rows.length} found · ${nw.length} new · ${dup} duplicate${dup!==1?'s':''}
+    </div>
+    ${nw.slice(0,10).map(r=>`<div class="pr">
+      <span>${r.name}</span><span style="color:var(--muted)">${r.grade}</span>
+      <span style="color:var(--green);font-size:.7rem;font-weight:700">NEW</span>
+    </div>`).join('')}
+    ${nw.length>10?`<div style="text-align:center;font-size:.73rem;color:var(--muted);padding:5px">…and ${nw.length-10} more</div>`:''}
+    ${dup?`<div style="font-size:.7rem;color:var(--muted);margin-top:5px">${dup} duplicate(s) will be skipped.</div>`:''}
+  </div>`;
+  pv.classList.remove('hidden');
+  const btn=g('importBtn'); btn.classList.remove('hidden');
+  btn.textContent=nw.length?`✅ Import ${nw.length} Learner(s)`:'No new learners to import';
+  btn.disabled=!nw.length;
+}
+function doImport(){
+  const ex=new Set(S.learners.map(l=>l.name.toLowerCase()+'|'+l.grade.toLowerCase()));
+  let added=0;
+  pending.forEach(r=>{
+    const k=r.name.toLowerCase()+'|'+r.grade.toLowerCase();
+    if(!ex.has(k)){S.learners.push({id:S.nextId++,name:r.name,grade:r.grade,history:[]});ex.add(k);added++;}
+  });
+  saveS(); g('uPreview').classList.add('hidden'); g('importBtn').classList.add('hidden');
+  pending=[]; renderAll(); filterL(); toast(`✅ ${added} learner(s) imported!`);
+}
+
+// ══ REPORT ════════════════════════════════════════════════════
+function renderReport(){
+  const all=S.learners.map(l=>({...l,pts:pPts(l)}));
+  const det=all.filter(l=>l.pts>=THRESH);
+  g('statsGrid').innerHTML=`
+    <div class="sb"><div class="sn blu">${S.learners.length}</div><div class="sl">Learners</div></div>
+    <div class="sb"><div class="sn red">${det.length}</div><div class="sl">In Detention</div></div>
+    <div class="sb"><div class="sn yel">${all.reduce((s,l)=>s+l.pts,0)}</div><div class="sl">Total Points</div></div>
+    <div class="sb"><div class="sn grn">${dLeft()}</div><div class="sl">Days Left</div></div>`;
+  g('detList').innerHTML=det.length
+    ? det.map(l=>`<div class="det-banner" style="margin-bottom:8px;padding:11px 14px">
+        <div class="di">🚨</div>
+        <div><h3>${l.name}</h3><p>${l.grade} — <strong>${l.pts} points</strong></p></div>
+      </div>`).join('')
+    : '<div class="empty">No learners in detention this period 🎉</div>';
+  g('repList').innerHTML=[...all].sort((a,b)=>b.pts-a.pts).map(l=>{
+    const cls=l.pts>=THRESH?'ph':l.pts>=6?'pm':'pl';
+    return `<div class="li" style="cursor:default;margin-bottom:7px">
+      <div><div class="ln">${l.name}</div><div class="lg">${l.grade}</div></div>
+      <div class="pill ${cls}">${l.pts}pts</div></div>`;
+  }).join('')||'<div class="empty">No learners yet</div>';
+}
+
+// ══ ADMIN ═════════════════════════════════════════════════════
+function addEdu(){
+  const name=gv('eName'),user=gv('eUser').toLowerCase(),pass=gv('ePass'),role=g('eRole').value;
+  if(!name||!user||!pass){toast('Fill in all fields',1);return;}
+  if(pass.length<6){toast('Password must be at least 6 characters',1);return;}
+  if(U.accounts.find(a=>a.username===user)){toast('Username already taken',1);return;}
+  U.accounts.push({id:U.nextId++,name,username:user,password:pass,role});
+  saveU(); g('eName').value=''; g('eUser').value=''; g('ePass').value='';
+  renderEduList(); toast(`${name} added as ${role}`);
+}
+function delEdu(id){
+  if(id===me.id){toast("Can't remove your own account",1);return;}
+  if(!confirm('Remove this educator account?')) return;
+  U.accounts=U.accounts.filter(a=>a.id!==id);
+  saveU(); renderEduList(); toast('Account removed');
+}
+function renderEduList(){
+  const c=g('eduList');
+  if(!U||!U.accounts.length){c.innerHTML='<div class="empty">No accounts</div>';return;}
+  c.innerHTML=U.accounts.map(a=>`<div class="eu">
+    <div><div class="eu-name">${a.name}</div><div class="eu-meta">@${a.username}</div></div>
+    <div style="display:flex;align-items:center;gap:7px">
+      <div class="role-pill ${a.role==='admin'?'role-admin':'role-edu'}">${a.role==='admin'?'★ Admin':'✏ Educator'}</div>
+      ${a.id!==me.id?`<button class="btn-xs bxr" onclick="delEdu(${a.id})">✕</button>`:'<span style="font-size:.69rem;color:var(--muted)">(you)</span>'}
+    </div></div>`).join('');
+}
+function changeMyPw() {
+  const cur=g('cpCur').value, nw=g('cpNew').value, nw2=g('cpNew2').value;
+  if(!cur||!nw||!nw2){toast('Fill in all fields',1);return;}
+  if(cur!==me.password){toast('Current password is incorrect',1);return;}
+  if(nw.length<6){toast('New password must be at least 6 characters',1);return;}
+  if(nw!==nw2){toast('New passwords do not match',1);return;}
+  const acc=U.accounts.find(a=>a.id===me.id);
+  acc.password=nw; me.password=nw;
+  saveU(); toast('✅ Password updated successfully!');
+  g('cpCur').value=''; g('cpNew').value=''; g('cpNew2').value='';
+}
+
+function clearAll(){
+  if(!confirm('CLEAR ALL LEARNER DATA? Cannot be undone.')) return;
+  if(!confirm('Last warning — all records will be deleted permanently.')) return;
+  S.learners=[]; S.nextId=1; saveS(); renderAll(); filterL(); toast('All data cleared');
+}
+
+// ══ TOAST ════════════════════════════════════════════════════
+function toast(msg,err=0,warn=0){
+  const t=g('toast'); t.textContent=msg;
+  t.className='toast'+(err?' err':warn?' warn':'');
+  clearTimeout(t._t); setTimeout(()=>t.classList.add('show'),10);
+  t._t=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ══ GOOGLE DRIVE SAVE ════════════════════════════════════════
+async function saveToDrive() {
+  const btn = g('driveBtn');
+  btn.textContent = '⏳';
+  btn.disabled = true;
+
+  try {
+    // Build a self-contained snapshot of the current HTML page
+    const html = document.documentElement.outerHTML;
+    const blob = new Blob([html], { type: 'text/html' });
+    const fileName = 'Curro_Secunda_Discipline_' + new Date().toISOString().slice(0,10) + '.html';
+
+    // Use Google Picker / Drive API via OAuth implicit flow
+    // Step 1: get OAuth token via popup
+    const CLIENT_ID = '';  // No client ID needed for the picker-less approach below
+    // We use the simpler approach: create a hidden <a> download, then guide user to upload
+    // For a real Drive integration, an OAuth client ID is required.
+    // We'll use the Google Drive File Picker upload approach via a data URL passed to a new tab.
+
+    // Generate a download and open Google Drive upload page simultaneously
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+    // Open Google Drive in a new tab for the user to upload
+    setTimeout(() => {
+      window.open('https://drive.google.com/drive/my-drive', '_blank');
+    }, 800);
+
+    toast('📥 File downloaded — now uploading to Google Drive tab…', 0, 1);
+  } catch (err) {
+    toast('Could not save to Drive: ' + err.message, 1);
+  } finally {
+    btn.textContent = '☁️';
+    btn.disabled = false;
+  }
+}
+
+// ══ GO ═══════════════════════════════════════════════════════
+boot();
+</script>
+</body>
+</html>
