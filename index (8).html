@@ -106,8 +106,8 @@
   .btn-danger{background:var(--red);border:none;border-radius:8px;color:#fff;
     font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;
     padding:6px 11px;cursor:pointer;}
-  .btn-xs{padding:5px 10px;font-size:.76rem;border-radius:7px;border:none;
-    cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;}
+  .btn-xs{padding:7px 13px;font-size:.8rem;border-radius:8px;border:none;
+    cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;min-height:36px;}
   .bxb{background:var(--blue-soft);color:var(--blue);border:1px solid var(--blue);}
   .bxr{background:var(--red-soft);color:var(--red);border:1px solid var(--red);}
 
@@ -877,15 +877,15 @@ function renderAll() {
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         <div class="hp">+${e.pts}</div>
-        ${me&&me.role==='admin'?`<button class="btn-xs bxr" onclick="removePoint(${l.id},'${e.date}')">✕</button>`:''}
+        ${me&&me.role==='admin'?`<button class="btn-xs bxr" onclick="removePoint(${l.id},'${e.date}')" style="padding:7px 11px;font-size:.82rem;border-radius:8px">✕ Remove</button>`:''}
       </div></div>`).join('');
     return `<div style="margin-bottom:8px">
       <div class="li" style="cursor:default">
         <div><div class="ln">${l.name}</div><div class="lg">${l.grade}</div></div>
         <div style="display:flex;align-items:center;gap:7px">
           <div class="pill ${cls}">${pts}pts</div>
-          <button class="btn-xs bxb" onclick="viewLearnerReport(${l.id})">📋</button>
-          ${me&&me.role==='admin'?`<button class="btn-xs bxr" onclick="delL(${l.id})">✕</button>`:''}
+          <button class="btn-xs bxb" onclick="viewLearnerReport(${l.id})" style="padding:7px 12px;font-size:.82rem;border-radius:8px">📋 Report</button>
+          ${me&&me.role==='admin'?`<button class="btn-xs bxr" onclick="delL(${l.id})" style="padding:7px 11px;font-size:.82rem;border-radius:8px">✕</button>`:''}
         </div></div>
       ${hist?`<div style="padding:4px 3px 0">${hist}</div>`:''}
     </div>`;
