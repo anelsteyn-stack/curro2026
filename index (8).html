@@ -302,7 +302,9 @@
       <div class="card-title" id="tTitle">Log Transgression</div>
       <div id="dBannerTop" class="det-banner hidden" style="margin-bottom:11px">
         <div class="di">🚨</div>
-        <div><h3>DETENTION ASSIGNED</h3><p id="dBannerMsg"></p></div>
+        <div style="flex:1"><h3>DETENTION ASSIGNED</h3><p id="dBannerMsg"></p>
+          <button id="dBannerAck" style="display:none;margin-top:8px;background:#fff2;border:1px solid #fff6;color:#fff;border-radius:8px;padding:6px 14px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;">✅ Mark Detention Done</button>
+        </div>
       </div>
       <div class="fg"><label>Transgression Type</label>
         <select id="tType" onchange="autoSetPts(this.value)">
@@ -558,6 +560,10 @@ const gv = id => g(id).value.trim();
 function pPts(l) {
   return (l.history||[]).reduce((a,x)=>a+x.pts,0);
 }
+// How many detentions have been earned (1 per 10 pts)
+function detLevel(l) { return Math.floor(pPts(l)/THRESH); }
+// True if there's an unacknowledged detention (bubble stays red)
+function detPending(l) { return detLevel(l) > (l.detention_acknowledged||0); }
 function dLeft() {
   const s=new Date(PERIOD.periodStart), e=new Date(s);
   e.setDate(e.getDate()+PDAYS);
@@ -696,7 +702,11 @@ async function doLogin() {
 
 async function loadLearners() {
   const rows = await sb('learners?order=grade,name');
-  LEARNERS = rows.map(r=>({...r, history: typeof r.history==='string' ? JSON.parse(r.history) : (r.history||[])}));
+  LEARNERS = rows.map(r=>({
+    ...r,
+    history: typeof r.history==='string' ? JSON.parse(r.history) : (r.history||[]),
+    detention_ack_log: typeof r.detention_ack_log==='string' ? JSON.parse(r.detention_ack_log) : (r.detention_ack_log||[])
+  }));
 }
 
 function doLogout() {
@@ -778,9 +788,10 @@ function filterL() {
   const c=g('lList');
   if(!list.length){c.innerHTML='<div class="empty">No learners found</div>';return;}
   c.innerHTML=list.map(l=>{
-    const pts=pPts(l),cls=pts>=THRESH?'ph':pts>=6?'pm':'pl',df=pts>=THRESH?' det':'';
+    const pts=pPts(l),pending=detPending(l);
+    const cls=pending?'ph':pts>=6?'pm':'pl',df=pending?' det':'';
     return `<div class="li${df}${selId===l.id?' sel':''}" onclick="selL(${l.id})">
-      <div><div class="ln">${l.name}${pts>=THRESH?' 🚨':''}</div><div class="lg">${l.grade}</div></div>
+      <div><div class="ln">${l.name}${pending?' 🚨':''}</div><div class="lg">${l.grade}</div></div>
       <div class="pill ${cls}">${pts}pts</div></div>`;
   }).join('');
 }
@@ -792,9 +803,13 @@ function selL(id) {
   const f=g('tForm'); f.classList.remove('hidden');
   g('tTitle').textContent=`Log — ${l.name}`;
   const pts=pPts(l), banner=g('dBannerTop');
-  if(pts>=THRESH){
+  if(detPending(l)){
     banner.classList.remove('hidden');
-    g('dBannerMsg').textContent=`${l.name} has ${pts} pts — DETENTION assigned.`;
+    const ackd=l.detention_acknowledged||0, lvl=detLevel(l);
+    g('dBannerMsg').textContent=`${l.name} has ${pts} pts — Detention #${lvl} assigned (${ackd} acknowledged).`;
+    // Show acknowledge button for admins
+    g('dBannerAck').style.display = me&&me.role==='admin' ? 'inline-block' : 'none';
+    g('dBannerAck').onclick = ()=>acknowledgeDetention(l.id);
   } else banner.classList.add('hidden');
   g('tType').value=''; g('tNote').value='';
   document.querySelectorAll('.pb').forEach((b,i)=>{b.classList.toggle('on',i===0);});
@@ -821,7 +836,7 @@ async function submitT() {
     l.history=newHistory;
     const total=pPts(l);
     filterL();
-    if(total>=THRESH) showDet(l,total);
+    if(detPending(l)) showDet(l,total);
     else toast(`+${selPt}pts — ${l.name} (Total: ${total})`);
     selL(selId);
   } catch(err) {
@@ -833,9 +848,41 @@ async function submitT() {
 
 function showDet(l,pts) {
   const b=g('dBannerTop'); b.classList.remove('hidden');
-  g('dBannerMsg').textContent=`⚠️ ${l.name} has reached ${pts} pts — DETENTION assigned!`;
+  g('dBannerMsg').textContent=`⚠️ ${l.name} has reached ${pts} pts — Detention #${detLevel(l)} assigned!`;
+  g('dBannerAck').style.display = me&&me.role==='admin' ? 'inline-block' : 'none';
+  g('dBannerAck').onclick = ()=>acknowledgeDetention(l.id);
   b.style.animation='none'; setTimeout(()=>b.style.animation='',10);
   toast(`🚨 DETENTION — ${l.name} (${pts}pts)`,0,1);
+}
+
+async function acknowledgeDetention(learnerId) {
+  const l=LEARNERS.find(x=>x.id===learnerId);
+  if(!l) return;
+  const newAck = detLevel(l);
+  const log = [...(l.detention_ack_log||[]), {level:newAck, date:new Date().toISOString(), admin:me.name}];
+  try {
+    await sb(`learners?id=eq.${learnerId}`, 'PATCH', {detention_acknowledged: newAck, detention_ack_log: JSON.stringify(log)});
+    l.detention_acknowledged = newAck;
+    l.detention_ack_log = log;
+    filterL(); renderAll();
+    selL(learnerId);
+    toast(`✅ Detention #${newAck} marked as done for ${l.name}`);
+  } catch(err) { toast('Error: '+err.message,1); }
+}
+
+async function acknowledgeDetentionFromReport(learnerId) {
+  const l=LEARNERS.find(x=>x.id===learnerId);
+  if(!l) return;
+  const newAck = detLevel(l);
+  const log = [...(l.detention_ack_log||[]), {level:newAck, date:new Date().toISOString(), admin:me.name}];
+  try {
+    await sb(`learners?id=eq.${learnerId}`, 'PATCH', {detention_acknowledged: newAck, detention_ack_log: JSON.stringify(log)});
+    l.detention_acknowledged = newAck;
+    l.detention_ack_log = log;
+    filterL(); renderAll();
+    viewLearnerReport(learnerId);
+    toast(`✅ Detention #${newAck} marked as done for ${l.name}`);
+  } catch(err) { toast('Error: '+err.message,1); }
 }
 
 // ══ LEARNERS TAB ═════════════════════════════════════════════
@@ -868,7 +915,7 @@ function renderAll() {
   const c=g('allList');
   if(!list.length){c.innerHTML='<div class="empty">No learners yet</div>';return;}
   c.innerHTML=list.map(l=>{
-    const pts=pPts(l),cls=pts>=THRESH?'ph':pts>=6?'pm':'pl';
+    const pts=pPts(l),pending=detPending(l),cls=pending?'ph':pts>=6?'pm':'pl';
     const rec=[...l.history].reverse().slice(0,2);
     const hist=rec.map((e,ei)=>`<div class="he" style="margin-bottom:5px">
       <div style="flex:1"><div class="ht">${e.type}</div>${e.note?`<div class="hn">${e.note}</div>`:''}
@@ -894,7 +941,7 @@ function renderAll() {
 
 // ══ REPORT ════════════════════════════════════════════════════
 function renderReport(){
-  const det=LEARNERS.filter(l=>pPts(l)>=THRESH);
+  const det=LEARNERS.filter(l=>detPending(l));
   g('statsGrid').innerHTML=`
     <div class="sb"><div class="sn blu">${LEARNERS.length}</div><div class="sl">Learners</div></div>
     <div class="sb"><div class="sn red">${det.length}</div><div class="sl">In Detention</div></div>
@@ -971,8 +1018,8 @@ async function clearAll(){
   if(!confirm('CLEAR ALL LEARNER POINTS? Cannot be undone.')) return;
   if(!confirm('Last warning — all points will be deleted permanently.')) return;
   try {
-    // Reset all learner histories
-    await sb('learners','PATCH',{history:JSON.stringify([])});
+    // Reset all learner histories and detention acknowledgements
+    await sb('learners','PATCH',{history:JSON.stringify([]),detention_acknowledged:0,detention_ack_log:JSON.stringify([])});
     await loadLearners();
     renderAll(); filterL(); toast('All points cleared');
   } catch(err){toast('Error: '+err.message,1);}
@@ -995,7 +1042,9 @@ function viewLearnerReport(id) {
   const l = LEARNERS.find(x => x.id === id);
   if (!l) return;
   const pts = pPts(l);
-  const det = pts >= THRESH;
+  const lvl = detLevel(l);
+  const ackd = l.detention_acknowledged||0;
+  const pending = detPending(l);
   const history = [...(l.history||[])].reverse();
   const today = new Date().toLocaleDateString('en-ZA', {day:'numeric',month:'long',year:'numeric'});
 
@@ -1014,13 +1063,13 @@ function viewLearnerReport(id) {
     <div style="background:var(--navy);border-radius:12px;padding:14px;margin-bottom:12px;">
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:2px">${l.name}</div>
       <div style="font-size:.78rem;color:var(--muted)">${l.grade} · Report generated ${today}</div>
-      <div style="margin-top:10px;display:flex;gap:10px;align-items:center">
-        <div style="background:${det?'var(--red-soft)':'var(--green-soft)'};border:1px solid ${det?'var(--red)':'var(--green)'};border-radius:10px;padding:8px 14px;text-align:center">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:${det?'var(--red)':'var(--green)'}">${pts}</div>
+      <div style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <div style="background:${pending?'var(--red-soft)':'var(--green-soft)'};border:1px solid ${pending?'var(--red)':'var(--green)'};border-radius:10px;padding:8px 14px;text-align:center">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:${pending?'var(--red)':'var(--green)'}">${pts}</div>
           <div style="font-size:.69rem;color:var(--muted)">Total Points</div>
         </div>
-        <div style="background:${det?'var(--red-soft)':'var(--green-soft)'};border:1px solid ${det?'var(--red)':'var(--green)'};border-radius:10px;padding:8px 14px;text-align:center">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:${det?'var(--red)':'var(--green)'}">${det?'YES':'NO'}</div>
+        <div style="background:${pending?'var(--red-soft)':'var(--green-soft)'};border:1px solid ${pending?'var(--red)':'var(--green)'};border-radius:10px;padding:8px 14px;text-align:center">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:${pending?'var(--red)':'var(--green)'}">${lvl > 0 ? '#'+lvl : 'NO'}</div>
           <div style="font-size:.69rem;color:var(--muted)">Detention</div>
         </div>
         <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;text-align:center">
@@ -1029,7 +1078,10 @@ function viewLearnerReport(id) {
         </div>
       </div>
     </div>
-    ${det?`<div style="background:linear-gradient(135deg,#8b0000,#c0392b);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:.82rem;font-weight:700">🚨 This learner has been assigned DETENTION (${pts} points accumulated)</div>`:''}
+    ${pending?`<div style="background:linear-gradient(135deg,#8b0000,#c0392b);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+      <span>🚨 Detention #${lvl} pending (${pts} pts · ${ackd} acknowledged)</span>
+      ${me&&me.role==='admin'?`<button onclick="acknowledgeDetentionFromReport(${l.id})" style="background:#fff2;border:1px solid #fff6;color:#fff;border-radius:8px;padding:6px 14px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap">✅ Mark Done</button>`:''}
+    </div>`:''}
     <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border)">
       <table style="width:100%;border-collapse:collapse;">
         <thead>
@@ -1046,6 +1098,21 @@ function viewLearnerReport(id) {
       </table>
     </div>
     <div style="margin-top:10px;font-size:.72rem;color:var(--muted);text-align:center">Curro Secunda Discipline System · Period ${PERIOD.periodNum}</div>
+    ${(l.detention_ack_log&&l.detention_ack_log.length)?`
+    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px">📋 Detention Acknowledgement Log</div>
+      ${l.detention_ack_log.map(e=>`
+        <div style="background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:7px 11px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div>
+            <div style="font-weight:700;font-size:.82rem;color:var(--green)">✅ Detention #${e.level} acknowledged</div>
+            <div style="font-size:.7rem;color:var(--muted);margin-top:2px">by ${e.admin}</div>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);text-align:right;white-space:nowrap">
+            ${new Date(e.date).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})}<br>
+            ${new Date(e.date).toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})}
+          </div>
+        </div>`).join('')}
+    </div>`:''}
   `;
   g('reportModal').classList.remove('hidden');
   g('reportModal').style.display = 'flex';
