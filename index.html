@@ -416,7 +416,10 @@
   <main id="pg-report" class="hidden">
     <div class="sg" id="statsGrid"></div>
     <div class="card">
-      <div class="card-title" style="color:var(--red)">🚨 Detention — Current Period</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:2px">
+        <div class="card-title" style="color:var(--red);margin-bottom:0">🚨 Detention — Current Period</div>
+        <button class="btn-xs bxb" onclick="viewDetentionReport()" style="padding:7px 12px;font-size:.82rem;border-radius:8px;white-space:nowrap">🖨️ Print Detention List</button>
+      </div>
       <div id="detList"></div>
     </div>
     <div class="card">
@@ -492,7 +495,7 @@
 <div id="reportModal" class="hidden" style="position:fixed;inset:0;background:#000a;z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;">
   <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:420px;padding:20px;margin-top:10px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;">📋 Learner Report</div>
+      <div id="reportModalTitle" style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;">📋 Learner Report</div>
       <button onclick="closeReport()" style="background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;">✕</button>
     </div>
     <div id="reportContent"></div>
@@ -855,33 +858,48 @@ function showDet(l,pts) {
   toast(`🚨 DETENTION — ${l.name} (${pts}pts)`,0,1);
 }
 
+// Building the reset log entry + history marker used whenever a detention is
+// acknowledged. Points go back to 0 by appending a balancing negative entry
+// to history (so the full record of what happened is preserved, but the
+// running total resets), and detention_acknowledged resets to 0 since the
+// point pool it was tracking has just been cleared.
+function buildDetentionReset(l) {
+  const lvl = detLevel(l);
+  const currentPts = pPts(l);
+  const now = new Date().toISOString();
+  const log = [...(l.detention_ack_log||[]), {level:lvl, points:currentPts, date:now, admin:me.name}];
+  const resetEntry = {type:'DETENTION_RESET', pts:-currentPts, note:`Detention #${lvl} acknowledged — ${currentPts} pts cleared`, date:now, educator:me.name};
+  const newHistory = [...(l.history||[]), resetEntry];
+  return {lvl, currentPts, log, newHistory};
+}
+
 async function acknowledgeDetention(learnerId) {
   const l=LEARNERS.find(x=>x.id===learnerId);
   if(!l) return;
-  const newAck = detLevel(l);
-  const log = [...(l.detention_ack_log||[]), {level:newAck, date:new Date().toISOString(), admin:me.name}];
+  const {lvl, log, newHistory} = buildDetentionReset(l);
   try {
-    await sb(`learners?id=eq.${learnerId}`, 'PATCH', {detention_acknowledged: newAck, detention_ack_log: JSON.stringify(log)});
-    l.detention_acknowledged = newAck;
+    await sb(`learners?id=eq.${learnerId}`, 'PATCH', {history: JSON.stringify(newHistory), detention_acknowledged: 0, detention_ack_log: JSON.stringify(log)});
+    l.history = newHistory;
+    l.detention_acknowledged = 0;
     l.detention_ack_log = log;
     filterL(); renderAll();
     selL(learnerId);
-    toast(`✅ Detention #${newAck} marked as done for ${l.name}`);
+    toast(`✅ Detention #${lvl} marked as done for ${l.name} — points reset to 0`);
   } catch(err) { toast('Error: '+err.message,1); }
 }
 
 async function acknowledgeDetentionFromReport(learnerId) {
   const l=LEARNERS.find(x=>x.id===learnerId);
   if(!l) return;
-  const newAck = detLevel(l);
-  const log = [...(l.detention_ack_log||[]), {level:newAck, date:new Date().toISOString(), admin:me.name}];
+  const {lvl, log, newHistory} = buildDetentionReset(l);
   try {
-    await sb(`learners?id=eq.${learnerId}`, 'PATCH', {detention_acknowledged: newAck, detention_ack_log: JSON.stringify(log)});
-    l.detention_acknowledged = newAck;
+    await sb(`learners?id=eq.${learnerId}`, 'PATCH', {history: JSON.stringify(newHistory), detention_acknowledged: 0, detention_ack_log: JSON.stringify(log)});
+    l.history = newHistory;
+    l.detention_acknowledged = 0;
     l.detention_ack_log = log;
     filterL(); renderAll();
     viewLearnerReport(learnerId);
-    toast(`✅ Detention #${newAck} marked as done for ${l.name}`);
+    toast(`✅ Detention #${lvl} marked as done for ${l.name} — points reset to 0`);
   } catch(err) { toast('Error: '+err.message,1); }
 }
 
@@ -917,15 +935,17 @@ function renderAll() {
   c.innerHTML=list.map(l=>{
     const pts=pPts(l),pending=detPending(l),cls=pending?'ph':pts>=6?'pm':'pl';
     const rec=[...l.history].reverse().slice(0,2);
-    const hist=rec.map((e,ei)=>`<div class="he" style="margin-bottom:5px">
-      <div style="flex:1"><div class="ht">${e.type}</div>${e.note?`<div class="hn">${e.note}</div>`:''}
+    const hist=rec.map((e,ei)=>{
+      const isReset = e.type==='DETENTION_RESET';
+      return `<div class="he" style="margin-bottom:5px">
+      <div style="flex:1"><div class="ht" style="${isReset?'color:var(--green)':''}">${isReset?'✅ Detention completed':e.type}</div>${e.note?`<div class="hn">${e.note}</div>`:''}
         <div class="heu">by ${e.educator}</div>
         <div class="hd">${new Date(e.date).toLocaleString('en-ZA',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-        <div class="hp">+${e.pts}</div>
+        <div class="hp" style="${isReset?'color:var(--green)':''}">${isReset?e.pts:'+'+e.pts}</div>
         ${me&&me.role==='admin'?`<button class="btn-xs bxr" onclick="removePoint(${l.id},'${e.date}')" style="padding:7px 11px;font-size:.82rem;border-radius:8px">✕ Remove</button>`:''}
-      </div></div>`).join('');
+      </div></div>`;}).join('');
     return `<div style="margin-bottom:8px">
       <div class="li" style="cursor:default">
         <div><div class="ln">${l.name}</div><div class="lg">${l.grade}</div></div>
@@ -1038,9 +1058,60 @@ function onDrop(e){e.preventDefault();}
 function onFileSel(inp){}
 
 // ══ LEARNER REPORT ══════════════════════════════════════════
+function viewDetentionReport() {
+  const det = [...LEARNERS].filter(l=>detPending(l)).sort((a,b)=> a.grade.localeCompare(b.grade) || a.name.localeCompare(b.name));
+  const today = new Date().toLocaleDateString('en-ZA', {day:'numeric',month:'long',year:'numeric'});
+
+  const rows = det.length ? det.map(l => {
+    const pts = pPts(l), lvl = detLevel(l);
+    const last = [...(l.history||[])].filter(e=>e.type!=='DETENTION_RESET').slice(-1)[0];
+    return `
+    <tr>
+      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;font-weight:700">${l.name}</td>
+      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem">${l.grade}</td>
+      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--red);font-weight:700;text-align:center">${pts}</td>
+      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;text-align:center">#${lvl}</td>
+      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--muted)">${last?last.type:'—'}</td>
+    </tr>`;
+  }).join('')
+    : '<tr><td colspan="5" style="text-align:center;padding:14px;color:var(--muted);font-size:.82rem">No learners currently in detention 🎉</td></tr>';
+
+  g('reportModalTitle').textContent = '🚨 Detention Report — All Learners';
+  g('reportContent').innerHTML = `
+    <div style="background:var(--navy);border-radius:12px;padding:14px;margin-bottom:12px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:2px">Curro Secunda — Detention List</div>
+      <div style="font-size:.78rem;color:var(--muted)">Report generated ${today} · Period ${PERIOD.periodNum}</div>
+      <div style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <div style="background:var(--red-soft);border:1px solid var(--red);border-radius:10px;padding:8px 14px;text-align:center">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--red)">${det.length}</div>
+          <div style="font-size:.69rem;color:var(--muted)">In Detention</div>
+        </div>
+      </div>
+    </div>
+    <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border)">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="background:var(--navy2)">
+            <th style="padding:8px 9px;text-align:left;font-size:.72rem;color:var(--muted);font-weight:700">Name</th>
+            <th style="padding:8px 9px;text-align:left;font-size:.72rem;color:var(--muted);font-weight:700">Grade</th>
+            <th style="padding:8px 9px;text-align:center;font-size:.72rem;color:var(--muted);font-weight:700">Pts</th>
+            <th style="padding:8px 9px;text-align:center;font-size:.72rem;color:var(--muted);font-weight:700">Detention</th>
+            <th style="padding:8px 9px;text-align:left;font-size:.72rem;color:var(--muted);font-weight:700">Last Transgression</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div style="margin-top:10px;font-size:.72rem;color:var(--muted);text-align:center">Curro Secunda Discipline System · Period ${PERIOD.periodNum}</div>
+  `;
+  g('reportModal').classList.remove('hidden');
+  g('reportModal').style.display = 'flex';
+}
+
 function viewLearnerReport(id) {
   const l = LEARNERS.find(x => x.id === id);
   if (!l) return;
+  g('reportModalTitle').textContent = '📋 Learner Report';
   const pts = pPts(l);
   const lvl = detLevel(l);
   const ackd = l.detention_acknowledged||0;
@@ -1048,15 +1119,18 @@ function viewLearnerReport(id) {
   const history = [...(l.history||[])].reverse();
   const today = new Date().toLocaleDateString('en-ZA', {day:'numeric',month:'long',year:'numeric'});
 
-  const rows = history.length ? history.map(e => `
-    <tr>
+  const incidentCount = history.filter(e=>e.type!=='DETENTION_RESET').length;
+  const rows = history.length ? history.map(e => {
+    const isReset = e.type==='DETENTION_RESET';
+    return `
+    <tr style="${isReset?'background:var(--green-soft)':''}">
       <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem">${new Date(e.date).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})}</td>
-      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem">${e.type}</td>
+      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;${isReset?'color:var(--green);font-weight:700':''}">${isReset?'✅ Detention completed':e.type}</td>
       <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--muted)">${e.note||'—'}</td>
-      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--red);font-weight:700;text-align:center">+${e.pts}</td>
+      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;font-weight:700;text-align:center;color:${isReset?'var(--green)':'var(--red)'}">${isReset?e.pts:'+'+e.pts}</td>
       <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--muted)">${e.educator}</td>
       <td style="padding:7px 9px;border-bottom:1px solid var(--border);text-align:center">${me&&me.role==='admin'?`<button class="btn-xs bxr" onclick="removePointFromReport(${l.id},'${e.date}')">✕</button>`:''}</td>
-    </tr>`).join('') 
+    </tr>`;}).join('') 
     : '<tr><td colspan="5" style="text-align:center;padding:14px;color:var(--muted);font-size:.82rem">No transgressions recorded</td></tr>';
 
   g('reportContent').innerHTML = `
@@ -1073,7 +1147,7 @@ function viewLearnerReport(id) {
           <div style="font-size:.69rem;color:var(--muted)">Detention</div>
         </div>
         <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;text-align:center">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--accent)">${history.length}</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--accent)">${incidentCount}</div>
           <div style="font-size:.69rem;color:var(--muted)">Incidents</div>
         </div>
       </div>
@@ -1229,3 +1303,4 @@ boot();
 </script>
 </body>
 </html>
+
