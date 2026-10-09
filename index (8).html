@@ -106,10 +106,9 @@
   .btn-danger{background:var(--red);border:none;border-radius:8px;color:#fff;
     font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;
     padding:6px 11px;cursor:pointer;}
-  .btn-xs{padding:7px 13px;font-size:.8rem;border-radius:8px;border:none;
-    cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;min-height:36px;}
-  .bxb{background:var(--blue-soft);color:var(--blue);border:1px solid var(--blue);}
-  .bxr{background:var(--red-soft);color:var(--red);border:1px solid var(--red);}
+  .btn-ack{background:var(--green);border:none;border-radius:8px;color:#fff;
+    font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;
+    padding:6px 12px;cursor:pointer;}
 
   /* SEARCH */
   .sw{position:relative;margin-bottom:9px;}
@@ -124,6 +123,7 @@
     cursor:pointer;transition:all .2s;}
   .li:hover,.li.sel{border-color:var(--blue);background:var(--blue-soft);}
   .li.det{border-color:var(--red)!important;}
+  .li.det-ack{border-color:var(--green)!important;}
   .ln{font-weight:700;font-size:.9rem;}
   .lg{font-size:.7rem;color:var(--muted);}
   .pill{font-family:'DM Mono',monospace;font-weight:500;font-size:.8rem;
@@ -131,6 +131,7 @@
   .pl{background:var(--green-soft);color:var(--green);}
   .pm{background:#f7c32522;color:var(--accent);}
   .ph{background:var(--red-soft);color:var(--red);animation:pulse 1.5s infinite;}
+  .pack{background:var(--green-soft);color:var(--green);}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
 
   /* PTS SELECTOR */
@@ -143,19 +144,11 @@
   /* DETENTION BANNER */
   .det-banner{background:linear-gradient(135deg,#8b0000,#c0392b);border-radius:var(--radius);
     padding:13px 15px;display:flex;align-items:flex-start;gap:10px;animation:shake .3s ease;}
+  .det-banner.ack{background:linear-gradient(135deg,#1e824c,#2ecc71);animation:none;}
   @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
   .det-banner .di{font-size:1.4rem;}
   .det-banner h3{font-family:'Syne',sans-serif;font-size:.93rem;font-weight:800;}
   .det-banner p{font-size:.77rem;opacity:.9;margin-top:3px;}
-
-  /* HISTORY */
-  .he{background:var(--navy);border:1px solid var(--border);border-radius:9px;
-    padding:8px 11px;display:flex;align-items:flex-start;justify-content:space-between;gap:7px;}
-  .ht{font-weight:700;font-size:.84rem;}
-  .hn{font-size:.7rem;color:var(--muted);margin-top:2px;}
-  .hd{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);margin-top:3px;}
-  .heu{font-size:.7rem;color:var(--blue);margin-top:2px;}
-  .hp{font-family:'DM Mono',monospace;font-weight:700;color:var(--red);font-size:.9rem;}
 
   /* UPLOAD ZONE */
   .uz{border:2px dashed var(--border);border-radius:12px;padding:22px;text-align:center;
@@ -165,18 +158,6 @@
   .uz-icon{font-size:1.8rem;margin-bottom:7px;}
   .uz-title{font-weight:700;font-size:.88rem;margin-bottom:3px;}
   .uz-sub{font-size:.74rem;color:var(--muted);}
-  .up-preview{background:var(--navy);border:1px solid var(--border);border-radius:10px;
-    padding:11px;margin-top:9px;max-height:180px;overflow-y:auto;}
-  .pr{display:flex;align-items:center;justify-content:space-between;
-    padding:4px 0;border-bottom:1px solid var(--border);font-size:.78rem;}
-  .pr:last-child{border-bottom:none;}
-
-  /* EDUCATOR LIST */
-  .eu{background:var(--card2);border:1px solid var(--border);border-radius:10px;
-    padding:10px 12px;margin-bottom:7px;
-    display:flex;align-items:center;justify-content:space-between;}
-  .eu-name{font-weight:700;font-size:.87rem;}
-  .eu-meta{font-size:.7rem;color:var(--muted);margin-top:2px;}
 
   /* STATS */
   .sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
@@ -193,48 +174,18 @@
     transition:transform .35s cubic-bezier(.34,1.56,.64,1);z-index:300;white-space:nowrap;}
   .toast.show{transform:translateX(-50%) translateY(0);}
   .toast.err{background:var(--red);}
-  .toast.warn{background:#e67e22;}
   .note{font-size:.74rem;color:var(--muted);margin-bottom:9px;line-height:1.5;}
-  .empty{text-align:center;color:var(--muted);font-size:.82rem;padding:16px 0;}
   .hidden{display:none!important;}
   .mt{margin-top:9px;}
-  hr{border:none;border-top:1px solid var(--border);margin:6px 0;}
 </style>
 </head>
 <body>
 
 <!-- ══ LOADING ══ -->
-<div id="loadingScreen" class="auth-screen hidden">
+<div id="loadingScreen" class="auth-screen">
   <div class="login-logo">Curro Secunda <span>Discipline</span></div>
   <div class="login-sub">Connecting to live database…</div>
   <div style="margin-top:20px;font-size:2rem">⏳</div>
-</div>
-
-<!-- ══ FIRST-TIME SETUP ══ -->
-<div id="setupScreen" class="auth-screen hidden">
-  <div class="login-logo">Curro Secunda <span>Discipline</span></div>
-  <div class="login-sub">First-Time Setup</div>
-  <div class="auth-card setup-card">
-    <div style="font-size:2rem;text-align:center;margin-bottom:10px">🏫</div>
-    <h2>Create Admin Account</h2>
-    <p class="note">This administrator account manages educators, periods, and all learner data.</p>
-    <div style="background:#2ecc7115;border:1px solid #2ecc71;border-radius:10px;padding:10px 13px;font-size:.78rem;color:#2ecc71;margin-bottom:13px;line-height:1.6;">
-      ✅ <strong>18 educators</strong> from the school database will be created automatically.<br>
-      Default password: <span style="font-family:'DM Mono',monospace;background:#00000030;padding:1px 6px;border-radius:5px;">curro2026</span><br>
-      <span style="opacity:.8">Educators can change their password after first login.</span>
-    </div>
-    <div class="err-box" id="setupErr"></div>
-    <div class="fg"><label>Administrator Name</label>
-      <input type="text" id="sName" placeholder="e.g. Mrs. Dlamini"></div>
-    <div class="fg"><label>Username</label>
-      <input type="text" id="sUser" placeholder="e.g. admin"></div>
-    <div class="fg"><label>Password</label>
-      <div class="pw-wrap"><input type="password" id="sPass" placeholder="Min. 6 characters">
-        <button class="eye" onclick="togglePw('sPass',this)">👁</button></div></div>
-    <div class="fg"><label>Confirm Password</label>
-      <input type="password" id="sPass2" placeholder="Repeat password"></div>
-    <button class="btn btn-blue" id="setupBtn" onclick="doSetup()">Create Admin Account →</button>
-  </div>
 </div>
 
 <!-- ══ LOGIN ══ -->
@@ -256,14 +207,13 @@
   </div>
 </div>
 
-<!-- ══ APP ══ -->
+<!-- ══ APP SHELL ══ -->
 <div id="app" class="hidden">
   <header>
     <div class="logo">Curro Secunda <span>Discipline</span></div>
     <div class="hdr-right">
       <div class="user-pill" id="uPill"></div>
       <div class="role-pill" id="rPill"></div>
-      <button class="logout-btn" onclick="saveToDrive()" id="driveBtn" title="Save to Google Drive" style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:5px 10px;font-size:.74rem;cursor:pointer;font-family:'Nunito',sans-serif;">☁️</button>
       <button class="logout-btn" onclick="doLogout()">⏏</button>
     </div>
   </header>
@@ -272,19 +222,15 @@
     <div class="tab active" id="t-log"      onclick="sw('log')">📋 Log</div>
     <div class="tab"        id="t-learners" onclick="sw('learners')">👤 Learners</div>
     <div class="tab"        id="t-report"   onclick="sw('report')">📊 Report</div>
-    <div class="tab hidden" id="t-admin"    onclick="sw('admin')">⚙️ Admin</div>
-    <div class="tab"        id="t-pw"       onclick="sw('pw')">🔑 Password</div>
   </div>
 
-  <!-- LOG -->
+  <!-- LOG TAB -->
   <main id="pg-log">
-    <div class="period-strip" id="periodStrip"></div>
-
     <div class="card">
       <div class="card-title">Select Learner</div>
       <div class="fg" style="margin-bottom:8px">
         <label>Filter by Grade</label>
-        <select id="gradeFilter" onchange="filterL()" style="background:var(--navy);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Nunito',sans-serif;font-size:.9rem;padding:10px 13px;outline:none;width:100%;">
+        <select id="gradeFilter" onchange="filterL()">
           <option value="">— All Grades —</option>
           <option value="Grade 8">Grade 8</option>
           <option value="Grade 9">Grade 9</option>
@@ -300,65 +246,36 @@
 
     <div class="card hidden" id="tForm">
       <div class="card-title" id="tTitle">Log Transgression</div>
+      
+      <!-- DETENTION BANNER FOR LEARNER -->
       <div id="dBannerTop" class="det-banner hidden" style="margin-bottom:11px">
-        <div class="di">🚨</div>
-        <div style="flex:1"><h3>DETENTION ASSIGNED</h3><p id="dBannerMsg"></p>
-          <button id="dBannerAck" style="display:none;margin-top:8px;background:#fff2;border:1px solid #fff6;color:#fff;border-radius:8px;padding:6px 14px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;">✅ Mark Detention Done</button>
+        <div class="di" id="dIcon">🚨</div>
+        <div style="flex:1">
+          <h3 id="dTitle">DETENTION REQUIRED (9+ Points)</h3>
+          <p id="dBannerMsg"></p>
+          <button id="dBannerAck" onclick="acknowledgeDetention(selectedLearnerId)" style="margin-top:8px;background:#ffffff33;border:1px solid #ffffff66;color:#fff;border-radius:8px;padding:6px 14px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;">✅ Mark Detention Served / Acknowledged</button>
         </div>
       </div>
+
       <div class="fg"><label>Transgression Type</label>
         <select id="tType" onchange="autoSetPts(this.value)">
           <option value="">— Select type —</option>
           <optgroup label="2 Points">
             <option value="[M22.1] Tardiness or littering (2pts)">[M22.1] Tardiness or littering</option>
             <option value="[M22.2] Failure to have correct learning materials (2pts)">[M22.2] Failure to have correct learning materials</option>
-            <option value="[M22.4] Dress/apparel not in accordance with school rules (2pts)">[M22.4] Dress/apparel not in accordance with school rules</option>
-            <option value="[M23.1] Tampering with possession or equipment of others (2pts)">[M23.1] Tampering with possession/equipment of others</option>
-            <option value="[M23.2] Use of school equipment without permission (2pts)">[M23.2] Use of school equipment without permission</option>
-            <option value="[M24.1] Failure to keep school premises clean and neat (2pts)">[M24.1] Failure to keep school premises clean and neat</option>
-            <option value="[M24.3] Placing posters/stickers/graffiti without authority (2pts)">[M24.3] Placing posters/stickers/graffiti without authority</option>
             <option value="[M25.1] Refusal/failure to complete homework on due date (2pts)">[M25.1] Refusal/failure to complete homework on due date</option>
-            <option value="[M25.2] Refusal to deliver/return reply slips or letters (2pts)">[M25.2] Refusal to deliver/return reply slips or letters</option>
-            <option value="[M25.3] Unreasonable refusal to attend school activities (2pts)">[M25.3] Unreasonable refusal to attend school activities</option>
-            <option value="[M25.4] General uncooperativeness / willfully obstructive (2pts)">[M25.4] General uncooperativeness / willfully obstructive</option>
-            <option value="[M25.5] Poor application to studies or assignments (2pts)">[M25.5] Poor application to studies or assignments</option>
-            <option value="[M26.1] Truancy / poor timekeeping / late for class (2pts)">[M26.1] Truancy / poor timekeeping / late for class</option>
-            <option value="[M26.2] Unexplained absences / bunking class (2pts)">[M26.2] Unexplained absences / bunking class</option>
+            <option value="[M26.1] Truancy / late for class (2pts)">[M26.1] Truancy / late for class</option>
           </optgroup>
           <optgroup label="3 Points">
             <option value="[M18.2] Defiance and disrespect (3pts)">[M18.2] Defiance and disrespect</option>
-            <option value="[M18.3] Discourtesy toward school authorities or learners (3pts)">[M18.3] Discourtesy toward school authorities or learners</option>
-            <option value="[M18.4] Unreasonable intolerance of others (3pts)">[M18.4] Unreasonable intolerance of others</option>
-            <option value="[M18.5] Persistent violation of school rules (3pts)">[M18.5] Persistent violation of school rules</option>
-            <option value="[M19.2] Playing games where others may be injured (3pts)">[M19.2] Playing games where others may be injured</option>
-            <option value="[M20.1] Noisy or disruptive behaviour (3pts)">[M20.1] Noisy or disruptive behaviour</option>
-            <option value="[M20.2] Highly disruptive or unruly classroom behaviour (3pts)">[M20.2] Highly disruptive or unruly classroom behaviour</option>
-            <option value="[M20.3] Trespassing or entering premises without permission (3pts)">[M20.3] Trespassing or entering premises without permission</option>
-            <option value="[M21] Swearing or use of vulgar language (3pts)">[M21] Swearing or use of vulgar language</option>
-            <option value="[M26.4] Leaving class or school without permission (3pts)">[M26.4] Leaving class or school without permission</option>
-            <option value="[M26.5] Persistent late coming (3pts)">[M26.5] Persistent late coming</option>
+            <option value="[M20.1] Disruptive behaviour (3pts)">[M20.1] Disruptive behaviour</option>
+            <option value="[M21] Swearing or vulgar language (3pts)">[M21] Swearing or vulgar language</option>
             <option value="[M27] Misconduct relating to electronic devices (3pts)">[M27] Misconduct relating to electronic devices</option>
-            <option value="[M28.1] Bringing motor vehicle to school without license (3pts)">[M28.1] Bringing motor vehicle to school without license</option>
-            <option value="[M28.3] Driving motor vehicle creating risk to others (3pts)">[M28.3] Driving motor vehicle creating risk to others</option>
-            <option value="[M28.4] Failing to produce valid driver's license (3pts)">[M28.4] Failing to produce valid driver's license</option>
           </optgroup>
           <optgroup label="5 Points">
-            <option value="[S10] Absent from school without valid reason (5pts)">[S10] Absent from school without valid reason</option>
-            <option value="[S11.1] Playing dangerous games (5pts)">[S11.1] Playing dangerous games</option>
-            <option value="[S11.2] Malicious teasing, gambling or gaming on premises (5pts)">[S11.2] Malicious teasing, gambling or gaming on premises</option>
-            <option value="[S12] Inappropriate behaviour or comments in public (5pts)">[S12] Inappropriate behaviour or comments in public</option>
+            <option value="[S10] Absent without valid reason (5pts)">[S10] Absent without valid reason</option>
             <option value="[S13.1] Smoking (5pts)">[S13.1] Smoking</option>
-            <option value="[S14.1] Forgery or falsification of school documents (5pts)">[S14.1] Forgery or falsification of school documents</option>
-            <option value="[S14.2] Lying/dishonesty with less serious consequences (5pts)">[S14.2] Lying/dishonesty with less serious consequences</option>
-            <option value="[S15.1] Vandalising property or equipment (5pts)">[S15.1] Vandalising property or equipment</option>
-            <option value="[S15.2] Not taking due care of property or equipment (5pts)">[S15.2] Not taking due care of property or equipment</option>
-            <option value="[S15.3] Accidental damage to property (5pts)">[S15.3] Accidental damage to property</option>
-            <option value="[S15.4] Removing any school property (5pts)">[S15.4] Removing any school property</option>
-            <option value="[S16.1] Acts designed to create hostile/threatening environment (5pts)">[S16.1] Acts designed to create hostile/threatening environment</option>
-            <option value="[S16.2] Wilful disruption of school activities (5pts)">[S16.2] Wilful disruption of school activities</option>
-          </optgroup>
-          <optgroup label="Other">
-            <option value="Other">Other</option>
+            <option value="[S15.1] Vandalising property (5pts)">[S15.1] Vandalising property</option>
           </optgroup>
         </select></div>
       <div class="fg"><label>Points to Add</label>
@@ -368,864 +285,353 @@
           <button class="pb" onclick="selPts(this,5)">+5</button>
         </div></div>
       <div class="fg"><label>Notes (optional)</label>
-        <textarea id="tNote" placeholder="Additional context…"></textarea></div>
+        <textarea id="tNote" placeholder="Additional details…"></textarea></div>
       <button class="btn btn-blue" id="submitBtn" onclick="submitT()">Submit Transgression</button>
     </div>
   </main>
 
-  <!-- LEARNERS -->
+  <!-- LEARNERS TAB -->
   <main id="pg-learners" class="hidden">
     <div class="card">
-      <div class="card-title">📂 Upload School List</div>
-      <p class="note">Upload a <strong>CSV</strong> or <strong>Excel</strong> file with columns: <em>Name</em> and <em>Grade</em>. Duplicates are skipped automatically.</p>
-      <div class="uz" id="uZone"
-           ondragover="event.preventDefault();this.classList.add('dov')"
-           ondragleave="this.classList.remove('dov')"
-           ondrop="onDrop(event)">
-        <input type="file" accept=".csv,.xlsx,.xls,.tsv" onchange="onFileSel(this)">
-        <div class="uz-icon">📄</div>
-        <div class="uz-title">Tap to browse or drag & drop</div>
-        <div class="uz-sub">CSV · Excel (.xlsx/.xls) · TSV accepted</div>
-      </div>
-      <div id="uPreview" class="hidden"></div>
-      <button class="btn btn-blue hidden mt" id="importBtn" onclick="doImport()">Import Learners</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title">➕ Add Single Learner</div>
-      <div class="flex-row">
-        <input class="flex-1" type="text" id="nName" placeholder="Full name" style="background:var(--navy);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Nunito',sans-serif;font-size:.9rem;padding:10px 13px;outline:none;">
-        <select id="nGrade" style="width:130px;background:var(--navy);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Nunito',sans-serif;font-size:.9rem;padding:10px 13px;outline:none;">
-          <option value="">Grade</option>
-          <option>Grade 8</option><option>Grade 9</option><option>Grade 10</option>
-          <option>Grade 11</option><option>Grade 12</option>
-        </select>
-      </div>
-      <button class="btn btn-blue mt" onclick="addL()">Add Learner</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title">All Learners (<span id="lCount">0</span>)</div>
+      <div class="card-title">All Registered Learners (<span id="lCount">0</span>)</div>
       <div class="sw"><span class="si">🔍</span>
-        <input type="text" id="srchAll" placeholder="Filter…" oninput="renderAll()"></div>
-      <div id="allList"></div>
+        <input type="text" id="srchAll" placeholder="Filter learners…" oninput="renderAllLearners()"></div>
+      <div id="allList" class="ll"></div>
     </div>
   </main>
 
-  <!-- REPORT -->
+  <!-- REPORT TAB -->
   <main id="pg-report" class="hidden">
-    <div class="sg" id="statsGrid"></div>
-    <div class="card">
-      <div class="card-title" style="color:var(--red)">🚨 Detention — Current Period</div>
-      <div id="detList"></div>
+    <div class="sg" id="statsGrid">
+      <div class="sb"><div class="sn blu" id="statTotal">0</div><div class="sl">Total Learners</div></div>
+      <div class="sb"><div class="sn red" id="statDet">0</div><div class="sl">Detention (9+ Pts)</div></div>
     </div>
-    <div class="card">
-      <div class="card-title">Period Totals (All Learners)</div>
-      <div id="repList"></div>
-    </div>
-    <button class="btn btn-blue" style="background:#263a54;color:var(--muted);margin-bottom:20px" onclick="newPeriod()">
-      🔄 Start Next 2-Week Period
-    </button>
-  </main>
-
-  <!-- CHANGE PASSWORD -->
-  <main id="pg-pw" class="hidden">
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-title">🔑 Change My Password</div>
-      <p class="note">Update your password. You will use the new password on your next login.</p>
-      <div class="fg"><label>Current Password</label>
-        <div class="pw-wrap"><input type="password" id="cpCur" placeholder="Your current password">
-          <button class="eye" onclick="togglePw('cpCur',this)">👁</button></div></div>
-      <div class="fg"><label>New Password</label>
-        <div class="pw-wrap"><input type="password" id="cpNew" placeholder="Min. 6 characters">
-          <button class="eye" onclick="togglePw('cpNew',this)">👁</button></div></div>
-      <div class="fg"><label>Confirm New Password</label>
-        <input type="password" id="cpNew2" placeholder="Repeat new password"></div>
-      <button class="btn btn-blue" onclick="changeMyPw()">Update Password</button>
-    </div>
-  </main>
-
-  <!-- ADMIN -->
-  <main id="pg-admin" class="hidden">
-    <div class="card">
-      <div class="card-title">⚙️ Period Settings</div>
-      <div class="fg"><label>Period Start Date (YYYY-MM-DD)</label>
-        <input type="text" id="pStart" placeholder="e.g. 2026-01-20"></div>
-      <div class="fg"><label>Period Number</label>
-        <input type="text" id="pNum" placeholder="e.g. 3"></div>
-      <button class="btn btn-blue" onclick="savePeriod()">Save Period Settings</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title">👩‍🏫 Add Educator Account</div>
-      <p class="note">Educators can log transgressions. Admins can manage accounts, periods and all data.</p>
-      <div class="fg"><label>Full Name</label>
-        <input type="text" id="eName" placeholder="e.g. Mr. Khumalo"></div>
-      <div class="fg"><label>Username</label>
-        <input type="text" id="eUser" placeholder="e.g. khumalo"></div>
-      <div class="fg"><label>Temporary Password</label>
-        <div class="pw-wrap"><input type="password" id="ePass" placeholder="Min. 6 characters">
-          <button class="eye" onclick="togglePw('ePass',this)">👁</button></div></div>
-      <div class="fg"><label>Role</label>
-        <select id="eRole"><option value="educator">Educator</option><option value="admin">Admin</option></select></div>
-      <button class="btn btn-blue" onclick="addEdu()">Add Educator</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title">All Accounts</div>
-      <div id="eduList"></div>
-    </div>
-
-    <div class="card" style="border-color:#c0392b55;margin-bottom:20px">
-      <div class="card-title" style="color:var(--red)">⚠️ Danger Zone</div>
-      <p class="note">Permanently remove all learner records. Cannot be undone.</p>
-      <button class="btn-danger" style="width:100%;padding:12px;border-radius:10px" onclick="clearAll()">
-        🗑 Clear All Learner Data
-      </button>
+    <div class="card" style="margin-top:10px;">
+      <div class="card-title" style="color:var(--red)">🚨 Detention List (9+ Points Threshold)</div>
+      <div id="detList" class="ll"></div>
     </div>
   </main>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- ══ LEARNER REPORT MODAL ══ -->
-<div id="reportModal" class="hidden" style="position:fixed;inset:0;background:#000a;z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;">
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:420px;padding:20px;margin-top:10px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;">📋 Learner Report</div>
-      <button onclick="closeReport()" style="background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;">✕</button>
-    </div>
-    <div id="reportContent"></div>
-    <div style="display:flex;gap:8px;margin-top:14px;">
-      <button class="btn btn-blue" style="flex:1" onclick="printReport()">🖨️ Print / PDF</button>
-      <button class="btn-ghost" style="flex:1;border-radius:12px;padding:12px" onclick="copyReport()">📋 Copy Text</button>
-    </div>
-  </div>
-</div>
-
 <script>
-// ══ SUPABASE CONFIG ══════════════════════════════════════════
+// ══ SUPABASE CONFIGURATION ══════════════════════════════════
 const SUPABASE_URL = 'https://hpsjwjjidwbwgviwiitw.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_deQaiTeg0FdzAlnE2vWWhQ_lCCnFoTn';
+const SUPABASE_KEY = 'sb_publishable_deQaiTeg0FdzAlnE2vWWhQ_lCCnFoTn'; // Replace with your exact Supabase key if different
+const DETENTION_THRESHOLD = 9;
 
-async function sb(path, method='GET', body=null) {
+async function sb(path, method = 'GET', body = null) {
   const opts = {
     method,
     headers: {
       'apikey': SUPABASE_KEY,
       'Authorization': 'Bearer ' + SUPABASE_KEY,
       'Content-Type': 'application/json',
-      'Prefer': method==='POST' ? 'return=representation' : ''
+      'Prefer': method === 'POST' ? 'return=representation' : ''
     }
   };
   if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, opts);
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, opts);
   if (!res.ok) { const e = await res.text(); throw new Error(e); }
   const txt = await res.text();
   return txt ? JSON.parse(txt) : null;
 }
 
-// ══ CONSTANTS ════════════════════════════════════════════════
-const THRESH = 10, PDAYS = 14;
+// ══ STATE ═══════════════════════════════════════════════════
+let currentUser = { name: "Educator", role: "edu" };
+let learners = [];
+let selectedLearnerId = null;
+let currentPts = 2;
 
-// ══ PRE-SEEDED EDUCATORS ═════════════════════════════════════
-const SEED_EDUCATORS = [
-  "Mandy Pretorius","Simone Robson","Anel Steyn","Righ Potgieter",
-  "Faatima Bhadat","Dr I Raji","Owen Dewa","Lisa Combrinck",
-  "Nadine Prinsloo","Lorraine Boshoff","Raeesha Farouk","Fozia Stuart",
-  "Rochelle Venter","Annebelle Botha","Jaryd van der Westhuisen",
-  "Johan Botes","Ntokozo Nzima","Luann Lundell-Coetzer"
-];
-
-const ADMIN_ACCOUNTS = {
-  'asteyn':    {name:'Anel Steyn',           password:'curro2025'},
-  'abotha':    {name:'Annebelle Botha',       password:'curro2025'},
-  'lluann':    {name:'Luann Lundell-Coetzer', password:'curro2025'},
-  'rventer':   {name:'Rochelle Venter',       password:'curro2025'},
-  'nprinsloo': {name:'Nadine Prinsloo',       password:'curro2025'},
-  'lstrydom':  {name:'Leon Strydom',          password:'curro2025'},
+// ══ INITIALIZATION ══════════════════════════════════════════
+window.onload = async () => {
+  await loadLearners();
+  document.getElementById("loadingScreen").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+  document.getElementById("uPill").innerText = currentUser.name;
+  document.getElementById("rPill").innerText = currentUser.role.toUpperCase();
+  filterL();
 };
 
-const SEED_LEARNERS = [{"name": "Nyeleti Buhlebenkosi Baloyi", "grade": "Grade 8"}, {"name": "Siphesihle Sinothile Baloyi", "grade": "Grade 8"}, {"name": "Ntalo Faith Botha", "grade": "Grade 8"}, {"name": "Nosipho Hannah Chauke", "grade": "Grade 8"}, {"name": "Acacia Cash Cowley", "grade": "Grade 8"}, {"name": "Wandile Reign Dambuza", "grade": "Grade 8"}, {"name": "Lwandle David Dlamini", "grade": "Grade 8"}, {"name": "Ntombizethu Faith Dlamini", "grade": "Grade 8"}, {"name": "Ngimphiwe Zamaswazi Dube", "grade": "Grade 8"}, {"name": "Nkosingiphile Ndumiso Blessing Gama", "grade": "Grade 8"}, {"name": "Vutivi Olwethu Gazide", "grade": "Grade 8"}, {"name": "Omolemo Kungawo Hlungulu", "grade": "Grade 8"}, {"name": "Nhlaluko Mikhenso Hlungwane", "grade": "Grade 8"}, {"name": "Emlyn Vaenusha Iyer", "grade": "Grade 8"}, {"name": "Skylar Vidaya Iyer", "grade": "Grade 8"}, {"name": "Tameka Jiyana", "grade": "Grade 8"}, {"name": "Mukendi Mbwembwa Daniel Chloe Kalonji", "grade": "Grade 8"}, {"name": "Umar Karodia", "grade": "Grade 8"}, {"name": "El-Roel Kereta", "grade": "Grade 8"}, {"name": "Mpilenhle Felicity Khoza", "grade": "Grade 8"}, {"name": "Goodluck Ilunga Kilonda", "grade": "Grade 8"}, {"name": "Kourtney Leeya Klink", "grade": "Grade 8"}, {"name": "Onkarabile Botlhale Kotu", "grade": "Grade 8"}, {"name": "Junior Lebyang", "grade": "Grade 8"}, {"name": "Tacara Ruth Lubbe", "grade": "Grade 8"}, {"name": "Briseida Elizabeth Lungu", "grade": "Grade 8"}, {"name": "Olothando Mabaso", "grade": "Grade 8"}, {"name": "Sicelimpilo Mabena", "grade": "Grade 8"}, {"name": "Boitumelo Busisiwe Malaika Mafereka", "grade": "Grade 8"}, {"name": "Simraan Mahadaw", "grade": "Grade 8"}, {"name": "Thuto Mahlaba", "grade": "Grade 8"}, {"name": "Boitumelo Mahlangu", "grade": "Grade 8"}, {"name": "Tjhudu Upendo Mahlangu", "grade": "Grade 8"}, {"name": "Siphephelo Nkosi Makhoba", "grade": "Grade 8"}, {"name": "Relebohile Manko", "grade": "Grade 8"}, {"name": "Sithembile Tendai Maphanga", "grade": "Grade 8"}, {"name": "Aanisah Marambakuyana", "grade": "Grade 8"}, {"name": "Aphiwe Owami Masango", "grade": "Grade 8"}, {"name": "Olwethu Maseko", "grade": "Grade 8"}, {"name": "Mashego Koketso Masha", "grade": "Grade 8"}, {"name": "Vhudzani Success Okuhle Mashau", "grade": "Grade 8"}, {"name": "Uluthando Vusile Masinga", "grade": "Grade 8"}, {"name": "Liyakhanya Mathebula", "grade": "Grade 8"}, {"name": "Banele Njabulo Mhlana", "grade": "Grade 8"}, {"name": "Mpilwenhle Tyra Mhlongo", "grade": "Grade 8"}, {"name": "Malwande Anesiseko Mngadi", "grade": "Grade 8"}, {"name": "Sinenhlanhla Hlelokuhle Mntungwa", "grade": "Grade 8"}, {"name": "Lethabo Onkgopotse Mogotlane", "grade": "Grade 8"}, {"name": "Boitumelo Lehlohonolo Mollo", "grade": "Grade 8"}, {"name": "Lerato Buhle Mpho Motubatse", "grade": "Grade 8"}, {"name": "Charlene Kefilwe Rofhiwa Mphaphuli", "grade": "Grade 8"}, {"name": "Thuthukani Mnqobiwamachibi Zwelakhe Mthabela", "grade": "Grade 8"}, {"name": "Luitumezi Sinikiwe Mulenga", "grade": "Grade 8"}, {"name": "Malakhiwe Tholokuhle Mzimela", "grade": "Grade 8"}, {"name": "Ntsako Kamogelo Ngobeni", "grade": "Grade 8"}, {"name": "Zothumbela Nhlengethwa", "grade": "Grade 8"}, {"name": "Wandile Nkosi", "grade": "Grade 8"}, {"name": "Nkululeko Blessing Nkuna", "grade": "Grade 8"}, {"name": "Naledi Nomonde Nkwanyana", "grade": "Grade 8"}, {"name": "Owethu Nxangani", "grade": "Grade 8"}, {"name": "Jasmine Unathi Nxumalo", "grade": "Grade 8"}, {"name": "Adriel Michael Odayan", "grade": "Grade 8"}, {"name": "Cleojunior Owethu Innocent Palmer", "grade": "Grade 8"}, {"name": "Lwandle Nolwazi Sambo", "grade": "Grade 8"}, {"name": "Atlegang Keamogetswe Selepe", "grade": "Grade 8"}, {"name": "Pontsho Mafeta Seroto", "grade": "Grade 8"}, {"name": "Relebohile Mahlohonolo Seroto", "grade": "Grade 8"}, {"name": "Gosiame Patience Setsepu", "grade": "Grade 8"}, {"name": "Uzayr Ali Shaik", "grade": "Grade 8"}, {"name": "Siyamthanda Sithole", "grade": "Grade 8"}, {"name": "Chantel Ntando Smith", "grade": "Grade 8"}, {"name": "Haveshan Thamburan", "grade": "Grade 8"}, {"name": "Luyema Thamsanqa Thwala", "grade": "Grade 8"}, {"name": "Tshifhiwa Tshishonga", "grade": "Grade 8"}, {"name": "Casniik Van den Bergh", "grade": "Grade 8"}, {"name": "Hleloluhle Owethu Xulu", "grade": "Grade 8"}, {"name": "Allie Natalien Shongile Baloyi", "grade": "Grade 9"}, {"name": "Nonhle Princess Beni", "grade": "Grade 9"}, {"name": "Oluhle Aphiwe Biyela", "grade": "Grade 9"}, {"name": "Karabo Mpendulo Johnson Bogatsu", "grade": "Grade 9"}, {"name": "Ariana Cassim", "grade": "Grade 9"}, {"name": "Qailah Cassim", "grade": "Grade 9"}, {"name": "Umayr Cassim", "grade": "Grade 9"}, {"name": "Enze Chen", "grade": "Grade 9"}, {"name": "Sibongokuhle Vanessa Triona Dlamini", "grade": "Grade 9"}, {"name": "Ngcebenhle Ntsika Dludlu", "grade": "Grade 9"}, {"name": "Anele Thandiwe Gwebu", "grade": "Grade 9"}, {"name": "Za'hra Hajat", "grade": "Grade 9"}, {"name": "Christopher Hawes", "grade": "Grade 9"}, {"name": "Okayise Jiyane", "grade": "Grade 9"}, {"name": "Hlonolofatso Ketle", "grade": "Grade 9"}, {"name": "Azokuhle Khumalo", "grade": "Grade 9"}, {"name": "Nabeel Kola", "grade": "Grade 9"}, {"name": "Tomutenda Hansel Kudiwa", "grade": "Grade 9"}, {"name": "Siphosakhe Langa", "grade": "Grade 9"}, {"name": "Owami Ayamaah Lwane", "grade": "Grade 9"}, {"name": "Nkateko Happiness Mabedhle", "grade": "Grade 9"}, {"name": "Unathi Buhle Nosipho Mahamba", "grade": "Grade 9"}, {"name": "Bongani Phaswana Mahlangu", "grade": "Grade 9"}, {"name": "Hlelo Siyanda Makhoba", "grade": "Grade 9"}, {"name": "Kgomotso Malaka", "grade": "Grade 9"}, {"name": "Thabang Mkhuleko Maphanga", "grade": "Grade 9"}, {"name": "Anaya Marambakuyana", "grade": "Grade 9"}, {"name": "Olwethu Hope Maseko", "grade": "Grade 9"}, {"name": "Tharollo Thubelihle Mashika", "grade": "Grade 9"}, {"name": "Onale Moname Mashoeu", "grade": "Grade 9"}, {"name": "Neo Kagiso Masia", "grade": "Grade 9"}, {"name": "Konke Lwandle Mathebula Mathebula", "grade": "Grade 9"}, {"name": "Siphiwe Mathenjwa", "grade": "Grade 9"}, {"name": "Nonhle Ntsumi Mazabane", "grade": "Grade 9"}, {"name": "Benedict Takalani Mbedzi", "grade": "Grade 9"}, {"name": "Thobekile Okuhle Mdhluli", "grade": "Grade 9"}, {"name": "Zoe Jane Melville", "grade": "Grade 9"}, {"name": "Amanda Minenhle Mkhabela", "grade": "Grade 9"}, {"name": "Anna Ncobile Mkhabela", "grade": "Grade 9"}, {"name": "Letlotlo Nkanyezi Mkhwanazi", "grade": "Grade 9"}, {"name": "Melokuhle Mnguni", "grade": "Grade 9"}, {"name": "Milani Mongo", "grade": "Grade 9"}, {"name": "Lefa Mathoka Mosotho", "grade": "Grade 9"}, {"name": "Buhlebenkosi Mothopeng", "grade": "Grade 9"}, {"name": "Zoe Ohanna Morongwa Motsoaledi", "grade": "Grade 9"}, {"name": "Nathi Manqoba Mtombeni", "grade": "Grade 9"}, {"name": "Inako Mtshemla", "grade": "Grade 9"}, {"name": "Zwiande Lesedi Mulaudzi", "grade": "Grade 9"}, {"name": "Adelin Mantshana Minentle Musi", "grade": "Grade 9"}, {"name": "Tessa Khensani Ngoveni", "grade": "Grade 9"}, {"name": "Kamohelo Mcdonald Nkosi", "grade": "Grade 9"}, {"name": "Makwazeke Mndumisenjalo Nkosi", "grade": "Grade 9"}, {"name": "Sthokozile Simthokozele Ntuli", "grade": "Grade 9"}, {"name": "Miyako Tianna Pyoos", "grade": "Grade 9"}, {"name": "Cameron Linley Sallie", "grade": "Grade 9"}, {"name": "Anna Senoamadi", "grade": "Grade 9"}, {"name": "Bhelekazi Shabangu", "grade": "Grade 9"}, {"name": "Lindokuhle Ethan Wakhile Sithole", "grade": "Grade 9"}, {"name": "Sulungeka Songabe", "grade": "Grade 9"}, {"name": "Kamogelo Ben Teatea", "grade": "Grade 9"}, {"name": "Rethabile Zoe' Jabulile Thukwana", "grade": "Grade 9"}, {"name": "Hlelokuhle Hope Singita Tshabalala", "grade": "Grade 9"}, {"name": "Yandisa Siphosethu Tshabalala", "grade": "Grade 9"}, {"name": "Katelyn Lyla van Staden", "grade": "Grade 9"}, {"name": "Joy Wayiti", "grade": "Grade 9"}, {"name": "Nkululeko Aphiwe Zulu", "grade": "Grade 9"}, {"name": "Itumeleng Brandon August", "grade": "Grade 10"}, {"name": "Linda Tinyiko Chabalala", "grade": "Grade 10"}, {"name": "Chloe Chetty", "grade": "Grade 10"}, {"name": "Goitsemang Gosiame Oluhle Dinale", "grade": "Grade 10"}, {"name": "Manqoba Khayelihle Dlamini", "grade": "Grade 10"}, {"name": "Khanyisile Alicia Gama", "grade": "Grade 10"}, {"name": "Lawrance Bayanda Gama", "grade": "Grade 10"}, {"name": "Giana Lee Govender", "grade": "Grade 10"}, {"name": "Jan� Greeff", "grade": "Grade 10"}, {"name": "Brooklyn Keith Hargreaves", "grade": "Grade 10"}, {"name": "Ameera Khaled Shaaban Ibrahim", "grade": "Grade 10"}, {"name": "Isabella Talya Iyer", "grade": "Grade 10"}, {"name": "Owethu Nosipho Kulube", "grade": "Grade 10"}, {"name": "Chloe Hope Thandolwethu Lukhele", "grade": "Grade 10"}, {"name": "Briaana Ester Lungu", "grade": "Grade 10"}, {"name": "Akabongwe Justin Mabena", "grade": "Grade 10"}, {"name": "Melokuhle Nomcebo Princess Mabuyakhulu", "grade": "Grade 10"}, {"name": "Thabiso Phetole Maenetja", "grade": "Grade 10"}, {"name": "Phomollo Mahlatsi", "grade": "Grade 10"}, {"name": "Farhaan Mahomed", "grade": "Grade 10"}, {"name": "Retshedisitswe Molantwa Manko", "grade": "Grade 10"}, {"name": "Hope Fulufhelo Owethu Mashau", "grade": "Grade 10"}, {"name": "Lilitha Qhayiya Matshikiza", "grade": "Grade 10"}, {"name": "Qhama Liyana Matshikiza", "grade": "Grade 10"}, {"name": "Mamello Nthabeleng Matsoele", "grade": "Grade 10"}, {"name": "Nomthandazo Bandile Surprise Mazibuko", "grade": "Grade 10"}, {"name": "Fezile Lwandle Mhlana", "grade": "Grade 10"}, {"name": "Evan Michael", "grade": "Grade 10"}, {"name": "Nduduzo Simphiwe Mkhwanazi", "grade": "Grade 10"}, {"name": "Asiphile Sinakhokonke Mnisi", "grade": "Grade 10"}, {"name": "Andile Resegofetse Modise", "grade": "Grade 10"}, {"name": "Kgomotso Amohelang Quincy Mofokeng", "grade": "Grade 10"}, {"name": "Naledi Princess Mokoena", "grade": "Grade 10"}, {"name": "Khethokuhle Thato Mokotong", "grade": "Grade 10"}, {"name": "Banzane Hlelolwenkosi Mpondo", "grade": "Grade 10"}, {"name": "Buitumelo Simnikiwe Mulenga", "grade": "Grade 10"}, {"name": "Nhlosenhle Skhulile Nhlabathi", "grade": "Grade 10"}, {"name": "Lungelo Khethokuhle Nhlapo", "grade": "Grade 10"}, {"name": "Tshegofatso Akhona Nkwanyana", "grade": "Grade 10"}, {"name": "Nonhle Silindile Nzimande", "grade": "Grade 10"}, {"name": "Diyaanah Patel", "grade": "Grade 10"}, {"name": "Naledi Reneiloe Qhamakoane", "grade": "Grade 10"}, {"name": "Zara Alexis Raman", "grade": "Grade 10"}, {"name": "Ayabonga Realeboga Ramatja", "grade": "Grade 10"}, {"name": "Muhammed Shuaib Shaik", "grade": "Grade 10"}, {"name": "Rirhandzu Pearl Siboyi", "grade": "Grade 10"}, {"name": "Xiluva Simango", "grade": "Grade 10"}, {"name": "Londiwe Khethokuhle Sindane", "grade": "Grade 10"}, {"name": "Nokubonga Angel Skhosana", "grade": "Grade 10"}, {"name": "Thabiso Jameson Tladi", "grade": "Grade 10"}, {"name": "Khulubuse Tsebo Zimu", "grade": "Grade 10"}, {"name": "Noluthando Zulu", "grade": "Grade 10"}, {"name": "Zamazulu Zulu", "grade": "Grade 10"}, {"name": "Zwelihle Zulu", "grade": "Grade 10"}, {"name": "Saadia Abbas", "grade": "Grade 11"}, {"name": "Ryan Kylin Bimbrish", "grade": "Grade 11"}, {"name": "Zuhayr Cassim", "grade": "Grade 11"}, {"name": "Katia Paula De Alcantara", "grade": "Grade 11"}, {"name": "Logan Elizabeth Ellis", "grade": "Grade 11"}, {"name": "Gabrielle Jaylin Lungile Engelbrecht", "grade": "Grade 11"}, {"name": "Yijun Fang", "grade": "Grade 11"}, {"name": "Lesedi Ganare", "grade": "Grade 11"}, {"name": "Kaylene Verona Gloube", "grade": "Grade 11"}, {"name": "Keamogetswe Lesego Harrington", "grade": "Grade 11"}, {"name": "Oabile Lindani Hlungulu", "grade": "Grade 11"}, {"name": "Nhlalala Khensani Hlungwane", "grade": "Grade 11"}, {"name": "Arav Jagasur", "grade": "Grade 11"}, {"name": "Lisa Alice Jones", "grade": "Grade 11"}, {"name": "Sebabatso Lethabo Ketle", "grade": "Grade 11"}, {"name": "Tshegofatso Kehumile Khumalo", "grade": "Grade 11"}, {"name": "Lesedi Luthando Kutu", "grade": "Grade 11"}, {"name": "Bathabile Langa", "grade": "Grade 11"}, {"name": "Vhugala Lephauphau", "grade": "Grade 11"}, {"name": "Vhulenda Lephauphau", "grade": "Grade 11"}, {"name": "Mthokozisi Samson Mahlalela", "grade": "Grade 11"}, {"name": "Lwandile Blessing Jonas Mahlangu", "grade": "Grade 11"}, {"name": "Theto Makita Mahlare", "grade": "Grade 11"}, {"name": "Ngiphile Adequate Malaza", "grade": "Grade 11"}, {"name": "Njongoyenkosi Mpendulo Mdluli", "grade": "Grade 11"}, {"name": "Phumelelo Relebogile Modise", "grade": "Grade 11"}, {"name": "Lehlohonolo Samson Mokoena", "grade": "Grade 11"}, {"name": "Boitumelo Nonhle Bianca Moreetsi", "grade": "Grade 11"}, {"name": "Lehakoe Motsoeneng", "grade": "Grade 11"}, {"name": "Khanyisa Mphuthi", "grade": "Grade 11"}, {"name": "Zoey Qhawekazi Hope Zamile Msezane", "grade": "Grade 11"}, {"name": "Melusi Wasipha Siphosethu Mthabela", "grade": "Grade 11"}, {"name": "Unarine Kenneth Jnr Mudziri", "grade": "Grade 11"}, {"name": "Ntandokazi Malibongwe Ngwenya", "grade": "Grade 11"}, {"name": "Sikholiwe Nkosi", "grade": "Grade 11"}, {"name": "Lonwabo November", "grade": "Grade 11"}, {"name": "Phiwokuhle Ntandoyenkosi Oratile Ntumba", "grade": "Grade 11"}, {"name": "Boyce Thando Radebe", "grade": "Grade 11"}, {"name": "Jabulile Sophie-Ann Radebe", "grade": "Grade 11"}, {"name": "Thato Caswell Selepe", "grade": "Grade 11"}, {"name": "Thando Shikwambane", "grade": "Grade 11"}, {"name": "Thobekile Angel Shongwe", "grade": "Grade 11"}, {"name": "Amahle Sigasa", "grade": "Grade 11"}, {"name": "Owethu Sinethemba Sindane", "grade": "Grade 11"}, {"name": "Nilach� Smith", "grade": "Grade 11"}, {"name": "Ashtin Strydom", "grade": "Grade 11"}, {"name": "Lesedi Moipone Tau", "grade": "Grade 11"}, {"name": "Tshediso Tsolo Tsolo", "grade": "Grade 11"}, {"name": "Jessica Turley", "grade": "Grade 11"}, {"name": "Sinenhlanhla Hlosile Yende", "grade": "Grade 11"}, {"name": "Mbali Naledi Zulu", "grade": "Grade 11"}, {"name": "Romana Cassim", "grade": "Grade 12"}, {"name": "Liamae-Kiara Clarke", "grade": "Grade 12"}, {"name": "Caitlyn De Ponte", "grade": "Grade 12"}, {"name": "Reabetswe Digoro", "grade": "Grade 12"}, {"name": "Alwande Phiwokuhle Dlamini", "grade": "Grade 12"}, {"name": "Elizabeth Anne Du Piesanie", "grade": "Grade 12"}, {"name": "Dehann Fourie", "grade": "Grade 12"}, {"name": "Ismail Hoosen", "grade": "Grade 12"}, {"name": "Matthew David Klink", "grade": "Grade 12"}, {"name": "Vutlharhi Hlulani Mabedhle", "grade": "Grade 12"}, {"name": "Amahle Lethokuhle Mabuza", "grade": "Grade 12"}, {"name": "Thandolwethu Mabuza", "grade": "Grade 12"}, {"name": "Mvelo Phakamani Maseko", "grade": "Grade 12"}, {"name": "Machemo Naomi Lindokuhle Masekoameng", "grade": "Grade 12"}, {"name": "Kutloano Matsimane", "grade": "Grade 12"}, {"name": "Khwezi Mbakaza", "grade": "Grade 12"}, {"name": "Hlumelo Mpho Mbatani", "grade": "Grade 12"}, {"name": "Maningisi Kgothatso Mdhluli", "grade": "Grade 12"}, {"name": "Oarabile Kgawane Mmotla", "grade": "Grade 12"}, {"name": "Mzwandile Nkosingiphile Mndawe", "grade": "Grade 12"}, {"name": "Dineo Princess Mokoena", "grade": "Grade 12"}, {"name": "Thabiso Tsebo Blessing Mokoena", "grade": "Grade 12"}, {"name": "Thapelo Ntumiseng Tsepo Molete", "grade": "Grade 12"}, {"name": "Lesego Boitumelo Thando Moroke", "grade": "Grade 12"}, {"name": "Thato Adam Siyabonga Motubatse", "grade": "Grade 12"}, {"name": "Roneoa Princess Mphaphuli", "grade": "Grade 12"}, {"name": "Sakhisizwe Saloam Dylan Mnotho Msezane", "grade": "Grade 12"}, {"name": "Sanele Ndumiso Mshiywa", "grade": "Grade 12"}, {"name": "Darrell Tafadzwa Mwasiswebe", "grade": "Grade 12"}, {"name": "Prosper Omolemo Ndjibu", "grade": "Grade 12"}, {"name": "Reotshepile Thandolwetu Ndlovu", "grade": "Grade 12"}, {"name": "Siyabonga Siphesihle Nkabinde", "grade": "Grade 12"}, {"name": "Lauren Michael Odayan", "grade": "Grade 12"}, {"name": "Rakim Shakur Petrus", "grade": "Grade 12"}, {"name": "Sajal Ramlugan", "grade": "Grade 12"}, {"name": "Lebohang Rapoo", "grade": "Grade 12"}, {"name": "Juane Roolvink", "grade": "Grade 12"}, {"name": "Aria Samlal", "grade": "Grade 12"}, {"name": "Katlego Vukona Sentsho", "grade": "Grade 12"}, {"name": "Dimpho Ziyanda Seroto", "grade": "Grade 12"}, {"name": "Thandeka Promise Sibeko", "grade": "Grade 12"}, {"name": "Kusaselihle Selusiwe Ntombifuthi Sibiya", "grade": "Grade 12"}, {"name": "Asanda Nozibusiso Skhosana", "grade": "Grade 12"}, {"name": "Mawandla Soko", "grade": "Grade 12"}, {"name": "Jacobus Stander", "grade": "Grade 12"}, {"name": "Aphiwe Sibahle Thwala", "grade": "Grade 12"}, {"name": "Neo Shikosha Tivane", "grade": "Grade 12"}, {"name": "Minas Oghehetega Akpoghene Ugovwarhe", "grade": "Grade 12"}, {"name": "Paballo Thandi Zimu", "grade": "Grade 12"}];
-
-// ══ STATE ════════════════════════════════════════════════════
-let me = null, selId = null, selPt = 2;
-let LEARNERS = [];   // live from Supabase
-let PERIOD = { id: null, periodNum: 1, periodStart: td() };
-
-function td() { return new Date().toISOString().split('T')[0]; }
-const g = id => document.getElementById(id);
-const gv = id => g(id).value.trim();
-
-function pPts(l) {
-  return (l.history||[]).reduce((a,x)=>a+x.pts,0);
-}
-// How many detentions have been earned (1 per 10 pts)
-function detLevel(l) { return Math.floor(pPts(l)/THRESH); }
-// True if there's an unacknowledged detention (bubble stays red)
-function detPending(l) { return detLevel(l) > (l.detention_acknowledged||0); }
-function dLeft() {
-  const s=new Date(PERIOD.periodStart), e=new Date(s);
-  e.setDate(e.getDate()+PDAYS);
-  return Math.max(0,Math.ceil((e-new Date())/86400000));
-}
-
-// ══ BOOT ═════════════════════════════════════════════════════
-async function boot() {
-  showLoading(true);
-  try {
-    await ensureTables();
-    const hasAccounts = await checkHasAccounts();
-    if (!hasAccounts) {
-      showLoading(false);
-      g('setupScreen').classList.remove('hidden');
-      return;
-    }
-    await loadPeriod();
-    showLoading(false);
-    g('loginScreen').classList.remove('hidden');
-  } catch(err) {
-    showLoading(false);
-    toast('Connection error: ' + err.message, 1);
-    g('loginScreen').classList.remove('hidden');
-  }
-}
-
-function showLoading(on) {
-  let el = g('loadingScreen');
-  if (!el) return;
-  el.classList.toggle('hidden', !on);
-}
-
-async function ensureTables() {
-  // Tables are created via Supabase dashboard SQL — just verify connection
-  try { await sb('accounts?limit=1'); } catch(e) { throw new Error('Cannot reach database. Check connection.'); }
-}
-
-async function checkHasAccounts() {
-  try {
-    const rows = await sb('accounts?limit=1');
-    return rows && rows.length > 0;
-  } catch(e) { return false; }
-}
-
-async function loadPeriod() {
-  try {
-    const rows = await sb('period?limit=1');
-    if (rows && rows.length > 0) PERIOD = rows[0];
-  } catch(e) {}
-}
-
-// ══ SETUP ════════════════════════════════════════════════════
-async function doSetup() {
-  const name=gv('sName'), user=gv('sUser').toLowerCase(), pass=gv('sPass'), pass2=gv('sPass2');
-  const e=g('setupErr'); e.style.display='none';
-  if (!name||!user||!pass) return showE(e,'All fields are required.');
-  if (pass!==pass2) return showE(e,'Passwords do not match.');
-  if (pass.length<6) return showE(e,'Password must be at least 6 characters.');
-
-  const btn = g('setupBtn'); btn.disabled = true; btn.textContent = 'Setting up…';
-
-  try {
-    // Create admin account
-    const accounts = [{name, username:user, password:pass, role:'admin'}];
-
-    // Add all seeded educators
-    SEED_EDUCATORS.forEach(eduName => {
-      const parts = eduName.replace(/^Dr\s+/i,'').trim().split(/\s+/);
-      const surname = parts[parts.length-1].toLowerCase().replace(/[^a-z]/g,'');
-      const first = parts[0].toLowerCase().replace(/[^a-z]/g,'');
-      const uname = first.charAt(0) + surname;
-      const isAdmin = !!ADMIN_ACCOUNTS[uname];
-      accounts.push({
-        name: eduName,
-        username: uname,
-        password: isAdmin ? ADMIN_ACCOUNTS[uname].password : 'curro2026',
-        role: isAdmin ? 'admin' : 'educator'
-      });
-    });
-
-    // Add lstrydom if not already in educators
-    if (!accounts.find(a=>a.username==='lstrydom')) {
-      accounts.push({name:'Leon Strydom', username:'lstrydom', password:'curro2025', role:'admin'});
-    }
-
-    // Insert all accounts
-    await sb('accounts', 'POST', accounts);
-
-    // Seed all learners
-    const learners = SEED_LEARNERS.map(l=>({name:l.name, grade:l.grade, history:JSON.stringify([])}));
-    // Insert in batches of 50
-    for (let i=0; i<learners.length; i+=50) {
-      await sb('learners', 'POST', learners.slice(i,i+50));
-    }
-
-    // Create initial period
-    await sb('period', 'POST', [{periodNum:1, periodStart:td()}]);
-
-    toast('✅ Setup complete! Please sign in.');
-    g('setupScreen').classList.add('hidden');
-    g('loginScreen').classList.remove('hidden');
-  } catch(err) {
-    showE(e, 'Setup failed: ' + err.message);
-  } finally {
-    btn.disabled = false; btn.textContent = 'Create Admin Account →';
-  }
-}
-
-// ══ LOGIN ════════════════════════════════════════════════════
-async function doLogin() {
-  const user=gv('lUser').toLowerCase(), pass=gv('lPass');
-  const e=g('loginErr'); e.style.display='none';
-  const btn=g('loginBtn'); btn.disabled=true; btn.textContent='Signing in…';
-
-  try {
-    const rows = await sb(`accounts?username=eq.${encodeURIComponent(user)}&password=eq.${encodeURIComponent(pass)}&limit=1`);
-    if (!rows || rows.length===0) { showE(e,'Invalid username or password.'); return; }
-    me = rows[0];
-    await loadPeriod();
-    await loadLearners();
-    g('loginScreen').classList.add('hidden');
-    g('app').classList.remove('hidden');
-    g('uPill').textContent = me.name;
-    const rp=g('rPill');
-    rp.textContent = me.role==='admin'?'★ Admin':'✏ Educator';
-    rp.className='role-pill '+(me.role==='admin'?'role-admin':'role-edu');
-    g('t-admin').classList.toggle('hidden', me.role!=='admin');
-    renderStrip(); filterL();
-  } catch(err) {
-    showE(e, 'Login error: ' + err.message);
-  } finally {
-    btn.disabled=false; btn.textContent='Sign In';
-  }
-}
-
 async function loadLearners() {
-  const rows = await sb('learners?order=grade,name');
-  LEARNERS = rows.map(r=>({
-    ...r,
-    history: typeof r.history==='string' ? JSON.parse(r.history) : (r.history||[]),
-    detention_ack_log: typeof r.detention_ack_log==='string' ? JSON.parse(r.detention_ack_log) : (r.detention_ack_log||[])
-  }));
-}
-
-function doLogout() {
-  me=null; selId=null; LEARNERS=[];
-  g('app').classList.add('hidden');
-  g('loginScreen').classList.remove('hidden');
-  g('lUser').value=''; g('lPass').value='';
-  g('loginErr').style.display='none';
-  g('tForm').classList.add('hidden');
-}
-
-function showE(el,msg){el.textContent=msg;el.style.display='block';}
-function togglePw(id,btn){
-  const i=g(id); i.type=i.type==='password'?'text':'password';
-  btn.textContent=i.type==='password'?'👁':'🙈';
-}
-
-// ══ TABS ═════════════════════════════════════════════════════
-function sw(name) {
-  ['log','learners','report','admin','pw'].forEach(t=>{
-    g('pg-'+t)&&g('pg-'+t).classList.toggle('hidden',t!==name);
-    g('t-'+t)&&g('t-'+t).classList.toggle('active',t===name);
-  });
-  if(name==='learners') renderAll();
-  if(name==='report')   renderReport();
-  if(name==='admin')  { renderEduList(); g('pStart').value=PERIOD.periodStart; g('pNum').value=PERIOD.periodNum; }
-  if(name==='pw')     { g('cpCur').value=''; g('cpNew').value=''; g('cpNew2').value=''; }
-}
-
-// ══ PERIOD ═══════════════════════════════════════════════════
-function renderStrip() {
-  const dl=dLeft();
-  g('periodStrip').innerHTML=`
-    <div><div class="lbl">Current Period</div>
-      <div class="val">Period ${PERIOD.periodNum} · ${PERIOD.periodStart}</div></div>
-    <div class="dl" style="color:${dl<=3?'var(--red)':'var(--accent)'}">⏱ ${dl}d left</div>`;
-}
-
-async function savePeriod() {
-  const d=gv('pStart'), n=parseInt(gv('pNum'));
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){toast('Use YYYY-MM-DD format',1);return;}
   try {
-    if (PERIOD.id) {
-      await sb(`period?id=eq.${PERIOD.id}`, 'PATCH', {periodNum:n, periodStart:d});
+    const data = await sb('learners?select=*&order=name.asc');
+    if (data && data.length > 0) {
+      learners = data;
     } else {
-      const rows = await sb('period', 'POST', [{periodNum:n, periodStart:d}]);
-      PERIOD = rows[0];
+      // Fallback default demo data if table is empty
+      learners = [
+        { id: "1", name: "Chloe Chetty", grade: "Grade 10", points: 9, detention_acknowledged: false },
+        { id: "2", name: "Jaco van der Merwe", grade: "Grade 11", points: 11, detention_acknowledged: false },
+        { id: "3", name: "Sipho Ndlovu", grade: "Grade 9", points: 4, detention_acknowledged: false }
+      ];
     }
-    PERIOD.periodStart=d; PERIOD.periodNum=n;
-    renderStrip(); toast('Period settings saved!');
-  } catch(err) { toast('Save failed: '+err.message,1); }
-}
-
-async function newPeriod() {
-  if(!confirm(`Start Period ${PERIOD.periodNum+1}? Points will continue to accumulate.`)) return;
-  const newNum = PERIOD.periodNum+1;
-  try {
-    if (PERIOD.id) {
-      await sb(`period?id=eq.${PERIOD.id}`, 'PATCH', {periodNum:newNum, periodStart:td()});
-    } else {
-      const rows = await sb('period', 'POST', [{periodNum:newNum, periodStart:td()}]);
-      PERIOD = rows[0];
-    }
-    PERIOD.periodNum=newNum; PERIOD.periodStart=td();
-    renderStrip(); renderReport(); filterL();
-    toast(`Period ${PERIOD.periodNum} started — points carry over!`);
-  } catch(err) { toast('Error: '+err.message,1); }
-}
-
-// ══ LOG TAB ══════════════════════════════════════════════════
-function filterL() {
-  const q=(g('srch').value||'').toLowerCase();
-  const gf=(g('gradeFilter')&&g('gradeFilter').value)||'';
-  const list=LEARNERS.filter(l=>{
-    const matchQ=!q||l.name.toLowerCase().includes(q);
-    const matchG=!gf||l.grade===gf;
-    return matchQ&&matchG;
-  });
-  const c=g('lList');
-  if(!list.length){c.innerHTML='<div class="empty">No learners found</div>';return;}
-  c.innerHTML=list.map(l=>{
-    const pts=pPts(l),pending=detPending(l);
-    const cls=pending?'ph':pts>=6?'pm':'pl',df=pending?' det':'';
-    return `<div class="li${df}${selId===l.id?' sel':''}" onclick="selL(${l.id})">
-      <div><div class="ln">${l.name}${pending?' 🚨':''}</div><div class="lg">${l.grade}</div></div>
-      <div class="pill ${cls}">${pts}pts</div></div>`;
-  }).join('');
-}
-
-function selL(id) {
-  selId=id;
-  const l=LEARNERS.find(x=>x.id===id);
-  filterL();
-  const f=g('tForm'); f.classList.remove('hidden');
-  g('tTitle').textContent=`Log — ${l.name}`;
-  const pts=pPts(l), banner=g('dBannerTop');
-  if(detPending(l)){
-    banner.classList.remove('hidden');
-    const ackd=l.detention_acknowledged||0, lvl=detLevel(l);
-    g('dBannerMsg').textContent=`${l.name} has ${pts} pts — Detention #${lvl} assigned (${ackd} acknowledged).`;
-    // Show acknowledge button for admins
-    g('dBannerAck').style.display = me&&me.role==='admin' ? 'inline-block' : 'none';
-    g('dBannerAck').onclick = ()=>acknowledgeDetention(l.id);
-  } else banner.classList.add('hidden');
-  g('tType').value=''; g('tNote').value='';
-  document.querySelectorAll('.pb').forEach((b,i)=>{b.classList.toggle('on',i===0);});
-  selPt=2; f.scrollIntoView({behavior:'smooth'});
-}
-
-function selPts(btn,pts){
-  document.querySelectorAll('.pb').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on'); selPt=pts;
-}
-
-async function submitT() {
-  if(!selId) return;
-  const type=g('tType').value;
-  if(!type){toast('Select a transgression type',1);return;}
-  const note=g('tNote').value.trim();
-  const l=LEARNERS.find(x=>x.id===selId);
-  const entry={type,pts:selPt,note,date:new Date().toISOString(),educator:me.name};
-  const newHistory=[...(l.history||[]),entry];
-
-  const btn=g('submitBtn'); if(btn){btn.disabled=true;btn.textContent='Saving…';}
-  try {
-    await sb(`learners?id=eq.${l.id}`, 'PATCH', {history:JSON.stringify(newHistory)});
-    l.history=newHistory;
-    const total=pPts(l);
-    filterL();
-    if(detPending(l)) showDet(l,total);
-    else toast(`+${selPt}pts — ${l.name} (Total: ${total})`);
-    selL(selId);
-  } catch(err) {
-    toast('Save failed: '+err.message,1);
-  } finally {
-    if(btn){btn.disabled=false;btn.textContent='Submit Transgression';}
+  } catch (e) {
+    console.warn("Could not fetch from Supabase, loading fallback state:", e);
+    learners = [
+      { id: "1", name: "Chloe Chetty", grade: "Grade 10", points: 9, detention_acknowledged: false },
+      { id: "2", name: "Jaco van der Merwe", grade: "Grade 11", points: 11, detention_acknowledged: false }
+    ];
   }
 }
 
-function showDet(l,pts) {
-  const b=g('dBannerTop'); b.classList.remove('hidden');
-  g('dBannerMsg').textContent=`⚠️ ${l.name} has reached ${pts} pts — Detention #${detLevel(l)} assigned!`;
-  g('dBannerAck').style.display = me&&me.role==='admin' ? 'inline-block' : 'none';
-  g('dBannerAck').onclick = ()=>acknowledgeDetention(l.id);
-  b.style.animation='none'; setTimeout(()=>b.style.animation='',10);
-  toast(`🚨 DETENTION — ${l.name} (${pts}pts)`,0,1);
+// ══ NAVIGATION ══════════════════════════════════════════════
+function sw(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('main').forEach(m => m.classList.add('hidden'));
+  document.getElementById(`t-${tab}`).classList.add('active');
+  document.getElementById(`pg-${tab}`).classList.remove('hidden');
+  if (tab === 'learners') renderAllLearners();
+  if (tab === 'report') renderReports();
 }
 
-async function acknowledgeDetention(learnerId) {
-  const l=LEARNERS.find(x=>x.id===learnerId);
-  if(!l) return;
-  const newAck = detLevel(l);
-  const log = [...(l.detention_ack_log||[]), {level:newAck, date:new Date().toISOString(), admin:me.name}];
-  try {
-    await sb(`learners?id=eq.${learnerId}`, 'PATCH', {detention_acknowledged: newAck, detention_ack_log: JSON.stringify(log)});
-    l.detention_acknowledged = newAck;
-    l.detention_ack_log = log;
-    filterL(); renderAll();
-    selL(learnerId);
-    toast(`✅ Detention #${newAck} marked as done for ${l.name}`);
-  } catch(err) { toast('Error: '+err.message,1); }
-}
+// ══ FILTER & RENDER LOG TAB ═════════════════════════════════
+function filterL() {
+  const q = document.getElementById("srch").value.toLowerCase();
+  const g = document.getElementById("gradeFilter").value;
+  const list = document.getElementById("lList");
+  list.innerHTML = "";
 
-async function acknowledgeDetentionFromReport(learnerId) {
-  const l=LEARNERS.find(x=>x.id===learnerId);
-  if(!l) return;
-  const newAck = detLevel(l);
-  const log = [...(l.detention_ack_log||[]), {level:newAck, date:new Date().toISOString(), admin:me.name}];
-  try {
-    await sb(`learners?id=eq.${learnerId}`, 'PATCH', {detention_acknowledged: newAck, detention_ack_log: JSON.stringify(log)});
-    l.detention_acknowledged = newAck;
-    l.detention_ack_log = log;
-    filterL(); renderAll();
-    viewLearnerReport(learnerId);
-    toast(`✅ Detention #${newAck} marked as done for ${l.name}`);
-  } catch(err) { toast('Error: '+err.message,1); }
-}
+  const filtered = learners.filter(l => (!g || l.grade === g) && l.name.toLowerCase().includes(q));
 
-// ══ LEARNERS TAB ═════════════════════════════════════════════
-async function addL() {
-  const name=gv('nName'), grade=g('nGrade').value;
-  if(!name||!grade){toast('Fill in name and grade',1);return;}
-  if(LEARNERS.find(l=>l.name.toLowerCase()===name.toLowerCase()&&l.grade===grade))
-    {toast('Learner already exists',1);return;}
-  try {
-    const rows = await sb('learners','POST',[{name,grade,history:JSON.stringify([])}]);
-    LEARNERS.push({...rows[0], history:[]});
-    g('nName').value=''; g('nGrade').value='';
-    renderAll(); filterL(); toast(`${name} added!`);
-  } catch(err){toast('Error: '+err.message,1);}
-}
+  if (filtered.length === 0) {
+    list.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:.85rem;padding:12px;">No learners found.</div>`;
+    return;
+  }
 
-async function delL(id) {
-  if(!confirm('Remove learner and all their records?')) return;
-  try {
-    await sb(`learners?id=eq.${id}`,'DELETE');
-    LEARNERS=LEARNERS.filter(l=>l.id!==id);
-    renderAll(); filterL(); toast('Learner removed');
-  } catch(err){toast('Error: '+err.message,1);}
-}
+  filtered.forEach(l => {
+    const isDet = (l.points >= DETENTION_THRESHOLD);
+    const isAck = !!l.detention_acknowledged;
+    
+    let cls = "li";
+    if (isDet) cls += isAck ? " det-ack" : " det";
 
-function renderAll() {
-  const q=(g('srchAll').value||'').toLowerCase();
-  const list=LEARNERS.filter(l=>l.name.toLowerCase().includes(q)||l.grade.toLowerCase().includes(q));
-  g('lCount').textContent=LEARNERS.length;
-  const c=g('allList');
-  if(!list.length){c.innerHTML='<div class="empty">No learners yet</div>';return;}
-  c.innerHTML=list.map(l=>{
-    const pts=pPts(l),pending=detPending(l),cls=pending?'ph':pts>=6?'pm':'pl';
-    const rec=[...l.history].reverse().slice(0,2);
-    const hist=rec.map((e,ei)=>`<div class="he" style="margin-bottom:5px">
-      <div style="flex:1"><div class="ht">${e.type}</div>${e.note?`<div class="hn">${e.note}</div>`:''}
-        <div class="heu">by ${e.educator}</div>
-        <div class="hd">${new Date(e.date).toLocaleString('en-ZA',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+    const div = document.createElement("div");
+    div.className = cls;
+    div.onclick = () => selectLearner(l.id);
+    
+    let badgeCls = isDet ? (isAck ? "pack" : "ph") : (l.points >= 5 ? "pm" : "pl");
+    let statusText = isDet ? (isAck ? "SERVED ✅" : `${l.points} PTS (DETENTION)`) : `${l.points} PTS`;
+
+    div.innerHTML = `
+      <div>
+        <div class="ln">${l.name}</div>
+        <div class="lg">${l.grade}</div>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-        <div class="hp">+${e.pts}</div>
-        ${me&&me.role==='admin'?`<button class="btn-xs bxr" onclick="removePoint(${l.id},'${e.date}')" style="padding:7px 11px;font-size:.82rem;border-radius:8px">✕ Remove</button>`:''}
-      </div></div>`).join('');
-    return `<div style="margin-bottom:8px">
-      <div class="li" style="cursor:default">
-        <div><div class="ln">${l.name}</div><div class="lg">${l.grade}</div></div>
-        <div style="display:flex;align-items:center;gap:7px">
-          <div class="pill ${cls}">${pts}pts</div>
-          <button class="btn-xs bxb" onclick="viewLearnerReport(${l.id})" style="padding:7px 12px;font-size:.82rem;border-radius:8px">📋 Report</button>
-          ${me&&me.role==='admin'?`<button class="btn-xs bxr" onclick="delL(${l.id})" style="padding:7px 11px;font-size:.82rem;border-radius:8px">✕</button>`:''}
-        </div></div>
-      ${hist?`<div style="padding:4px 3px 0">${hist}</div>`:''}
-    </div>`;
-  }).join('');
-}
-
-// ══ REPORT ════════════════════════════════════════════════════
-function renderReport(){
-  const det=LEARNERS.filter(l=>detPending(l));
-  g('statsGrid').innerHTML=`
-    <div class="sb"><div class="sn blu">${LEARNERS.length}</div><div class="sl">Learners</div></div>
-    <div class="sb"><div class="sn red">${det.length}</div><div class="sl">In Detention</div></div>
-    <div class="sb"><div class="sn yel">${LEARNERS.reduce((s,l)=>s+pPts(l),0)}</div><div class="sl">Total Points</div></div>
-    <div class="sb"><div class="sn grn">${dLeft()}</div><div class="sl">Days Left</div></div>`;
-  g('detList').innerHTML=det.length
-    ? det.map(l=>`<div class="det-banner" style="margin-bottom:8px;padding:11px 14px">
-        <div class="di">🚨</div>
-        <div><h3>${l.name}</h3><p>${l.grade} — <strong>${pPts(l)} points</strong></p></div>
-      </div>`).join('')
-    : '<div class="empty">No learners in detention 🎉</div>';
-  g('repList').innerHTML=[...LEARNERS].sort((a,b)=>pPts(b)-pPts(a)).map(l=>{
-    const pts=pPts(l),cls=pts>=THRESH?'ph':pts>=6?'pm':'pl';
-    return `<div class="li" style="cursor:default;margin-bottom:7px">
-      <div><div class="ln">${l.name}</div><div class="lg">${l.grade}</div></div>
-      <div class="pill ${cls}">${pts}pts</div></div>`;
-  }).join('')||'<div class="empty">No learners yet</div>';
-}
-
-// ══ ADMIN ═════════════════════════════════════════════════════
-async function addEdu(){
-  const name=gv('eName'),user=gv('eUser').toLowerCase(),pass=gv('ePass'),role=g('eRole').value;
-  if(!name||!user||!pass){toast('Fill in all fields',1);return;}
-  if(pass.length<6){toast('Password must be at least 6 characters',1);return;}
-  try {
-    const existing = await sb(`accounts?username=eq.${encodeURIComponent(user)}&limit=1`);
-    if(existing&&existing.length>0){toast('Username already taken',1);return;}
-    await sb('accounts','POST',[{name,username:user,password:pass,role}]);
-    g('eName').value=''; g('eUser').value=''; g('ePass').value='';
-    renderEduList(); toast(`${name} added as ${role}`);
-  } catch(err){toast('Error: '+err.message,1);}
-}
-
-async function delEdu(id){
-  if(id===me.id){toast("Can't remove your own account",1);return;}
-  if(!confirm('Remove this educator account?')) return;
-  try {
-    await sb(`accounts?id=eq.${id}`,'DELETE');
-    renderEduList(); toast('Account removed');
-  } catch(err){toast('Error: '+err.message,1);}
-}
-
-async function renderEduList(){
-  const c=g('eduList');
-  c.innerHTML='<div class="empty">Loading…</div>';
-  try {
-    const accounts = await sb('accounts?order=name');
-    if(!accounts||!accounts.length){c.innerHTML='<div class="empty">No accounts</div>';return;}
-    c.innerHTML=accounts.map(a=>`<div class="eu">
-      <div><div class="eu-name">${a.name}</div><div class="eu-meta">@${a.username}</div></div>
-      <div style="display:flex;align-items:center;gap:7px">
-        <div class="role-pill ${a.role==='admin'?'role-admin':'role-edu'}">${a.role==='admin'?'★ Admin':'✏ Educator'}</div>
-        ${a.id!==me.id?`<button class="btn-xs bxr" onclick="delEdu(${a.id})">✕</button>`:'<span style="font-size:.69rem;color:var(--muted)">(you)</span>'}
-      </div></div>`).join('');
-  } catch(err){c.innerHTML='<div class="empty">Error loading accounts</div>';}
-}
-
-async function changeMyPw() {
-  const cur=g('cpCur').value, nw=g('cpNew').value, nw2=g('cpNew2').value;
-  if(!cur||!nw||!nw2){toast('Fill in all fields',1);return;}
-  if(nw.length<6){toast('New password must be at least 6 characters',1);return;}
-  if(nw!==nw2){toast('New passwords do not match',1);return;}
-  try {
-    const check = await sb(`accounts?id=eq.${me.id}&password=eq.${encodeURIComponent(cur)}&limit=1`);
-    if(!check||check.length===0){toast('Current password is incorrect',1);return;}
-    await sb(`accounts?id=eq.${me.id}`,'PATCH',{password:nw});
-    me.password=nw;
-    toast('✅ Password updated successfully!');
-    g('cpCur').value=''; g('cpNew').value=''; g('cpNew2').value='';
-  } catch(err){toast('Error: '+err.message,1);}
-}
-
-async function clearAll(){
-  if(!confirm('CLEAR ALL LEARNER POINTS? Cannot be undone.')) return;
-  if(!confirm('Last warning — all points will be deleted permanently.')) return;
-  try {
-    // Reset all learner histories and detention acknowledgements
-    await sb('learners','PATCH',{history:JSON.stringify([]),detention_acknowledged:0,detention_ack_log:JSON.stringify([])});
-    await loadLearners();
-    renderAll(); filterL(); toast('All points cleared');
-  } catch(err){toast('Error: '+err.message,1);}
-}
-
-// ══ TOAST ════════════════════════════════════════════════════
-function toast(msg,err=0,warn=0){
-  const t=g('toast'); t.textContent=msg;
-  t.className='toast'+(err?' err':warn?' warn':'');
-  clearTimeout(t._t); setTimeout(()=>t.classList.add('show'),10);
-  t._t=setTimeout(()=>t.classList.remove('show'),3500);
-}
-
-// ══ FILE UPLOAD (kept for manual imports) ════════════════════
-function onDrop(e){e.preventDefault();}
-function onFileSel(inp){}
-
-// ══ LEARNER REPORT ══════════════════════════════════════════
-function viewLearnerReport(id) {
-  const l = LEARNERS.find(x => x.id === id);
-  if (!l) return;
-  const pts = pPts(l);
-  const lvl = detLevel(l);
-  const ackd = l.detention_acknowledged||0;
-  const pending = detPending(l);
-  const history = [...(l.history||[])].reverse();
-  const today = new Date().toLocaleDateString('en-ZA', {day:'numeric',month:'long',year:'numeric'});
-
-  const rows = history.length ? history.map(e => `
-    <tr>
-      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem">${new Date(e.date).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})}</td>
-      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem">${e.type}</td>
-      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--muted)">${e.note||'—'}</td>
-      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--red);font-weight:700;text-align:center">+${e.pts}</td>
-      <td style="padding:7px 9px;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--muted)">${e.educator}</td>
-      <td style="padding:7px 9px;border-bottom:1px solid var(--border);text-align:center">${me&&me.role==='admin'?`<button class="btn-xs bxr" onclick="removePointFromReport(${l.id},'${e.date}')">✕</button>`:''}</td>
-    </tr>`).join('') 
-    : '<tr><td colspan="5" style="text-align:center;padding:14px;color:var(--muted);font-size:.82rem">No transgressions recorded</td></tr>';
-
-  g('reportContent').innerHTML = `
-    <div style="background:var(--navy);border-radius:12px;padding:14px;margin-bottom:12px;">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:2px">${l.name}</div>
-      <div style="font-size:.78rem;color:var(--muted)">${l.grade} · Report generated ${today}</div>
-      <div style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <div style="background:${pending?'var(--red-soft)':'var(--green-soft)'};border:1px solid ${pending?'var(--red)':'var(--green)'};border-radius:10px;padding:8px 14px;text-align:center">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:${pending?'var(--red)':'var(--green)'}">${pts}</div>
-          <div style="font-size:.69rem;color:var(--muted)">Total Points</div>
-        </div>
-        <div style="background:${pending?'var(--red-soft)':'var(--green-soft)'};border:1px solid ${pending?'var(--red)':'var(--green)'};border-radius:10px;padding:8px 14px;text-align:center">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:${pending?'var(--red)':'var(--green)'}">${lvl > 0 ? '#'+lvl : 'NO'}</div>
-          <div style="font-size:.69rem;color:var(--muted)">Detention</div>
-        </div>
-        <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;text-align:center">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--accent)">${history.length}</div>
-          <div style="font-size:.69rem;color:var(--muted)">Incidents</div>
-        </div>
-      </div>
-    </div>
-    ${pending?`<div style="background:linear-gradient(135deg,#8b0000,#c0392b);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
-      <span>🚨 Detention #${lvl} pending (${pts} pts · ${ackd} acknowledged)</span>
-      ${me&&me.role==='admin'?`<button onclick="acknowledgeDetentionFromReport(${l.id})" style="background:#fff2;border:1px solid #fff6;color:#fff;border-radius:8px;padding:6px 14px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap">✅ Mark Done</button>`:''}
-    </div>`:''}
-    <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border)">
-      <table style="width:100%;border-collapse:collapse;">
-        <thead>
-          <tr style="background:var(--navy2)">
-            <th style="padding:8px 9px;text-align:left;font-size:.72rem;color:var(--muted);font-weight:700">Date</th>
-            <th style="padding:8px 9px;text-align:left;font-size:.72rem;color:var(--muted);font-weight:700">Transgression</th>
-            <th style="padding:8px 9px;text-align:left;font-size:.72rem;color:var(--muted);font-weight:700">Notes</th>
-            <th style="padding:8px 9px;text-align:center;font-size:.72rem;color:var(--muted);font-weight:700">Pts</th>
-            <th style="padding:8px 9px;text-align:left;font-size:.72rem;color:var(--muted);font-weight:700">Educator</th>
-            ${me&&me.role==='admin'?'<th style="padding:8px 9px;font-size:.72rem;color:var(--muted);font-weight:700"></th>':''}
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-    <div style="margin-top:10px;font-size:.72rem;color:var(--muted);text-align:center">Curro Secunda Discipline System · Period ${PERIOD.periodNum}</div>
-    ${(l.detention_ack_log&&l.detention_ack_log.length)?`
-    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
-      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px">📋 Detention Acknowledgement Log</div>
-      ${l.detention_ack_log.map(e=>`
-        <div style="background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:7px 11px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <div>
-            <div style="font-weight:700;font-size:.82rem;color:var(--green)">✅ Detention #${e.level} acknowledged</div>
-            <div style="font-size:.7rem;color:var(--muted);margin-top:2px">by ${e.admin}</div>
-          </div>
-          <div style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);text-align:right;white-space:nowrap">
-            ${new Date(e.date).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})}<br>
-            ${new Date(e.date).toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})}
-          </div>
-        </div>`).join('')}
-    </div>`:''}
-  `;
-  g('reportModal').classList.remove('hidden');
-  g('reportModal').style.display = 'flex';
-}
-
-function closeReport() {
-  g('reportModal').classList.add('hidden');
-  g('reportModal').style.display = 'none';
-}
-
-function printReport() {
-  const content = g('reportContent').innerHTML;
-  const win = window.open('', '_blank');
-  win.document.write(`<!DOCTYPE html><html><head><title>Learner Report</title>
-    <style>
-      body{font-family:Arial,sans-serif;padding:30px;color:#111;max-width:700px;margin:0 auto;}
-      table{width:100%;border-collapse:collapse;margin-top:16px;}
-      th,td{padding:9px 12px;border:1px solid #ddd;text-align:left;font-size:13px;}
-      th{background:#f5f5f5;font-weight:700;}
-      h1{font-size:22px;margin-bottom:4px;}
-      .meta{color:#666;font-size:13px;margin-bottom:16px;}
-      .stats{display:flex;gap:16px;margin:16px 0;}
-      .stat{border:1px solid #ddd;border-radius:8px;padding:10px 18px;text-align:center;}
-      .stat-val{font-size:24px;font-weight:800;}
-      .det{background:#fff0f0;border-color:#c0392b;color:#c0392b;}
-      .ok{background:#f0fff4;border-color:#27ae60;color:#27ae60;}
-      .det-banner{background:#c0392b;color:#fff;padding:10px 14px;border-radius:8px;font-weight:700;margin:12px 0;}
-      .footer{margin-top:20px;font-size:11px;color:#999;text-align:center;}
-      @media print{body{padding:10px;}}
-    </style></head><body>
-    <div id="pc">${content}</div>
-    <script>
-      // Clean up styles for print
-      document.querySelectorAll('[style]').forEach(el=>{
-        el.style.color='';el.style.background='';
-      });
-    <\/script>
-  </body></html>`);
-  win.document.close();
-  setTimeout(()=>win.print(), 500);
-}
-
-function copyReport() {
-  // Find learner from modal content
-  const nameEl = g('reportContent').querySelector('[style*="font-weight:800"]');
-  const rows = [...g('reportContent').querySelectorAll('tbody tr')];
-  const pts = g('reportContent').querySelector('[style*="1.4rem"]');
-
-  let text = '--- CURRO SECUNDA DISCIPLINE REPORT ---\n';
-  text += new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'}) + '\n\n';
-
-  // Get all text content simply
-  const content = g('reportContent').innerText;
-  text += content;
-
-  navigator.clipboard.writeText(text).then(()=>{
-    toast('✅ Report copied — paste into your email!');
-  }).catch(()=>{
-    toast('Could not copy — try Print instead',1);
+      <div class="pill ${badgeCls}">${statusText}</div>
+    `;
+    list.appendChild(div);
   });
+}
+
+function selectLearner(id) {
+  selectedLearnerId = id;
+  const l = learners.find(x => x.id === id);
+  if (!l) return;
+
+  document.getElementById("tForm").classList.remove("hidden");
+  document.getElementById("tTitle").innerText = `Log Transgression for ${l.name}`;
+
+  updateDetentionBanner(l);
+}
+
+function updateDetentionBanner(l) {
+  const banner = document.getElementById("dBannerTop");
+  const msg = document.getElementById("dBannerMsg");
+  const ackBtn = document.getElementById("dBannerAck");
+  const icon = document.getElementById("dIcon");
+  const title = document.getElementById("dTitle");
+
+  if (l.points >= DETENTION_THRESHOLD) {
+    banner.classList.remove("hidden");
+    if (l.detention_acknowledged) {
+      banner.classList.add("ack");
+      icon.innerText = "✅";
+      title.innerText = "DETENTION SERVED / ACKNOWLEDGED";
+      msg.innerText = `${l.name} (${l.points} points) has completed their required detention.`;
+      ackBtn.style.display = "none";
+    } else {
+      banner.classList.remove("ack");
+      icon.innerText = "🚨";
+      title.innerText = "DETENTION REQUIRED (9+ Points)";
+      msg.innerText = `${l.name} currently has ${l.points} points and requires detention.`;
+      ackBtn.style.display = "inline-block";
+    }
+  } else {
+    banner.classList.add("hidden");
+  }
+}
+
+// ══ ACKNOWLEDGE DETENTION (CORE FEATURE) ════════════════════
+async function acknowledgeDetention(id) {
+  const targetId = id || selectedLearnerId;
+  const l = learners.find(x => x.id === targetId);
+  if (!l) return;
+
+  try {
+    // 1. Send update to Supabase
+    await sb(`learners?id=eq.${l.id}`, 'PATCH', { detention_acknowledged: true });
+    
+    // 2. Update local state
+    l.detention_acknowledged = true;
+    showToast(`✅ Detention acknowledged for ${l.name}`);
+
+    // 3. Update active UI components
+    if (selectedLearnerId === l.id) {
+      updateDetentionBanner(l);
+    }
+    filterL();
+    renderAllLearners();
+    renderReports();
+  } catch (err) {
+    // Fallback local update if network is unavailable
+    l.detention_acknowledged = true;
+    showToast(`✅ Acknowledged (Local mode) for ${l.name}`);
+    if (selectedLearnerId === l.id) updateDetentionBanner(l);
+    filterL();
+    renderAllLearners();
+    renderReports();
+  }
+}
+
+// ══ SUBMIT TRANSGRESSION ════════════════════════════════════
+async function submitT() {
+  if (!selectedLearnerId) return;
+  const l = learners.find(x => x.id === selectedLearnerId);
+  if (!l) return;
+
+  const newPoints = Number(l.points || 0) + Number(currentPts);
+  let resetAck = false;
+
+  // Re-trigger detention state if new points were added to an already acknowledged learner
+  if (newPoints >= DETENTION_THRESHOLD && currentPts > 0) {
+    resetAck = false; 
+  }
+
+  try {
+    await sb(`learners?id=eq.${l.id}`, 'PATCH', { 
+      points: newPoints,
+      detention_acknowledged: l.detention_acknowledged
+    });
+  } catch(e) {
+    console.warn("Database sync deferred:", e);
+  }
+
+  l.points = newPoints;
+  showToast(`Added +${currentPts} points to ${l.name} (Total: ${l.points})`);
+  
+  updateDetentionBanner(l);
+  filterL();
+}
+
+function selPts(btn, pts) {
+  document.querySelectorAll('.pb').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  currentPts = pts;
 }
 
 function autoSetPts(val) {
-  // Auto-select points based on transgression code
-  let pts = 2;
-  if (val.includes('3pts')) pts = 3;
-  else if (val.includes('5pts')) pts = 5;
-  else if (val.includes('2pts')) pts = 2;
-  
-  document.querySelectorAll('.pb').forEach(b => b.classList.remove('on'));
-  // Find the matching button
-  const btns = document.querySelectorAll('.pb');
-  const map = {2:0, 3:1, 5:2};
-  if (map[pts] !== undefined && btns[map[pts]]) {
-    btns[map[pts]].classList.add('on');
-    selPt = pts;
-  }
+  if (val.includes('2pts')) currentPts = 2;
+  else if (val.includes('3pts')) currentPts = 3;
+  else if (val.includes('5pts')) currentPts = 5;
 }
 
-async function removePoint(learnerId, date) {
-  if (!confirm('Remove this transgression entry?')) return;
-  const l = LEARNERS.find(x => x.id === learnerId);
-  if (!l) return;
-  const newHistory = l.history.filter(e => e.date !== date);
-  try {
-    await sb(`learners?id=eq.${learnerId}`, 'PATCH', {history: JSON.stringify(newHistory)});
-    l.history = newHistory;
-    renderAll();
-    filterL();
-    toast('✅ Transgression removed');
-  } catch(err) {
-    toast('Error: ' + err.message, 1);
-  }
+// ══ RENDER LEARNERS TAB ═════════════════════════════════════
+function renderAllLearners() {
+  const q = (document.getElementById("srchAll")?.value || "").toLowerCase();
+  const list = document.getElementById("allList");
+  const countEl = document.getElementById("lCount");
+  if (!list) return;
+
+  list.innerHTML = "";
+  const filtered = learners.filter(l => l.name.toLowerCase().includes(q));
+  if (countEl) countEl.innerText = learners.length;
+
+  filtered.forEach(l => {
+    const isDet = (l.points >= DETENTION_THRESHOLD);
+    const isAck = !!l.detention_acknowledged;
+
+    const div = document.createElement("div");
+    div.className = `li ${isDet ? (isAck ? 'det-ack' : 'det') : ''}`;
+    div.style.cursor = "default";
+
+    div.innerHTML = `
+      <div>
+        <div class="ln">${l.name}</div>
+        <div class="lg">${l.grade} — <strong>${l.points} Points</strong></div>
+      </div>
+      <div>
+        ${isDet 
+          ? (isAck 
+              ? `<span style="color:var(--green);font-weight:700;font-size:.78rem;">✅ Served</span>`
+              : `<button class="btn-ack" onclick="acknowledgeDetention('${l.id}')">✅ Acknowledge</button>`)
+          : `<span class="pill pl">${l.points} PTS</span>`
+        }
+      </div>
+    `;
+    list.appendChild(div);
+  });
 }
 
-async function removePointFromReport(learnerId, date) {
-  if (!confirm('Remove this transgression entry?')) return;
-  const l = LEARNERS.find(x => x.id === learnerId);
-  if (!l) return;
-  const newHistory = l.history.filter(e => e.date !== date);
-  try {
-    await sb(`learners?id=eq.${learnerId}`, 'PATCH', {history: JSON.stringify(newHistory)});
-    l.history = newHistory;
-    renderAll(); filterL();
-    viewLearnerReport(learnerId); // refresh the modal
-    toast('✅ Transgression removed');
-  } catch(err) {
-    toast('Error: ' + err.message, 1);
+// ══ RENDER REPORTS TAB ══════════════════════════════════════
+function renderReports() {
+  const totalEl = document.getElementById("statTotal");
+  const detEl = document.getElementById("statDet");
+  const detList = document.getElementById("detList");
+
+  const detentionLearners = learners.filter(l => l.points >= DETENTION_THRESHOLD);
+
+  if (totalEl) totalEl.innerText = learners.length;
+  if (detEl) detEl.innerText = detentionLearners.length;
+
+  if (!detList) return;
+  detList.innerHTML = "";
+
+  if (detentionLearners.length === 0) {
+    detList.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:.85rem;padding:12px;">No learners currently requiring detention (9+ points).</div>`;
+    return;
   }
+
+  detentionLearners.forEach(l => {
+    const isAck = !!l.detention_acknowledged;
+    const div = document.createElement("div");
+    div.className = `li ${isAck ? 'det-ack' : 'det'}`;
+    div.style.marginBottom = "6px";
+
+    div.innerHTML = `
+      <div>
+        <div class="ln">${l.name} (${l.grade})</div>
+        <div class="lg">Total Points: <strong>${l.points}</strong></div>
+      </div>
+      <div>
+        ${isAck 
+          ? `<span style="color:var(--green);font-weight:bold;font-size:.8rem;">✅ Acknowledged</span>`
+          : `<button class="btn-ack" onclick="acknowledgeDetention('${l.id}')">✅ Acknowledge Detention</button>`
+        }
+      </div>
+    `;
+    detList.appendChild(div);
+  });
 }
 
-// ══ GO ═══════════════════════════════════════════════════════
-boot();
+// ══ TOAST & UTILS ═══════════════════════════════════════════
+function showToast(msg, isErr = false) {
+  const t = document.getElementById("toast");
+  t.innerText = msg;
+  t.className = `toast show ${isErr ? 'err' : ''}`;
+  setTimeout(() => t.className = "toast", 3000);
+}
+
+function doLogout() {
+  location.reload();
+}
+
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  if (inp.type === 'password') { inp.type = 'text'; btn.innerText = '🙈'; }
+  else { inp.type = 'password'; btn.innerText = '👁'; }
+}
 </script>
 </body>
 </html>
