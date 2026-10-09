@@ -25,6 +25,551 @@
     letter-spacing:-1px;margin-bottom:4px;}
   .login-logo span{color:var(--accent);}
   .login-sub{color:var(--muted);font-size:.85rem;margin-bottom:32px;text-align:center;}
+  
+  /* APP SHELL */
+  header{background:var(--navy2);padding:13px 15px;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-space-between;
+    position:sticky;top:0;z-index:100;}
+  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;letter-spacing:-.5px;}
+  .logo span{color:var(--accent);}
+  .hdr-right{display:flex;align-items:center;gap:7px;}
+  .user-pill{background:var(--blue-soft);border:1px solid var(--blue);color:var(--blue);
+    font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:20px;
+    font-family:'DM Mono',monospace;}
+  .role-pill{font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:20px;
+    font-family:'DM Mono',monospace;background:var(--green-soft);border:1px solid var(--green);color:var(--green);}
+  .logout-btn{background:transparent;border:1px solid var(--border);color:var(--muted);
+    border-radius:8px;padding:5px 10px;font-size:.74rem;cursor:pointer;
+    font-family:'Nunito',sans-serif;}
+
+  /* TABS */
+  .tabs{display:flex;background:var(--navy2);border-bottom:1px solid var(--border);
+    padding:0 10px;overflow-x:auto;}
+  .tab{flex:1;min-width:55px;padding:11px 3px;text-align:center;font-size:.73rem;
+    font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;
+    transition:all .2s;white-space:nowrap;}
+  .tab.active{color:var(--accent);border-color:var(--accent);}
+
+  main{padding:13px;display:flex;flex-direction:column;gap:11px;}
+
+  /* CARDS */
+  .card{background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);padding:13px;}
+  .card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.78rem;
+    color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+
+  /* FORMS */
+  .fg{margin-bottom:10px;}
+  label{font-size:.77rem;font-weight:700;color:var(--muted);display:block;margin-bottom:5px;}
+  select,input[type=text],textarea{
+    width:100%;background:var(--navy);border:1px solid var(--border);border-radius:10px;
+    color:var(--text);font-family:'Nunito',sans-serif;font-size:.9rem;
+    padding:10px 13px;outline:none;transition:border-color .2s;}
+  select:focus,input:focus,textarea:focus{border-color:var(--blue);}
+  textarea{resize:none;height:64px;}
+
+  /* BUTTONS */
+  .btn{width:100%;border:none;border-radius:12px;font-family:'Syne',sans-serif;
+    font-weight:700;font-size:.93rem;padding:12px;cursor:pointer;transition:all .2s;}
+  .btn-blue{background:var(--blue);color:#fff;}
+  .btn-blue:hover{filter:brightness(1.12);}
+  .btn-ack{background:var(--green);border:none;border-radius:8px;color:#fff;
+    font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;
+    padding:6px 12px;cursor:pointer;}
+  .btn-ack:hover{filter:brightness(1.1);}
+
+  /* SEARCH */
+  .sw{position:relative;margin-bottom:9px;}
+  .sw input{padding-left:34px;}
+  .sw .si{position:absolute;left:11px;top:50%;transform:translateY(-50%);
+    color:var(--muted);font-size:.88rem;}
+
+  /* LEARNER ITEMS */
+  .ll{display:flex;flex-direction:column;gap:6px;}
+  .li{background:var(--card2);border:1px solid var(--border);border-radius:10px;
+    padding:10px 12px;display:flex;align-items:center;justify-content:space-between;
+    cursor:pointer;transition:all .2s;}
+  .li:hover,.li.sel{border-color:var(--blue);background:var(--blue-soft);}
+  .li.det{border-color:var(--red)!important;background:#ff4d4d15!important;}
+  .li.det-ack{border-color:var(--green)!important;background:#2ecc7115!important;}
+  .ln{font-weight:700;font-size:.9rem;}
+  .lg{font-size:.7rem;color:var(--muted);}
+  .pill{font-family:'DM Mono',monospace;font-weight:500;font-size:.8rem;
+    padding:3px 9px;border-radius:20px;min-width:40px;text-align:center;}
+  .pl{background:var(--green-soft);color:var(--green);}
+  .pm{background:#f7c32522;color:var(--accent);}
+  .ph{background:var(--red-soft);color:var(--red);border:1px solid var(--red);animation:pulse 1.5s infinite;}
+  .pack{background:var(--green-soft);color:var(--green);border:1px solid var(--green);}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+
+  /* PTS SELECTOR */
+  .pts-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:3px;}
+  .pb{background:var(--navy);border:1px solid var(--border);border-radius:8px;
+    color:var(--muted);font-family:'DM Mono',monospace;font-weight:500;
+    font-size:.87rem;padding:7px 13px;cursor:pointer;transition:all .2s;}
+  .pb.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+
+  /* DETENTION BANNER */
+  .det-banner{background:linear-gradient(135deg,#8b0000,#c0392b);border-radius:var(--radius);
+    padding:13px 15px;display:flex;align-items:flex-start;gap:10px;}
+  .det-banner.ack{background:linear-gradient(135deg,#1e824c,#2ecc71);}
+  .det-banner .di{font-size:1.4rem;}
+  .det-banner h3{font-family:'Syne',sans-serif;font-size:.93rem;font-weight:800;}
+  .det-banner p{font-size:.77rem;opacity:.9;margin-top:3px;}
+
+  /* STATS */
+  .sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .sb{background:var(--navy);border:1px solid var(--border);border-radius:12px;
+    padding:12px 10px;text-align:center;}
+  .sn{font-family:'Syne',sans-serif;font-weight:800;font-size:1.45rem;}
+  .sl{font-size:.69rem;color:var(--muted);margin-top:2px;}
+  .sn.red{color:var(--red)}.sn.blu{color:var(--blue)}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);
+    background:var(--green);color:#fff;font-family:'Nunito',sans-serif;font-weight:700;
+    font-size:.87rem;padding:11px 22px;border-radius:30px;
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);z-index:300;white-space:nowrap;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+  .toast.err{background:var(--red);}
+  .hidden{display:none!important;}
+</style>
+</head>
+<body>
+
+<!-- ══ LOADING ══ -->
+<div id="loadingScreen" class="auth-screen">
+  <div class="login-logo">Curro Secunda <span>Discipline</span></div>
+  <div class="login-sub">Connecting to live database…</div>
+  <div style="margin-top:20px;font-size:2rem">⏳</div>
+</div>
+
+<!-- ══ APP SHELL ══ -->
+<div id="app" class="hidden">
+  <header>
+    <div class="logo">Curro Secunda <span>Discipline</span></div>
+    <div class="hdr-right">
+      <div class="user-pill" id="uPill">Anel Steyn</div>
+      <div class="role-pill">EDUCATOR</div>
+      <button class="logout-btn" onclick="location.reload()">⏏</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" id="t-log"      onclick="sw('log')">📋 Log</div>
+    <div class="tab"        id="t-learners" onclick="sw('learners')">👤 Learners</div>
+    <div class="tab"        id="t-report"   onclick="sw('report')">📊 Report</div>
+  </div>
+
+  <!-- LOG TAB -->
+  <main id="pg-log">
+    <div class="card">
+      <div class="card-title">Select Learner</div>
+      <div class="fg" style="margin-bottom:8px">
+        <label>Filter by Grade</label>
+        <select id="gradeFilter" onchange="filterL()">
+          <option value="">— All Grades —</option>
+          <option value="Grade 8">Grade 8</option>
+          <option value="Grade 9">Grade 9</option>
+          <option value="Grade 10">Grade 10</option>
+          <option value="Grade 11">Grade 11</option>
+          <option value="Grade 12">Grade 12</option>
+        </select>
+      </div>
+      <div class="sw"><span class="si">🔍</span>
+        <input type="text" id="srch" placeholder="Search name…" oninput="filterL()"></div>
+      <div class="ll" id="lList"></div>
+    </div>
+
+    <div class="card hidden" id="tForm">
+      <div class="card-title" id="tTitle">Log Transgression</div>
+      
+      <!-- DETENTION BANNER -->
+      <div id="dBannerTop" class="det-banner hidden" style="margin-bottom:11px">
+        <div class="di" id="dIcon">🚨</div>
+        <div style="flex:1">
+          <h3 id="dTitle">DETENTION REQUIRED (9+ Points)</h3>
+          <p id="dBannerMsg"></p>
+          <button id="dBannerAck" onclick="acknowledgeDetention(selectedLearnerId)" style="margin-top:8px;background:#ffffff33;border:1px solid #ffffff66;color:#fff;border-radius:8px;padding:6px 14px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;">✅ Mark Detention Served / Acknowledged</button>
+        </div>
+      </div>
+
+      <div class="fg"><label>Transgression Type</label>
+        <select id="tType" onchange="autoSetPts(this.value)">
+          <option value="">— Select type —</option>
+          <optgroup label="2 Points">
+            <option value="[M22.1] Tardiness or littering (2pts)">[M22.1] Tardiness or littering</option>
+            <option value="[M22.2] Failure to have correct learning materials (2pts)">[M22.2] Failure to have correct learning materials</option>
+            <option value="[M25.1] Homework not completed (2pts)">[M25.1] Homework not completed</option>
+          </optgroup>
+          <optgroup label="3 Points">
+            <option value="[M18.2] Defiance and disrespect (3pts)">[M18.2] Defiance and disrespect</option>
+            <option value="[M20.1] Disruptive behaviour (3pts)">[M20.1] Disruptive behaviour</option>
+            <option value="[M21] Swearing or vulgar language (3pts)">[M21] Swearing or vulgar language</option>
+          </optgroup>
+          <optgroup label="5 Points">
+            <option value="[S10] Absent without valid reason (5pts)">[S10] Absent without valid reason</option>
+            <option value="[S13.1] Smoking (5pts)">[S13.1] Smoking</option>
+          </optgroup>
+        </select></div>
+      <div class="fg"><label>Points to Add</label>
+        <div class="pts-row">
+          <button class="pb on" onclick="selPts(this,2)">+2</button>
+          <button class="pb" onclick="selPts(this,3)">+3</button>
+          <button class="pb" onclick="selPts(this,5)">+5</button>
+        </div></div>
+      <div class="fg"><label>Notes (optional)</label>
+        <textarea id="tNote" placeholder="Additional details…"></textarea></div>
+      <button class="btn btn-blue" id="submitBtn" onclick="submitT()">Submit Transgression</button>
+    </div>
+  </main>
+
+  <!-- LEARNERS TAB -->
+  <main id="pg-learners" class="hidden">
+    <div class="card">
+      <div class="card-title">All Registered Learners (<span id="lCount">0</span>)</div>
+      <div class="sw"><span class="si">🔍</span>
+        <input type="text" id="srchAll" placeholder="Filter learners…" oninput="renderAllLearners()"></div>
+      <div id="allList" class="ll"></div>
+    </div>
+  </main>
+
+  <!-- REPORT TAB -->
+  <main id="pg-report" class="hidden">
+    <div class="sg" id="statsGrid">
+      <div class="sb"><div class="sn blu" id="statTotal">0</div><div class="sl">Total Learners</div></div>
+      <div class="sb"><div class="sn red" id="statDet">0</div><div class="sl">Detention (9+ Pts)</div></div>
+    </div>
+    <div class="card" style="margin-top:10px;">
+      <div class="card-title" style="color:var(--red)">🚨 Detention List (9+ Points Threshold)</div>
+      <div id="detList" class="ll"></div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══ SUPABASE CONFIGURATION ══════════════════════════════════
+const SUPABASE_URL = 'https://hpsjwjjidwbwgviwiitw.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_deQaiTeg0FdzAlnE2vWWhQ_lCCnFoTn';
+const DETENTION_THRESHOLD = 9;
+
+async function sb(path, method = 'GET', body = null) {
+  const opts = {
+    method,
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : ''
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, opts);
+  if (!res.ok) { const e = await res.text(); throw new Error(e); }
+  const txt = await res.text();
+  return txt ? JSON.parse(txt) : null;
+}
+
+// ══ STATE ═══════════════════════════════════════════════════
+let learners = [];
+let selectedLearnerId = null;
+let currentPts = 2;
+
+// ══ INITIALIZATION ══════════════════════════════════════════
+window.onload = async () => {
+  await loadLearners();
+  document.getElementById("loadingScreen").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+  filterL();
+};
+
+async function loadLearners() {
+  try {
+    const data = await sb('learners?select=*&order=name.asc');
+    if (data && data.length > 0) {
+      learners = data;
+    }
+  } catch (e) {
+    console.warn("Could not fetch from Supabase:", e);
+  }
+}
+
+// ══ NAVIGATION ══════════════════════════════════════════════
+function sw(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('main').forEach(m => m.classList.add('hidden'));
+  document.getElementById(`t-${tab}`).classList.add('active');
+  document.getElementById(`pg-${tab}`).classList.remove('hidden');
+  if (tab === 'learners') renderAllLearners();
+  if (tab === 'report') renderReports();
+}
+
+// ══ HELPER: GET BADGE AND DETENTION STATUS ══════════════════
+function getLearnerStatus(points, isAck) {
+  const pts = Number(points || 0);
+  const isDetention = pts >= DETENTION_THRESHOLD;
+  
+  if (isDetention) {
+    if (isAck) return { isDetention: true, badgeCls: 'pack', label: 'SERVED ✅' };
+    return { isDetention: true, badgeCls: 'ph', label: `${pts} PTS (DETENTION)` };
+  }
+  if (pts >= 5) return { isDetention: false, badgeCls: 'pm', label: `${pts} PTS` };
+  return { isDetention: false, badgeCls: 'pl', label: `${pts} PTS` };
+}
+
+// ══ FILTER & RENDER LOG TAB ═════════════════════════════════
+function filterL() {
+  const q = document.getElementById("srch").value.toLowerCase();
+  const g = document.getElementById("gradeFilter").value;
+  const list = document.getElementById("lList");
+  list.innerHTML = "";
+
+  const filtered = learners.filter(l => (!g || l.grade === g) && l.name.toLowerCase().includes(q));
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:.85rem;padding:12px;">No learners found.</div>`;
+    return;
+  }
+
+  filtered.forEach(l => {
+    const status = getLearnerStatus(l.points, l.detention_acknowledged);
+    
+    let cls = "li";
+    if (status.isDetention) cls += l.detention_acknowledged ? " det-ack" : " det";
+
+    const div = document.createElement("div");
+    div.className = cls;
+    div.onclick = () => selectLearner(l.id);
+
+    div.innerHTML = `
+      <div>
+        <div class="ln">${l.name}</div>
+        <div class="lg">${l.grade}</div>
+      </div>
+      <div class="pill ${status.badgeCls}">${status.label}</div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function selectLearner(id) {
+  selectedLearnerId = id;
+  const l = learners.find(x => String(x.id) === String(id));
+  if (!l) return;
+
+  document.getElementById("tForm").classList.remove("hidden");
+  document.getElementById("tTitle").innerText = `Log Transgression for ${l.name}`;
+
+  updateDetentionBanner(l);
+}
+
+function updateDetentionBanner(l) {
+  const banner = document.getElementById("dBannerTop");
+  const msg = document.getElementById("dBannerMsg");
+  const ackBtn = document.getElementById("dBannerAck");
+  const icon = document.getElementById("dIcon");
+  const title = document.getElementById("dTitle");
+
+  const pts = Number(l.points || 0);
+
+  if (pts >= DETENTION_THRESHOLD) {
+    banner.classList.remove("hidden");
+    if (l.detention_acknowledged) {
+      banner.classList.add("ack");
+      icon.innerText = "✅";
+      title.innerText = "DETENTION SERVED / ACKNOWLEDGED";
+      msg.innerText = `${l.name} (${pts} points) has completed their required detention.`;
+      ackBtn.style.display = "none";
+    } else {
+      banner.classList.remove("ack");
+      icon.innerText = "🚨";
+      title.innerText = "DETENTION REQUIRED (9+ Points)";
+      msg.innerText = `${l.name} currently has ${pts} points and requires detention.`;
+      ackBtn.style.display = "inline-block";
+    }
+  } else {
+    banner.classList.add("hidden");
+  }
+}
+
+// ══ ACKNOWLEDGE DETENTION (LOG, LEARNERS & REPORT PAGES) ════
+async function acknowledgeDetention(id) {
+  const targetId = id || selectedLearnerId;
+  const l = learners.find(x => String(x.id) === String(targetId));
+  if (!l) return;
+
+  try {
+    await sb(`learners?id=eq.${l.id}`, 'PATCH', { detention_acknowledged: true });
+  } catch (err) {
+    console.warn("Updated locally due to offline state or network issue:", err);
+  }
+
+  l.detention_acknowledged = true;
+  showToast(`✅ Detention acknowledged for ${l.name}`);
+
+  if (String(selectedLearnerId) === String(l.id)) {
+    updateDetentionBanner(l);
+  }
+  filterL();
+  renderAllLearners();
+  renderReports();
+}
+
+// ══ SUBMIT TRANSGRESSION ════════════════════════════════════
+async function submitT() {
+  if (!selectedLearnerId) return;
+  const l = learners.find(x => String(x.id) === String(selectedLearnerId));
+  if (!l) return;
+
+  const currentTotal = Number(l.points || 0);
+  const newPoints = currentTotal + Number(currentPts);
+
+  try {
+    await sb(`learners?id=eq.${l.id}`, 'PATCH', { 
+      points: newPoints
+    });
+  } catch(e) {
+    console.warn("Database sync deferred:", e);
+  }
+
+  l.points = newPoints;
+  showToast(`Added +${currentPts} points to ${l.name} (Total: ${l.points})`);
+  
+  updateDetentionBanner(l);
+  filterL();
+}
+
+function selPts(btn, pts) {
+  document.querySelectorAll('.pb').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  currentPts = pts;
+}
+
+function autoSetPts(val) {
+  if (val.includes('2pts')) currentPts = 2;
+  else if (val.includes('3pts')) currentPts = 3;
+  else if (val.includes('5pts')) currentPts = 5;
+}
+
+// ══ RENDER LEARNERS TAB ═════════════════════════════════════
+function renderAllLearners() {
+  const q = (document.getElementById("srchAll")?.value || "").toLowerCase();
+  const list = document.getElementById("allList");
+  const countEl = document.getElementById("lCount");
+  if (!list) return;
+
+  list.innerHTML = "";
+  const filtered = learners.filter(l => l.name.toLowerCase().includes(q));
+  if (countEl) countEl.innerText = learners.length;
+
+  filtered.forEach(l => {
+    const pts = Number(l.points || 0);
+    const status = getLearnerStatus(pts, l.detention_acknowledged);
+
+    const div = document.createElement("div");
+    div.className = `li ${status.isDetention ? (l.detention_acknowledged ? 'det-ack' : 'det') : ''}`;
+    div.style.cursor = "default";
+
+    div.innerHTML = `
+      <div>
+        <div class="ln">${l.name}</div>
+        <div class="lg">${l.grade} — <strong>${pts} Points</strong></div>
+      </div>
+      <div>
+        ${status.isDetention 
+          ? (l.detention_acknowledged 
+              ? `<span style="color:var(--green);font-weight:700;font-size:.78rem;">✅ Served</span>`
+              : `<button class="btn-ack" onclick="acknowledgeDetention('${l.id}')">✅ Acknowledge</button>`)
+          : `<span class="pill ${status.badgeCls}">${pts} PTS</span>`
+        }
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+// ══ RENDER REPORT TAB WITH DIRECT ACKNOWLEDGMENT ════════════
+function renderReports() {
+  const totalEl = document.getElementById("statTotal");
+  const detEl = document.getElementById("statDet");
+  const detList = document.getElementById("detList");
+
+  const detentionLearners = learners.filter(l => Number(l.points || 0) >= DETENTION_THRESHOLD);
+
+  if (totalEl) totalEl.innerText = learners.length;
+  if (detEl) detEl.innerText = detentionLearners.length;
+
+  if (!detList) return;
+  detList.innerHTML = "";
+
+  if (detentionLearners.length === 0) {
+    detList.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:.85rem;padding:12px;">No learners currently requiring detention (9+ points).</div>`;
+    return;
+  }
+
+  detentionLearners.forEach(l => {
+    const isAck = !!l.detention_acknowledged;
+    const pts = Number(l.points || 0);
+
+    const div = document.createElement("div");
+    div.className = `li ${isAck ? 'det-ack' : 'det'}`;
+    div.style.marginBottom = "6px";
+    div.style.cursor = "default";
+
+    div.innerHTML = `
+      <div>
+        <div class="ln">${l.name} (${l.grade})</div>
+        <div class="lg">Total Points: <strong>${pts}</strong></div>
+      </div>
+      <div>
+        ${isAck 
+          ? `<span style="color:var(--green);font-weight:bold;font-size:.8rem;">✅ Served</span>`
+          : `<button class="btn-ack" onclick="acknowledgeDetention('${l.id}')">✅ Acknowledge Detention</button>`
+        }
+      </div>
+    `;
+    detList.appendChild(div);
+  });
+}
+
+// ══ TOAST & UTILS ═══════════════════════════════════════════
+function showToast(msg, isErr = false) {
+  const t = document.getElementById("toast");
+  t.innerText = msg;
+  t.className = `toast show ${isErr ? 'err' : ''}`;
+  setTimeout(() => t.className = "toast", 3000);
+}
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Curro Secunda Discipline</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0f1b2d;--navy2:#162236;--blue:#1a6ff4;--blue-soft:#2979ff22;
+    --accent:#f7c325;--red:#ff4d4d;--red-soft:#ff4d4d22;
+    --green:#2ecc71;--green-soft:#2ecc7122;
+    --card:#1c2d44;--card2:#223350;--text:#e8edf5;
+    --muted:#7a90aa;--border:#263a54;--radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy);color:var(--text);font-family:'Nunito',sans-serif;
+    min-height:100vh;max-width:430px;margin:0 auto;overflow-x:hidden;}
+
+  /* LOGIN / SETUP */
+  .auth-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;padding:24px;
+    background:radial-gradient(ellipse at top,#1a3a5c 0%,var(--navy) 70%);}
+  .login-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:2.2rem;
+    letter-spacing:-1px;margin-bottom:4px;}
+  .login-logo span{color:var(--accent);}
+  .login-sub{color:var(--muted);font-size:.85rem;margin-bottom:32px;text-align:center;}
   .auth-card{background:var(--card);border:1px solid var(--border);
     border-radius:20px;padding:28px 22px;width:100%;max-width:360px;}
   .auth-card h2{font-family:'Syne',sans-serif;font-weight:800;
