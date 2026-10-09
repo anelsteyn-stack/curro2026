@@ -29,7 +29,6 @@
     border-radius:20px;padding:28px 22px;width:100%;max-width:360px;}
   .auth-card h2{font-family:'Syne',sans-serif;font-weight:800;
     font-size:1.1rem;margin-bottom:18px;text-align:center;}
-  .setup-card{border-color:var(--accent);}
   .err-box{background:var(--red-soft);border:1px solid var(--red);color:var(--red);
     border-radius:10px;padding:10px 14px;font-size:.82rem;margin-bottom:12px;display:none;}
   
@@ -45,7 +44,6 @@
     font-family:'DM Mono',monospace;}
   .role-pill{font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:20px;
     font-family:'DM Mono',monospace;}
-  .role-admin{background:#f7c32522;border:1px solid var(--accent);color:var(--accent);}
   .role-edu{background:var(--green-soft);border:1px solid var(--green);color:var(--green);}
   .logout-btn{background:transparent;border:1px solid var(--border);color:var(--muted);
     border-radius:8px;padding:5px 10px;font-size:.74rem;cursor:pointer;
@@ -60,14 +58,6 @@
   .tab.active{color:var(--accent);border-color:var(--accent);}
 
   main{padding:13px;display:flex;flex-direction:column;gap:11px;}
-
-  /* PERIOD STRIP */
-  .period-strip{background:linear-gradient(135deg,var(--blue) 0%,#0a4ab5 100%);
-    border-radius:var(--radius);padding:12px 16px;
-    display:flex;align-items:center;justify-content:space-between;}
-  .period-strip .lbl{font-size:.7rem;opacity:.8;}
-  .period-strip .val{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;}
-  .period-strip .dl{font-family:'DM Mono',monospace;font-size:.82rem;}
 
   /* CARDS */
   .card{background:var(--card);border:1px solid var(--border);
@@ -88,27 +78,16 @@
   .pw-wrap input{padding-right:40px;}
   .eye{position:absolute;right:11px;top:50%;transform:translateY(-50%);
     background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;}
-  .flex-row{display:flex;gap:8px;}
-  .flex-1{flex:1;}
 
   /* BUTTONS */
   .btn{width:100%;border:none;border-radius:12px;font-family:'Syne',sans-serif;
     font-weight:700;font-size:.93rem;padding:12px;cursor:pointer;transition:all .2s;}
   .btn-blue{background:var(--blue);color:#fff;}
   .btn-blue:hover{filter:brightness(1.12);}
-  .btn-blue:disabled{opacity:.4;cursor:not-allowed;}
-  .btn-ghost{background:transparent;border:1px solid var(--border);border-radius:10px;
-    color:var(--muted);font-family:'Nunito',sans-serif;font-weight:700;
-    font-size:.87rem;padding:10px 16px;cursor:pointer;}
-  .btn-accent{background:var(--accent);color:var(--navy);font-family:'Syne',sans-serif;
-    font-weight:800;border:none;border-radius:10px;padding:10px 18px;
-    font-size:.87rem;cursor:pointer;}
-  .btn-danger{background:var(--red);border:none;border-radius:8px;color:#fff;
-    font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;
-    padding:6px 11px;cursor:pointer;}
   .btn-ack{background:var(--green);border:none;border-radius:8px;color:#fff;
     font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;
     padding:6px 12px;cursor:pointer;}
+  .btn-ack:hover{filter:brightness(1.1);}
 
   /* SEARCH */
   .sw{position:relative;margin-bottom:9px;}
@@ -150,22 +129,13 @@
   .det-banner h3{font-family:'Syne',sans-serif;font-size:.93rem;font-weight:800;}
   .det-banner p{font-size:.77rem;opacity:.9;margin-top:3px;}
 
-  /* UPLOAD ZONE */
-  .uz{border:2px dashed var(--border);border-radius:12px;padding:22px;text-align:center;
-    cursor:pointer;transition:all .2s;background:var(--navy);position:relative;}
-  .uz:hover,.uz.dov{border-color:var(--blue);background:var(--blue-soft);}
-  .uz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-  .uz-icon{font-size:1.8rem;margin-bottom:7px;}
-  .uz-title{font-weight:700;font-size:.88rem;margin-bottom:3px;}
-  .uz-sub{font-size:.74rem;color:var(--muted);}
-
   /* STATS */
   .sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
   .sb{background:var(--navy);border:1px solid var(--border);border-radius:12px;
     padding:12px 10px;text-align:center;}
   .sn{font-family:'Syne',sans-serif;font-weight:800;font-size:1.45rem;}
   .sl{font-size:.69rem;color:var(--muted);margin-top:2px;}
-  .sn.red{color:var(--red)}.sn.grn{color:var(--green)}.sn.yel{color:var(--accent)}.sn.blu{color:var(--blue)}
+  .sn.red{color:var(--red)}.sn.blu{color:var(--blue)}
 
   /* TOAST */
   .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);
@@ -174,9 +144,7 @@
     transition:transform .35s cubic-bezier(.34,1.56,.64,1);z-index:300;white-space:nowrap;}
   .toast.show{transform:translateX(-50%) translateY(0);}
   .toast.err{background:var(--red);}
-  .note{font-size:.74rem;color:var(--muted);margin-bottom:9px;line-height:1.5;}
   .hidden{display:none!important;}
-  .mt{margin-top:9px;}
 </style>
 </head>
 <body>
@@ -188,33 +156,14 @@
   <div style="margin-top:20px;font-size:2rem">⏳</div>
 </div>
 
-<!-- ══ LOGIN ══ -->
-<div id="loginScreen" class="auth-screen hidden">
-  <div class="login-logo">Curro Secunda <span>Discipline</span></div>
-  <div class="login-sub">Curro Secunda — Educator Discipline Portal</div>
-  <div class="auth-card">
-    <h2>🔐 Sign In</h2>
-    <div class="err-box" id="loginErr">Invalid username or password.</div>
-    <div class="fg"><label>Username</label>
-      <input type="text" id="lUser" placeholder="Your username" autocomplete="username"></div>
-    <div class="fg"><label>Password</label>
-      <div class="pw-wrap">
-        <input type="password" id="lPass" placeholder="Your password" autocomplete="current-password"
-          onkeydown="if(event.key==='Enter')doLogin()">
-        <button class="eye" onclick="togglePw('lPass',this)">👁</button>
-      </div></div>
-    <button class="btn btn-blue" id="loginBtn" onclick="doLogin()">Sign In</button>
-  </div>
-</div>
-
 <!-- ══ APP SHELL ══ -->
 <div id="app" class="hidden">
   <header>
     <div class="logo">Curro Secunda <span>Discipline</span></div>
     <div class="hdr-right">
       <div class="user-pill" id="uPill"></div>
-      <div class="role-pill" id="rPill"></div>
-      <button class="logout-btn" onclick="doLogout()">⏏</button>
+      <div class="role-pill" id="rPill">EDUCATOR</div>
+      <button class="logout-btn" onclick="location.reload()">⏏</button>
     </div>
   </header>
 
@@ -247,7 +196,7 @@
     <div class="card hidden" id="tForm">
       <div class="card-title" id="tTitle">Log Transgression</div>
       
-      <!-- DETENTION BANNER FOR LEARNER -->
+      <!-- DETENTION BANNER FOR SELECTED LEARNER -->
       <div id="dBannerTop" class="det-banner hidden" style="margin-bottom:11px">
         <div class="di" id="dIcon">🚨</div>
         <div style="flex:1">
@@ -263,19 +212,16 @@
           <optgroup label="2 Points">
             <option value="[M22.1] Tardiness or littering (2pts)">[M22.1] Tardiness or littering</option>
             <option value="[M22.2] Failure to have correct learning materials (2pts)">[M22.2] Failure to have correct learning materials</option>
-            <option value="[M25.1] Refusal/failure to complete homework on due date (2pts)">[M25.1] Refusal/failure to complete homework on due date</option>
-            <option value="[M26.1] Truancy / late for class (2pts)">[M26.1] Truancy / late for class</option>
+            <option value="[M25.1] Homework not completed (2pts)">[M25.1] Homework not completed</option>
           </optgroup>
           <optgroup label="3 Points">
             <option value="[M18.2] Defiance and disrespect (3pts)">[M18.2] Defiance and disrespect</option>
             <option value="[M20.1] Disruptive behaviour (3pts)">[M20.1] Disruptive behaviour</option>
             <option value="[M21] Swearing or vulgar language (3pts)">[M21] Swearing or vulgar language</option>
-            <option value="[M27] Misconduct relating to electronic devices (3pts)">[M27] Misconduct relating to electronic devices</option>
           </optgroup>
           <optgroup label="5 Points">
             <option value="[S10] Absent without valid reason (5pts)">[S10] Absent without valid reason</option>
             <option value="[S13.1] Smoking (5pts)">[S13.1] Smoking</option>
-            <option value="[S15.1] Vandalising property (5pts)">[S15.1] Vandalising property</option>
           </optgroup>
         </select></div>
       <div class="fg"><label>Points to Add</label>
@@ -285,7 +231,7 @@
           <button class="pb" onclick="selPts(this,5)">+5</button>
         </div></div>
       <div class="fg"><label>Notes (optional)</label>
-        <textarea id="tNote" placeholder="Additional details…"></textarea></div>
+        <textarea id="tNote" placeholder="Additional context…"></textarea></div>
       <button class="btn btn-blue" id="submitBtn" onclick="submitT()">Submit Transgression</button>
     </div>
   </main>
@@ -293,7 +239,7 @@
   <!-- LEARNERS TAB -->
   <main id="pg-learners" class="hidden">
     <div class="card">
-      <div class="card-title">All Registered Learners (<span id="lCount">0</span>)</div>
+      <div class="card-title">All Learners (<span id="lCount">0</span>)</div>
       <div class="sw"><span class="si">🔍</span>
         <input type="text" id="srchAll" placeholder="Filter learners…" oninput="renderAllLearners()"></div>
       <div id="allList" class="ll"></div>
@@ -318,7 +264,7 @@
 <script>
 // ══ SUPABASE CONFIGURATION ══════════════════════════════════
 const SUPABASE_URL = 'https://hpsjwjjidwbwgviwiitw.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_deQaiTeg0FdzAlnE2vWWhQ_lCCnFoTn'; // Replace with your exact Supabase key if different
+const SUPABASE_KEY = 'sb_publishable_deQaiTeg0FdzAlnE2vWWhQ_lCCnFoTn'; // Ensure this matches your anon key
 const DETENTION_THRESHOLD = 9;
 
 async function sb(path, method = 'GET', body = null) {
@@ -339,7 +285,7 @@ async function sb(path, method = 'GET', body = null) {
 }
 
 // ══ STATE ═══════════════════════════════════════════════════
-let currentUser = { name: "Educator", role: "edu" };
+let currentUser = { name: "Anel Steyn", role: "edu" };
 let learners = [];
 let selectedLearnerId = null;
 let currentPts = 2;
@@ -350,7 +296,6 @@ window.onload = async () => {
   document.getElementById("loadingScreen").classList.add("hidden");
   document.getElementById("app").classList.remove("hidden");
   document.getElementById("uPill").innerText = currentUser.name;
-  document.getElementById("rPill").innerText = currentUser.role.toUpperCase();
   filterL();
 };
 
@@ -360,18 +305,17 @@ async function loadLearners() {
     if (data && data.length > 0) {
       learners = data;
     } else {
-      // Fallback default demo data if table is empty
       learners = [
-        { id: "1", name: "Chloe Chetty", grade: "Grade 10", points: 9, detention_acknowledged: false },
-        { id: "2", name: "Jaco van der Merwe", grade: "Grade 11", points: 11, detention_acknowledged: false },
-        { id: "3", name: "Sipho Ndlovu", grade: "Grade 9", points: 4, detention_acknowledged: false }
+        { id: "1", name: "Mbedzi", grade: "Grade 10", points: 10, detention_acknowledged: false },
+        { id: "2", name: "Chloe Chetty", grade: "Grade 10", points: 9, detention_acknowledged: false },
+        { id: "3", name: "Jaco van der Merwe", grade: "Grade 11", points: 4, detention_acknowledged: false }
       ];
     }
   } catch (e) {
     console.warn("Could not fetch from Supabase, loading fallback state:", e);
     learners = [
-      { id: "1", name: "Chloe Chetty", grade: "Grade 10", points: 9, detention_acknowledged: false },
-      { id: "2", name: "Jaco van der Merwe", grade: "Grade 11", points: 11, detention_acknowledged: false }
+      { id: "1", name: "Mbedzi", grade: "Grade 10", points: 10, detention_acknowledged: false },
+      { id: "2", name: "Chloe Chetty", grade: "Grade 10", points: 9, detention_acknowledged: false }
     ];
   }
 }
@@ -396,242 +340,4 @@ function filterL() {
   const filtered = learners.filter(l => (!g || l.grade === g) && l.name.toLowerCase().includes(q));
 
   if (filtered.length === 0) {
-    list.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:.85rem;padding:12px;">No learners found.</div>`;
-    return;
-  }
-
-  filtered.forEach(l => {
-    const isDet = (l.points >= DETENTION_THRESHOLD);
-    const isAck = !!l.detention_acknowledged;
-    
-    let cls = "li";
-    if (isDet) cls += isAck ? " det-ack" : " det";
-
-    const div = document.createElement("div");
-    div.className = cls;
-    div.onclick = () => selectLearner(l.id);
-    
-    let badgeCls = isDet ? (isAck ? "pack" : "ph") : (l.points >= 5 ? "pm" : "pl");
-    let statusText = isDet ? (isAck ? "SERVED ✅" : `${l.points} PTS (DETENTION)`) : `${l.points} PTS`;
-
-    div.innerHTML = `
-      <div>
-        <div class="ln">${l.name}</div>
-        <div class="lg">${l.grade}</div>
-      </div>
-      <div class="pill ${badgeCls}">${statusText}</div>
-    `;
-    list.appendChild(div);
-  });
-}
-
-function selectLearner(id) {
-  selectedLearnerId = id;
-  const l = learners.find(x => x.id === id);
-  if (!l) return;
-
-  document.getElementById("tForm").classList.remove("hidden");
-  document.getElementById("tTitle").innerText = `Log Transgression for ${l.name}`;
-
-  updateDetentionBanner(l);
-}
-
-function updateDetentionBanner(l) {
-  const banner = document.getElementById("dBannerTop");
-  const msg = document.getElementById("dBannerMsg");
-  const ackBtn = document.getElementById("dBannerAck");
-  const icon = document.getElementById("dIcon");
-  const title = document.getElementById("dTitle");
-
-  if (l.points >= DETENTION_THRESHOLD) {
-    banner.classList.remove("hidden");
-    if (l.detention_acknowledged) {
-      banner.classList.add("ack");
-      icon.innerText = "✅";
-      title.innerText = "DETENTION SERVED / ACKNOWLEDGED";
-      msg.innerText = `${l.name} (${l.points} points) has completed their required detention.`;
-      ackBtn.style.display = "none";
-    } else {
-      banner.classList.remove("ack");
-      icon.innerText = "🚨";
-      title.innerText = "DETENTION REQUIRED (9+ Points)";
-      msg.innerText = `${l.name} currently has ${l.points} points and requires detention.`;
-      ackBtn.style.display = "inline-block";
-    }
-  } else {
-    banner.classList.add("hidden");
-  }
-}
-
-// ══ ACKNOWLEDGE DETENTION (CORE FEATURE) ════════════════════
-async function acknowledgeDetention(id) {
-  const targetId = id || selectedLearnerId;
-  const l = learners.find(x => x.id === targetId);
-  if (!l) return;
-
-  try {
-    // 1. Send update to Supabase
-    await sb(`learners?id=eq.${l.id}`, 'PATCH', { detention_acknowledged: true });
-    
-    // 2. Update local state
-    l.detention_acknowledged = true;
-    showToast(`✅ Detention acknowledged for ${l.name}`);
-
-    // 3. Update active UI components
-    if (selectedLearnerId === l.id) {
-      updateDetentionBanner(l);
-    }
-    filterL();
-    renderAllLearners();
-    renderReports();
-  } catch (err) {
-    // Fallback local update if network is unavailable
-    l.detention_acknowledged = true;
-    showToast(`✅ Acknowledged (Local mode) for ${l.name}`);
-    if (selectedLearnerId === l.id) updateDetentionBanner(l);
-    filterL();
-    renderAllLearners();
-    renderReports();
-  }
-}
-
-// ══ SUBMIT TRANSGRESSION ════════════════════════════════════
-async function submitT() {
-  if (!selectedLearnerId) return;
-  const l = learners.find(x => x.id === selectedLearnerId);
-  if (!l) return;
-
-  const newPoints = Number(l.points || 0) + Number(currentPts);
-  let resetAck = false;
-
-  // Re-trigger detention state if new points were added to an already acknowledged learner
-  if (newPoints >= DETENTION_THRESHOLD && currentPts > 0) {
-    resetAck = false; 
-  }
-
-  try {
-    await sb(`learners?id=eq.${l.id}`, 'PATCH', { 
-      points: newPoints,
-      detention_acknowledged: l.detention_acknowledged
-    });
-  } catch(e) {
-    console.warn("Database sync deferred:", e);
-  }
-
-  l.points = newPoints;
-  showToast(`Added +${currentPts} points to ${l.name} (Total: ${l.points})`);
-  
-  updateDetentionBanner(l);
-  filterL();
-}
-
-function selPts(btn, pts) {
-  document.querySelectorAll('.pb').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  currentPts = pts;
-}
-
-function autoSetPts(val) {
-  if (val.includes('2pts')) currentPts = 2;
-  else if (val.includes('3pts')) currentPts = 3;
-  else if (val.includes('5pts')) currentPts = 5;
-}
-
-// ══ RENDER LEARNERS TAB ═════════════════════════════════════
-function renderAllLearners() {
-  const q = (document.getElementById("srchAll")?.value || "").toLowerCase();
-  const list = document.getElementById("allList");
-  const countEl = document.getElementById("lCount");
-  if (!list) return;
-
-  list.innerHTML = "";
-  const filtered = learners.filter(l => l.name.toLowerCase().includes(q));
-  if (countEl) countEl.innerText = learners.length;
-
-  filtered.forEach(l => {
-    const isDet = (l.points >= DETENTION_THRESHOLD);
-    const isAck = !!l.detention_acknowledged;
-
-    const div = document.createElement("div");
-    div.className = `li ${isDet ? (isAck ? 'det-ack' : 'det') : ''}`;
-    div.style.cursor = "default";
-
-    div.innerHTML = `
-      <div>
-        <div class="ln">${l.name}</div>
-        <div class="lg">${l.grade} — <strong>${l.points} Points</strong></div>
-      </div>
-      <div>
-        ${isDet 
-          ? (isAck 
-              ? `<span style="color:var(--green);font-weight:700;font-size:.78rem;">✅ Served</span>`
-              : `<button class="btn-ack" onclick="acknowledgeDetention('${l.id}')">✅ Acknowledge</button>`)
-          : `<span class="pill pl">${l.points} PTS</span>`
-        }
-      </div>
-    `;
-    list.appendChild(div);
-  });
-}
-
-// ══ RENDER REPORTS TAB ══════════════════════════════════════
-function renderReports() {
-  const totalEl = document.getElementById("statTotal");
-  const detEl = document.getElementById("statDet");
-  const detList = document.getElementById("detList");
-
-  const detentionLearners = learners.filter(l => l.points >= DETENTION_THRESHOLD);
-
-  if (totalEl) totalEl.innerText = learners.length;
-  if (detEl) detEl.innerText = detentionLearners.length;
-
-  if (!detList) return;
-  detList.innerHTML = "";
-
-  if (detentionLearners.length === 0) {
-    detList.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:.85rem;padding:12px;">No learners currently requiring detention (9+ points).</div>`;
-    return;
-  }
-
-  detentionLearners.forEach(l => {
-    const isAck = !!l.detention_acknowledged;
-    const div = document.createElement("div");
-    div.className = `li ${isAck ? 'det-ack' : 'det'}`;
-    div.style.marginBottom = "6px";
-
-    div.innerHTML = `
-      <div>
-        <div class="ln">${l.name} (${l.grade})</div>
-        <div class="lg">Total Points: <strong>${l.points}</strong></div>
-      </div>
-      <div>
-        ${isAck 
-          ? `<span style="color:var(--green);font-weight:bold;font-size:.8rem;">✅ Acknowledged</span>`
-          : `<button class="btn-ack" onclick="acknowledgeDetention('${l.id}')">✅ Acknowledge Detention</button>`
-        }
-      </div>
-    `;
-    detList.appendChild(div);
-  });
-}
-
-// ══ TOAST & UTILS ═══════════════════════════════════════════
-function showToast(msg, isErr = false) {
-  const t = document.getElementById("toast");
-  t.innerText = msg;
-  t.className = `toast show ${isErr ? 'err' : ''}`;
-  setTimeout(() => t.className = "toast", 3000);
-}
-
-function doLogout() {
-  location.reload();
-}
-
-function togglePw(id, btn) {
-  const inp = document.getElementById(id);
-  if (inp.type === 'password') { inp.type = 'text'; btn.innerText = '🙈'; }
-  else { inp.type = 'password'; btn.innerText = '👁'; }
-}
-</script>
-</body>
-</html>
+    list.innerHTML = `<div
